@@ -25,8 +25,14 @@ public class BulletController : MonoBehaviour
       return;
     }
     Debug.Log(collision.name);
+    PlayerController player = collision.transform.GetComponent<PlayerController>();
     BeeController bee = collision.transform.GetComponent<BeeController>();
     HeadlessController headless = collision.transform.GetComponent<HeadlessController>();
+
+    if(player != null) {
+      // Ignore collisions with self player
+      return;
+    }
 
     if (bee != null)
     {

@@ -31,9 +31,9 @@ public class PlayerPhysicsController : MonoBehaviour
   // Reference to the RigidBody attached to the player
   private Rigidbody2D m_Rigidbody2D;
   // Radius of the overlap circle to determine if the player can stand up
-  private const float k_CeilingRadius = .15f;
+  private const float k_CeilingRadius = .1f;
   // Radius of the overlap circle to determine if grounded
-  private const float k_GroundedRadius = .15f;
+  private const float k_GroundedRadius = .1f;
   // Whether or not the player is grounded.
   private bool m_Grounded;
   // Flag for checking if player is being damaged

@@ -21,6 +21,7 @@ public class LaserController : MonoBehaviour
       ammo = value;
     }
   }
+  public LayerMask canHit;
 
   [System.Serializable]
   public class IntEvent : UnityEvent<int> { }
@@ -116,7 +117,7 @@ public class LaserController : MonoBehaviour
 
       lineRenderer.enabled = true;
 
-      yield return new WaitForSeconds(0.2f);
+      yield return new WaitForSeconds(0.05f);
 
       lineRenderer.enabled = false;
       ammo--;
