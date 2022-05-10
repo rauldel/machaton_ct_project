@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class BombController : MonoBehaviour
 {
-  //Public Attributes
+  [Header("Public Attributes")]
   public float timeToLive = 5;
-  public float launchForce = 4;
+  [Range(0,5)]
+  public float particleSystemDelay = 1f;
+  public GameObject smoke;
 
   // Start is called before the first frame update
   void Start()
   {
-    GetComponent<Rigidbody2D>().velocity = transform.right * launchForce;
     Destroy(gameObject, timeToLive);
+    Invoke("enableParticleSystem", particleSystemDelay);
   }
 
   // Update is called once per frame
@@ -24,5 +26,11 @@ public class BombController : MonoBehaviour
   private void OnCollisionEnter2D(Collision2D collision)
   {
 
+  }
+
+  private void enableParticleSystem() {
+    if (smoke.gameObject.activeSelf == false) {
+      smoke.SetActive(true);
+    }
   }
 }

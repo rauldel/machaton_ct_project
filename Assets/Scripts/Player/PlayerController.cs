@@ -15,6 +15,9 @@ public class PlayerController : MonoBehaviour
   private int playerCoins = 10;
 
   [SerializeField]
+  private bool autoMovement = false;
+
+  [SerializeField]
   private float runSpeed = 40f;
 
   public Animator playerAnimator;
@@ -43,7 +46,14 @@ public class PlayerController : MonoBehaviour
   {
     if (!GameSceneController.GameIsPaused)
     {
-      horizontalMove = Input.GetAxisRaw("Horizontal") * runSpeed;
+      if (autoMovement == true)
+      {
+        horizontalMove = runSpeed;
+      }
+      else
+      {
+        horizontalMove = Input.GetAxisRaw("Horizontal") * runSpeed;
+      }
 
       playerAnimator.SetFloat("Speed", Mathf.Abs(horizontalMove));
 

@@ -40,7 +40,9 @@ public class LaserController : MonoBehaviour
   void Awake()
   {
     if (OnShootEvent == null)
+    {
       OnShootEvent = new IntEvent();
+    }
   }
 
   void OnEnable()
@@ -87,6 +89,8 @@ public class LaserController : MonoBehaviour
           break;
       }
 
+      
+
       if (hitInfo)
       {
         Debug.Log("Laser hit " + hitInfo.transform.name);
@@ -115,11 +119,13 @@ public class LaserController : MonoBehaviour
         lineRenderer.SetPosition(1, firePoint.position + firePoint.right * 100);
       }
 
+      lineRenderer.gameObject.SetActive(true);
       lineRenderer.enabled = true;
 
       yield return new WaitForSeconds(0.05f);
 
       lineRenderer.enabled = false;
+      lineRenderer.gameObject.SetActive(false);
       ammo--;
       OnShootEvent.Invoke(ammo);
     }
