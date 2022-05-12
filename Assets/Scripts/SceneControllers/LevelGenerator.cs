@@ -9,6 +9,7 @@ public class LevelGenerator : MonoBehaviour
   [Space]
   [SerializeField]
   private Transform initialPlatform;
+  
   [SerializeField]
   private List<Transform> levelPartList;
 
@@ -34,6 +35,7 @@ public class LevelGenerator : MonoBehaviour
   void Awake()
   {
     spawnedPlatformList = new List<Transform>();
+    spawnedPlatformList.Add(initialPlatform.gameObject.transform);
     lastEndPosition = initialPlatform.Find("EndPosition").position;
     for (int i = 0; i < STARTING_SPAWN_LEVEL_PARTS; i++)
     {
