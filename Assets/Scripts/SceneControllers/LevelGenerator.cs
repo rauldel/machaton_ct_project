@@ -35,7 +35,7 @@ public class LevelGenerator : MonoBehaviour
   void Awake()
   {
     spawnedPlatformList = new List<Transform>();
-    spawnedPlatformList.Add(initialPlatform.gameObject.transform);
+    spawnedPlatformList.Add(GameObject.Find("InitialPlatforms").transform);
     lastEndPosition = initialPlatform.Find("EndPosition").position;
     for (int i = 0; i < STARTING_SPAWN_LEVEL_PARTS; i++)
     {
@@ -66,7 +66,6 @@ public class LevelGenerator : MonoBehaviour
   private Transform SpawnLevelPart(Transform levelPart, Vector3 spawnPosition)
   {
     Transform levelPartTransform = Instantiate(levelPart, spawnPosition, Quaternion.identity);
-    Debug.Log("|| Spawning part: " + spawnPosition.ToString());
     return levelPartTransform;
   }
 
@@ -78,7 +77,6 @@ public class LevelGenerator : MonoBehaviour
       Vector3 lastPos = spawnedPlatformList[i].Find("EndPosition").position;
       if (lastPos.x < player.gameObject.transform.position.x && Vector2.Distance(player.gameObject.transform.position, lastPos) > PLAYER_DISTANCE_DESTROY_LEVEL_PART)
       {
-        Debug.Log("HELLO");
         deleteList.Add(spawnedPlatformList[i]);
       }
     }
@@ -87,5 +85,17 @@ public class LevelGenerator : MonoBehaviour
       spawnedPlatformList.Remove(platform);
       Destroy(platform.gameObject);
     }
+  }
+
+  public void RestartGame() {
+    foreach (Transform platform in spawnedPlatformList)
+    {
+      Destroy(platform.gameObject);
+    }
+    spawnedPlatformList.RemoveAll(platform => true);
+
+    Transform initialPartReinstanced = Instantiate(initialPlatform, new Vector3(0,0,0), Quaternion.identity);
+    lastEndPosition = initialPartReinstanced.Find("EndPosition").position;
+    spawnedPlatformList.Add(initialPartReinstanced);
   }
 }
