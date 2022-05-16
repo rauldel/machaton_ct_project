@@ -23,14 +23,13 @@ public class PlayerWeaponController : MonoBehaviour
   void Awake()
   {
     weaponSelected = Weapons.MachineGun;
-    Debug.Log("AWAKE PWC");
     this.setWeapon(weaponSelected);
   }
 
   // Update is called once per frame
   void Update()
   {
-    if (!GameSceneController.GameIsPaused)
+    if (!GameSceneController.GameIsPaused && !GameSceneController.GameIsOver && !GameSceneController.StoreIsOpen)
     {
       if (Input.GetButtonDown("Weapon 1"))
       {
@@ -56,7 +55,6 @@ public class PlayerWeaponController : MonoBehaviour
 
   public void updateOnShootEvent(int uiAmmo)
   {
-    Debug.Log("UOSE - " + uiAmmo);
     switch (weaponSelected)
     {
       case Weapons.MachineGun:

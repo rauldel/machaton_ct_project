@@ -8,7 +8,9 @@ public class LevelGenerator : MonoBehaviour
   [Header("Level Generator Attributes")]
   [Space]
   [SerializeField]
-  private Transform initialPlatform;
+  private Transform initialPlatformReference;
+  [SerializeField]
+  private Transform initialPlatformPrefab;
   
   [SerializeField]
   private List<Transform> levelPartList;
@@ -35,8 +37,8 @@ public class LevelGenerator : MonoBehaviour
   void Awake()
   {
     spawnedPlatformList = new List<Transform>();
-    spawnedPlatformList.Add(initialPlatform.gameObject.transform);
-    lastEndPosition = initialPlatform.Find("EndPosition").position;
+    spawnedPlatformList.Add(initialPlatformReference.transform);
+    lastEndPosition = initialPlatformPrefab.Find("EndPosition").position;
     for (int i = 0; i < STARTING_SPAWN_LEVEL_PARTS; i++)
     {
       SpawnLevelPart();
@@ -66,7 +68,6 @@ public class LevelGenerator : MonoBehaviour
   private Transform SpawnLevelPart(Transform levelPart, Vector3 spawnPosition)
   {
     Transform levelPartTransform = Instantiate(levelPart, spawnPosition, Quaternion.identity);
-    Debug.Log("|| Spawning part: " + spawnPosition.ToString());
     return levelPartTransform;
   }
 
@@ -78,7 +79,6 @@ public class LevelGenerator : MonoBehaviour
       Vector3 lastPos = spawnedPlatformList[i].Find("EndPosition").position;
       if (lastPos.x < player.gameObject.transform.position.x && Vector2.Distance(player.gameObject.transform.position, lastPos) > PLAYER_DISTANCE_DESTROY_LEVEL_PART)
       {
-        Debug.Log("HELLO");
         deleteList.Add(spawnedPlatformList[i]);
       }
     }
@@ -87,5 +87,17 @@ public class LevelGenerator : MonoBehaviour
       spawnedPlatformList.Remove(platform);
       Destroy(platform.gameObject);
     }
+  }
+
+  public void RestartGame() {
+    foreach (Transform platform in spawnedPlatformList)
+    {
+      Destroy(platform.gameObject);
+    }
+    spawnedPlatformList.RemoveAll(platform => true);
+
+    initialPlatformReference = Instantiate(initialPlatformPrefab, new Vector3(0,0,0), Quaternion.identity);
+    lastEndPosition = initialPlatformReference.Find("EndPosition").position;
+    spawnedPlatformList.Add(initialPlatformReference);
   }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class PlayerController : MonoBehaviour
 {
@@ -20,9 +21,18 @@ public class PlayerController : MonoBehaviour
   [SerializeField]
   private float runSpeed = 40f;
 
+  [SerializeField]
+  private float GAME_OVER_VELOCITY_THRESOLD = -20;
+
+  public Transform playerInitialPosition;
+
   public Animator playerAnimator;
+  public Rigidbody2D playerRigidbody;
   public PlayerPhysicsController playerPhysicsController;
   public PlayerWeaponController playerWeaponController;
+
+  [Header("Player UI Attributes")]
+  [Space]
   public Text uiWeaponText;
   public Text uiLifeText;
   public Text uiCoinText;
@@ -30,6 +40,10 @@ public class PlayerController : MonoBehaviour
   private float horizontalMove = 0f;
   private bool jump = false;
   private bool crouch = false;
+  
+  [Header("Player Controller Events")]
+  [Space]
+  public UnityEvent OnGameOver;
   #endregion
 
   #region UnityEvents
@@ -44,7 +58,7 @@ public class PlayerController : MonoBehaviour
   // Update is called once per frame
   void Update()
   {
-    if (!GameSceneController.GameIsPaused)
+    if (!GameSceneController.GameIsPaused && !GameSceneController.GameIsOver && !GameSceneController.StoreIsOpen)
     {
       if (autoMovement == true)
       {
@@ -89,10 +103,20 @@ public class PlayerController : MonoBehaviour
     // Move the player
     playerPhysicsController.Move(horizontalMove * Time.fixedDeltaTime, crouch, jump);
     jump = false;
+
+    if (playerRigidbody.velocity.y <= GAME_OVER_VELOCITY_THRESOLD)
+    {
+      OnGameOver.Invoke();
+    }
   }
   #endregion
 
   #region PlayerPublicActions
+  public void OnRestartGame()
+  {
+    this.gameObject.transform.position = playerInitialPosition.transform.position;
+    playerRigidbody.velocity = Vector2.zero;
+  }
   public void OnLanding()
   {
     playerAnimator.SetBool("isJumping", false);
