@@ -6,6 +6,12 @@ using UnityEngine.Events;
 public class PlayerPhysicsController : MonoBehaviour
 {
   #region PlayerAttributes
+  [System.Serializable]
+  public class BoolEvent : UnityEvent<bool> { }
+
+  [System.Serializable]
+  public class IntEvent : UnityEvent<int> { }
+
   [Header("Player Attribtes")]
   [Space]
 
@@ -54,10 +60,8 @@ public class PlayerPhysicsController : MonoBehaviour
   public UnityEvent OnEndDamageStatus;
   public UnityEvent OnDecreaseLife;
   public UnityEvent OnIncreaseLife;
-  public UnityEvent OnIncreaseCoin;
+  public IntEvent OnIncreaseCoin;
   public UnityEvent OnLandEvent;
-  [System.Serializable]
-  public class BoolEvent : UnityEvent<bool> { }
   public BoolEvent OnCrouchEvent;
   #endregion
 
@@ -101,11 +105,14 @@ public class PlayerPhysicsController : MonoBehaviour
     if (m_BeingDamaged)
     {
       float auxDamagedTime = timeBeingDamaged + Time.fixedDeltaTime;
-      if (auxDamagedTime >= maxTimeDamage) {
+      if (auxDamagedTime >= maxTimeDamage)
+      {
         m_BeingDamaged = false;
         timeBeingDamaged = 0;
         OnEndDamageStatus.Invoke();
-      } else {
+      }
+      else
+      {
         timeBeingDamaged = auxDamagedTime;
       }
     }
@@ -118,7 +125,8 @@ public class PlayerPhysicsController : MonoBehaviour
     CoinController coin = collision.transform.GetComponent<CoinController>();
 
     // 12 es el layer de la cámara
-    if (collision.transform.gameObject.layer == 12) {
+    if (collision.transform.gameObject.layer == 12)
+    {
       return;
     }
 
@@ -148,12 +156,13 @@ public class PlayerPhysicsController : MonoBehaviour
     // This means we hit a coin with our body
     if (coin != null)
     {
-      OnIncreaseCoin.Invoke();
+      int money = coin.GetComponent<CoinController>().value;
+      OnIncreaseCoin.Invoke(money);
     }
   }
 
   private void OnTriggerExit2D(Collider2D other)
-  {}
+  { }
   #endregion
 
   #region PlayerPhysicsMethods
