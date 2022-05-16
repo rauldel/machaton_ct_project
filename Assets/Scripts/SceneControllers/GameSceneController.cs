@@ -43,7 +43,7 @@ public class GameSceneController : MonoBehaviour
 
   public void OnRestartGame()
   {
-    LevelGenerator levelGenerator = this.gameObject.GetComponent<LevelGenerator>();
+    LevelGenerator levelGenerator = gameObject.GetComponent<LevelGenerator>();
     levelGenerator.RestartGame();
 
     GameIsOver = false;

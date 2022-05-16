@@ -8,7 +8,9 @@ public class LevelGenerator : MonoBehaviour
   [Header("Level Generator Attributes")]
   [Space]
   [SerializeField]
-  private Transform initialPlatform;
+  private Transform initialPlatformReference;
+  [SerializeField]
+  private Transform initialPlatformPrefab;
   
   [SerializeField]
   private List<Transform> levelPartList;
@@ -35,8 +37,8 @@ public class LevelGenerator : MonoBehaviour
   void Awake()
   {
     spawnedPlatformList = new List<Transform>();
-    spawnedPlatformList.Add(GameObject.Find("InitialPlatforms").transform);
-    lastEndPosition = initialPlatform.Find("EndPosition").position;
+    spawnedPlatformList.Add(initialPlatformReference.transform);
+    lastEndPosition = initialPlatformPrefab.Find("EndPosition").position;
     for (int i = 0; i < STARTING_SPAWN_LEVEL_PARTS; i++)
     {
       SpawnLevelPart();
@@ -94,8 +96,8 @@ public class LevelGenerator : MonoBehaviour
     }
     spawnedPlatformList.RemoveAll(platform => true);
 
-    Transform initialPartReinstanced = Instantiate(initialPlatform, new Vector3(0,0,0), Quaternion.identity);
-    lastEndPosition = initialPartReinstanced.Find("EndPosition").position;
-    spawnedPlatformList.Add(initialPartReinstanced);
+    initialPlatformReference = Instantiate(initialPlatformPrefab, new Vector3(0,0,0), Quaternion.identity);
+    lastEndPosition = initialPlatformReference.Find("EndPosition").position;
+    spawnedPlatformList.Add(initialPlatformReference);
   }
 }
