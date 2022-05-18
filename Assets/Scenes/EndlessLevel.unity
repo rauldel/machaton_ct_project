@@ -547,7 +547,7 @@ PrefabInstance:
     - target: {fileID: 2678540540189050622, guid: e559e073336f86043b054c950120c5e5,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2678540540189050622, guid: e559e073336f86043b054c950120c5e5,
         type: 3}
@@ -791,7 +791,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.076794, y: -0.98, z: -10}
+  m_LocalPosition: {x: 8.077778, y: -0.98, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1315,7 +1315,7 @@ Transform:
   - {fileID: 1871835920}
   - {fileID: 1997188399}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &1058552189
 Rigidbody2D:
@@ -1459,7 +1459,18 @@ MonoBehaviour:
       m_Calls: []
   OnDecreaseLife:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1058552194}
+        m_MethodName: DecrementLife
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnIncreaseLife:
     m_PersistentCalls:
       m_Calls: []
@@ -1667,7 +1678,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1161536757
 MonoBehaviour:
@@ -2394,7 +2405,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1790129464}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.076794, y: -0.98, z: -10}
+  m_LocalPosition: {x: 8.077778, y: -0.98, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 563489153}
@@ -2883,7 +2894,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2678540541337556738
 PrefabInstance:
@@ -2920,7 +2931,7 @@ PrefabInstance:
     - target: {fileID: 2678540540189050622, guid: e559e073336f86043b054c950120c5e5,
         type: 3}
       propertyPath: m_RootOrder
-      value: 10
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 2678540540189050622, guid: e559e073336f86043b054c950120c5e5,
         type: 3}
@@ -2984,7 +2995,7 @@ PrefabInstance:
     - target: {fileID: 3677747482029203831, guid: c93900b6da3f4be40a1f47befc3a267c,
         type: 3}
       propertyPath: m_RootOrder
-      value: 6
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 3677747482029203831, guid: c93900b6da3f4be40a1f47befc3a267c,
         type: 3}
