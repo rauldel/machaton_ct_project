@@ -41,3 +41,8 @@ Once that, close the `Project Settings` and try to run the game again.
 
 If you see any other errors, please ping me to help you.
 
+Note that for WebGL building, we also have to set the API Compatibility Level to `.NET 4.x`, see in the following image where you can change the tab for displaying WebGL build options:
+![image](https://user-images.githubusercontent.com/6830824/169413493-c0c9c974-61de-4de2-b87f-3717e4c8d2cd.png)
+
+
+
