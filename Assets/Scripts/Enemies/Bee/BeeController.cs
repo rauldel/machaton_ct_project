@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum BEE_STATE { FLYING, FOLLOWING, STINGING };
+public enum BEE_STATE { FLYING, FOLLOWING, STINGING, SCARED };
 
 public class BeeController : MonoBehaviour
 {
@@ -17,6 +17,15 @@ public class BeeController : MonoBehaviour
 
   [SerializeField]
   private float beeSpeed = 1f;
+
+  [SerializeField]
+  private float beeSpeedScared = 3f;
+
+  [SerializeField]
+  private float maxScaredTime = 3f;
+
+  [SerializeField]
+  private float maxFollowingDistance = 3f;
 
   [SerializeField]
   private bool loopedPath = true;
@@ -35,6 +44,7 @@ public class BeeController : MonoBehaviour
   private bool isFacingRight = true;
   private Transform currentTarget;
   private int lastIndex;
+  private float timeScared;
   #endregion
 
   #region UnityEvents
@@ -56,21 +66,57 @@ public class BeeController : MonoBehaviour
   void Update()
   {
     Vector2 newPosition = Vector2.zero;
-    if (beeState == BEE_STATE.FLYING)
+    //Debug.Log("BS: " + beeState.ToString());
+    switch (beeState)
     {
-      if (transform.position == currentTarget.position)
-      {
-        calculateNextTarget();
-      }
-      newPosition = Vector2.MoveTowards(transform.position, currentTarget.position, beeSpeed * Time.deltaTime);
-    }
-    else if (beeState == BEE_STATE.FOLLOWING)
-    {
-      newPosition = Vector2.MoveTowards(transform.position, player.position, beeSpeed * Time.deltaTime);
-    }
-    else if (beeState == BEE_STATE.STINGING)
-    {
-      newPosition = Vector2.MoveTowards(transform.position, player.position, beeSpeed * Time.deltaTime);
+      case BEE_STATE.FLYING:
+        float playerDistance = Vector2.Distance(transform.position, player.position);
+        if (playerDistance < maxFollowingDistance)
+        {
+          beeState = BEE_STATE.FOLLOWING;
+          newPosition = Vector2.MoveTowards(transform.position, player.position, beeSpeed * Time.deltaTime);
+        }
+        else
+        {
+          if (transform.position == currentTarget.position)
+          {
+            calculateNextTarget();
+          }
+          newPosition = Vector2.MoveTowards(transform.position, currentTarget.position, beeSpeed * Time.deltaTime);
+        }
+        break;
+      case BEE_STATE.FOLLOWING:
+        Debug.Log("1 follower: " + transform.position + " | " + player.position);
+        float player_distance = Vector2.Distance(transform.position, player.position);
+        if (player_distance <= maxFollowingDistance)
+        {
+          newPosition = Vector2.MoveTowards(transform.position, player.position, beeSpeed * Time.deltaTime);
+        }
+        else
+        {
+          beeState = BEE_STATE.FLYING;
+          newPosition = Vector2.MoveTowards(transform.position, currentTarget.position, beeSpeed * Time.deltaTime);
+        }
+        break;
+      case BEE_STATE.STINGING:
+        newPosition = Vector2.MoveTowards(transform.position, player.position, beeSpeed * Time.deltaTime);
+        break;
+      case BEE_STATE.SCARED:
+        timeScared += Time.deltaTime;
+
+        // If scared, runs away from the player
+        if (timeScared < maxScaredTime)
+        {
+          newPosition = Vector2.MoveTowards(transform.position, player.position, -beeSpeed * Time.deltaTime);
+        }
+        else
+        {
+          newPosition = Vector2.MoveTowards(transform.position, currentTarget.position, beeSpeed * Time.deltaTime);
+          timeScared = 0;
+          SwapSpeeds();
+          beeState = BEE_STATE.FLYING;
+        }
+        break;
     }
 
     if (newPosition.x - transform.position.x > 0 && !isFacingRight)
@@ -89,7 +135,14 @@ public class BeeController : MonoBehaviour
   {
     PlayerController player = collision.transform.GetComponent<PlayerController>();
 
-    if (player != null && beeState != BEE_STATE.STINGING)
+    // If bee is in smoke (Layer 10), it will try to move away the smoke quickly
+    if (collision.transform.gameObject.layer == 10)
+    {
+      timeScared = 0f;
+      SwapSpeeds();
+      beeState = BEE_STATE.SCARED;
+    }
+    else if (player != null && beeState != BEE_STATE.STINGING)
     {
       beeState = BEE_STATE.STINGING;
       beeAnimator.SetBool("sting", true);
@@ -105,6 +158,7 @@ public class BeeController : MonoBehaviour
       beeState = BEE_STATE.FLYING;
     }
   }
+
   #endregion
 
   #region CustomPublicEvents
@@ -112,20 +166,13 @@ public class BeeController : MonoBehaviour
   {
     beeAnimator.SetBool("sting", false);
   }
-  public void OnSetFollowingState()
-  {
-    beeState = BEE_STATE.FOLLOWING;
-  }
-
-  public void OnSetFlyingState()
-  {
-    beeState = BEE_STATE.FLYING;
-  }
 
   public void TakeDamage(int damageAmount)
   {
+    Debug.Log("Damage received");
     if (healthPoints - damageAmount <= 0)
     {
+      player.GetComponent<PlayerController>().OnIncreaseCoin(lootCoins);
       // Destroy object and invoke animation or something
       Destroy(gameObject);
     }
@@ -180,6 +227,13 @@ public class BeeController : MonoBehaviour
   {
     isFacingRight = !isFacingRight;
     transform.Rotate(0f, 180f, 0f);
+  }
+
+  private void SwapSpeeds()
+  {
+    float speedAux = beeSpeed;
+    beeSpeed = beeSpeedScared;
+    beeSpeedScared = speedAux;
   }
   #endregion
 }

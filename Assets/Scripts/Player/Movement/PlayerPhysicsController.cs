@@ -147,7 +147,7 @@ public class PlayerPhysicsController : MonoBehaviour
         m_Rigidbody2D.velocity = new Vector2(0, 0);
       }
 
-      m_Rigidbody2D.AddForce(new Vector2(impulso.normalized.x * 10, impulso.normalized.y * 5), ForceMode2D.Impulse);
+      m_Rigidbody2D.AddForce(new Vector2(impulso.normalized.x * 5, impulso.normalized.y * 5), ForceMode2D.Impulse);
 
       // Invoke life decrement in PlayerController
       OnDecreaseLife.Invoke();

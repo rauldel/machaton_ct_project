@@ -24,12 +24,14 @@ public class BulletController : MonoBehaviour
     {
       return;
     }
+
     Debug.Log(collision.name);
     PlayerController player = collision.transform.GetComponent<PlayerController>();
     BeeController bee = collision.transform.GetComponent<BeeController>();
     HeadlessController headless = collision.transform.GetComponent<HeadlessController>();
 
-    if(player != null) {
+    if (player != null)
+    {
       // Ignore collisions with self player
       return;
     }
@@ -37,12 +39,11 @@ public class BulletController : MonoBehaviour
     if (bee != null)
     {
       bee.TakeDamage(damage);
-      //Instanciar animación impacto
       Instantiate(impactEffect, collision.transform.position, Quaternion.identity);
     }
-    else if (headless != null) {
+    else if (headless != null)
+    {
       headless.TakeDamage(damage);
-      //Instanciar animación impacto
       Instantiate(impactEffect, collision.transform.position, Quaternion.identity);
     }
     else
