@@ -183,7 +183,6 @@ public class LanzagranadasController : MonoBehaviour
     {
       var t = lowestTimeValue * i;
       lineArray[i] = CalculateLinePoint(t);
-      Debug.Log(lineArray[i]);
     }
 
     return lineArray;
