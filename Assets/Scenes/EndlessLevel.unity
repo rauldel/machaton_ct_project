@@ -648,7 +648,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.078218, y: -0.98, z: -10}
+  m_LocalPosition: {x: 8.074659, y: -0.98, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1057,6 +1057,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1023987845}
   m_CullTransparentMesh: 0
+--- !u!1 &1055794860
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1055794862}
+  - component: {fileID: 1055794861}
+  m_Layer: 0
+  m_Name: GameSaver
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1055794861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1055794860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16d6cc45d5cb3af4b827289a1d29f990, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weaponController: {fileID: 1058552192}
+--- !u!4 &1055794862
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1055794860}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -88.18722, y: 705.3861, z: -208.92122}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1058552187
 GameObject:
   m_ObjectHideFlags: 0
@@ -2097,7 +2141,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1790129464}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.078218, y: -0.98, z: -10}
+  m_LocalPosition: {x: 8.074659, y: -0.98, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 563489153}
@@ -2149,6 +2193,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7ddfc1202cd82d459cfbc9158673286, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  saveGameController: {fileID: 1055794861}
+  playerWeaponController: {fileID: 1058552192}
   firePoint: {fileID: 1077071110}
   damage: 20
   ammo: 50
@@ -2161,8 +2207,8 @@ MonoBehaviour:
   OnShootEvent:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1058552192}
-        m_MethodName: updateOnShootEvent
+      - m_Target: {fileID: 1055794861}
+        m_MethodName: UpdateAmmo
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2318,16 +2364,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5467bc1c9cc4284a8e2c1dcb0c18b11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  saveGameController: {fileID: 1055794861}
+  playerWeaponController: {fileID: 1058552192}
   firePoint: {fileID: 1714068654}
   damage: 20
-  ammo: 50
   bulletPrefab: {fileID: 2455185176149681972, guid: 1de898449d48c6448aab066e58167d5f,
     type: 3}
   OnShootEvent:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1058552192}
-        m_MethodName: updateOnShootEvent
+      - m_Target: {fileID: 1055794861}
+        m_MethodName: UpdateAmmo
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2456,6 +2503,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce26eef31ebcd594d841ca9421f8bc64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  saveGameController: {fileID: 1055794861}
+  playerWeaponController: {fileID: 1058552192}
   firePoint: {fileID: 1457885150}
   damage: 20
   ammo: 50
@@ -2473,8 +2522,8 @@ MonoBehaviour:
   OnShootEvent:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1058552192}
-        m_MethodName: updateOnShootEvent
+      - m_Target: {fileID: 1055794861}
+        m_MethodName: UpdateAmmo
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

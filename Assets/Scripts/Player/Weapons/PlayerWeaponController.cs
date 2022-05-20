@@ -7,92 +7,97 @@ public enum Weapons { Laser, MachineGun, SmokeBomb };
 
 public class PlayerWeaponController : MonoBehaviour
 {
-  [Header("Weapon Dependencies")]
-  public MachineGunController mgController;
-  public LaserController laserController;
-  public LanzagranadasController lgController;
+    [Header("Weapon Dependencies")]
+    public MachineGunController mgController;
+    public LaserController laserController;
+    public LanzagranadasController lgController;
 
-  [Header("UI Stuff")]
-  public Text uiText;
+    [Header("UI Stuff")]
+    public Text uiText;
 
-  // Private Attributes
-  private Weapons weaponSelected;
+    // Private Attributes
+    private Weapons weaponSelected;
 
 
-  // Start is called before the first frame update
-  void Awake()
-  {
-    weaponSelected = Weapons.MachineGun;
-    this.setWeapon(weaponSelected);
-  }
-
-  // Update is called once per frame
-  void Update()
-  {
-    if (!GameSceneController.GameIsPaused && !GameSceneController.GameIsOver && !GameSceneController.StoreIsOpen)
+    // Start is called before the first frame update
+    void Awake()
     {
-      if (Input.GetButtonDown("Weapon 1"))
-      {
-        this.setWeapon(Weapons.MachineGun);
-      }
-      else if (Input.GetButtonDown("Weapon 2"))
-      {
-        this.setWeapon(Weapons.Laser);
-      }
-      else if (Input.GetButtonDown("Weapon 3"))
-      {
-        this.setWeapon(Weapons.SmokeBomb);
-      }
+        weaponSelected = Weapons.MachineGun;
+        this.setWeapon(weaponSelected);
     }
-  }
 
-  #region WeaponControllerMethods
-  public void setWeapon(Weapons weapon)
-  {
-    weaponSelected = weapon;
-    this.UpdateWeaponState(weapon);
-  }
-
-  public void updateOnShootEvent(int uiAmmo)
-  {
-    switch (weaponSelected)
+    // Update is called once per frame
+    void Update()
     {
-      case Weapons.MachineGun:
-        uiText.text = "Machine Gun - " + uiAmmo;
-        break;
-      case Weapons.Laser:
-        uiText.text = "Laser - " + uiAmmo;
-        break;
-      case Weapons.SmokeBomb:
-        uiText.text = "Smoke Bomb - " + uiAmmo;
-        break;
-      default:
-        break;
+        if (!GameSceneController.GameIsPaused && !GameSceneController.GameIsOver && !GameSceneController.StoreIsOpen)
+        {
+            if (Input.GetButtonDown("Weapon 1"))
+            {
+                this.setWeapon(Weapons.MachineGun);
+            }
+            else if (Input.GetButtonDown("Weapon 2"))
+            {
+                this.setWeapon(Weapons.Laser);
+            }
+            else if (Input.GetButtonDown("Weapon 3"))
+            {
+                this.setWeapon(Weapons.SmokeBomb);
+            }
+        }
     }
-  }
 
-  private void UpdateWeaponState(Weapons newWeapon)
-  {
-    // Desactivamos todas las armas
-    mgController.gameObject.SetActive(false);
-    laserController.gameObject.SetActive(false);
-    lgController.gameObject.SetActive(false);
-
-    // Activamos la que se nos ordena
-    switch (newWeapon)
+    #region WeaponControllerMethods
+    public void setWeapon(Weapons weapon)
     {
-      case Weapons.MachineGun:
-        mgController.gameObject.SetActive(true);
-        break;
-      case Weapons.Laser:
-        laserController.gameObject.SetActive(true);
-        break;
-      case Weapons.SmokeBomb:
-        lgController.gameObject.SetActive(true);
-        break;
-      default:
-        break;
+        weaponSelected = weapon;
+        this.UpdateWeaponState(weapon);
     }
-  }
-  #endregion
+
+    public Weapons GetWeaponSelected()
+    {
+        return weaponSelected;
+    }
+
+    public void updateAmmoUI(int uiAmmo)
+    {
+        switch (weaponSelected)
+        {
+            case Weapons.MachineGun:
+                uiText.text = "Machine Gun - " + uiAmmo;
+                break;
+            case Weapons.Laser:
+                uiText.text = "Laser - " + uiAmmo;
+                break;
+            case Weapons.SmokeBomb:
+                uiText.text = "Smoke Bomb - " + uiAmmo;
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void UpdateWeaponState(Weapons newWeapon)
+    {
+        // Desactivamos todas las armas
+        mgController.gameObject.SetActive(false);
+        laserController.gameObject.SetActive(false);
+        lgController.gameObject.SetActive(false);
+
+        // Activamos la que se nos ordena
+        switch (newWeapon)
+        {
+            case Weapons.MachineGun:
+                mgController.gameObject.SetActive(true);
+                break;
+            case Weapons.Laser:
+                laserController.gameObject.SetActive(true);
+                break;
+            case Weapons.SmokeBomb:
+                lgController.gameObject.SetActive(true);
+                break;
+            default:
+                break;
+        }
+    }
+    #endregion
 }
