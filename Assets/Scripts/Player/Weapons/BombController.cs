@@ -6,9 +6,9 @@ public class BombController : MonoBehaviour
 {
   [Header("Public Attributes")]
   public float timeToLive = 5;
-  [Range(0,5)]
+  [Range(0, 5)]
   public float particleSystemDelay = 1f;
-  public GameObject smoke;
+  public ParticleSystem smoke;
 
   // Start is called before the first frame update
   void Start()
@@ -28,9 +28,8 @@ public class BombController : MonoBehaviour
 
   }
 
-  private void enableParticleSystem() {
-    if (smoke.gameObject.activeSelf == false) {
-      smoke.SetActive(true);
-    }
+  private void enableParticleSystem()
+  {
+    smoke.Play();
   }
 }

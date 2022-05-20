@@ -75,21 +75,9 @@ public class LaserController : MonoBehaviour
       RaycastHit2D hitInfoCoin = Physics2D.Raycast(firePoint.position, firePoint.right, 10000, LayerMask.GetMask("Coin"));
       RaycastHit2D hitInfoEnemy = Physics2D.Raycast(firePoint.position, firePoint.right, 10000, LayerMask.GetMask("Enemy"));
 
-      switch (getBiggestValue(hitInfoObstacle.distance, hitInfoCoin.distance, hitInfoEnemy.distance))
-      {
-        case 0:
-          hitInfo = hitInfoObstacle;
-          break;
-        case 1:
-          hitInfo = hitInfoCoin;
-          break;
-        default:
-        case 2:
-          hitInfo = hitInfoEnemy;
-          break;
-      }
+      List<RaycastHit2D> listRaycasts = new List<RaycastHit2D>() { hitInfoObstacle, hitInfoCoin, hitInfoEnemy };
 
-      
+      hitInfo = getShortestDistance(listRaycasts);
 
       if (hitInfo)
       {
@@ -135,21 +123,19 @@ public class LaserController : MonoBehaviour
     }
   }
 
-
-  private int getBiggestValue(float valueA, float valueB, float valueC)
+  private RaycastHit2D getShortestDistance(List<RaycastHit2D> listRaycasts)
   {
-    if (valueA > valueB && valueA > valueC)
+    int lowestIndex = 0;
+
+    for (int i = 0; i < listRaycasts.Count; i++)
     {
-      return 0;
+      if (listRaycasts[i].distance < listRaycasts[lowestIndex].distance && listRaycasts[i].distance > 0)
+      {
+        lowestIndex = i;
+      }
     }
-    else if (valueB > valueA && valueB > valueC)
-    {
-      return 1;
-    }
-    else
-    {
-      return 2;
-    }
+
+    return listRaycasts[lowestIndex];
   }
   #endregion
 }

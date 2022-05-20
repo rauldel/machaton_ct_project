@@ -140,15 +140,15 @@ public class PlayerController : MonoBehaviour
     uiLifeText.text = "Life(s) - " + playerLife.ToString();
   }
 
-  public void OnIncreaseCoin()
+  public void OnIncreaseCoin(int newCoins)
   {
-    playerCoins++;
+    playerCoins += newCoins;
     uiCoinText.text = "Coin: " + playerCoins;
   }
 
-  public void OnDecreaseCoin()
+  public void OnDecreaseCoin(int newCoins)
   {
-    playerCoins--;
+    playerCoins -= newCoins;
   }
   #endregion
 
