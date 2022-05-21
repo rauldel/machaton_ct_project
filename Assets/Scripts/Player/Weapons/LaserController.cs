@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
 public class LaserController : MonoBehaviour
 {
@@ -19,35 +18,28 @@ public class LaserController : MonoBehaviour
     set
     {
       ammo = value;
+      playerWeaponController.updateAmmoUI(value);
     }
   }
   public LayerMask canHit;
 
-  [System.Serializable]
-  public class IntEvent : UnityEvent<int> { }
-
   [Header("Laser dependencies")]
+  [SerializeField] private SaveGameController saveGameController;
+  [SerializeField] private PlayerWeaponController playerWeaponController;
   public LineRenderer lineRenderer;
   public GameObject impactEffect;
-
-  [Header("Laser Events")]
-  [Space]
-  public IntEvent OnShootEvent;
   #endregion
 
   #region UnityMethods
   // Awake is called when the script instance is being loaded
   void Awake()
   {
-    if (OnShootEvent == null)
-    {
-      OnShootEvent = new IntEvent();
-    }
+    SetAmmoFromSaveGameController();
   }
 
   void OnEnable()
   {
-    OnShootEvent.Invoke(ammo);
+    SetAmmoFromSaveGameController();
   }
 
   // Update is called once per frame
@@ -64,6 +56,12 @@ public class LaserController : MonoBehaviour
   #endregion
 
   #region LaserMethods
+  private void SetAmmoFromSaveGameController()
+  {
+    SaveData data = SaveGameController.GetSavedData();
+    Ammo = data.laserAmmo;
+  }
+
   IEnumerator ShootLaser()
   {
     if (ammo > 0)
@@ -114,8 +112,8 @@ public class LaserController : MonoBehaviour
 
       lineRenderer.enabled = false;
       lineRenderer.gameObject.SetActive(false);
-      ammo--;
-      OnShootEvent.Invoke(ammo);
+      Ammo--;
+      saveGameController.UpdateAmmo(Ammo);
     }
     else
     {

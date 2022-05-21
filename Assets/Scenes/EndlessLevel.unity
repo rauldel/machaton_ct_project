@@ -185,7 +185,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &32724695
 GameObject:
@@ -1098,7 +1098,7 @@ Transform:
   - {fileID: 1871835920}
   - {fileID: 1997188399}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &1058552189
 Rigidbody2D:
@@ -1210,9 +1210,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3dbd6bb3ff69cc64d9da96e2a7e3f04e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mgController: {fileID: 1928650166}
+  phaserController: {fileID: 1928650166}
   laserController: {fileID: 1871835921}
-  lgController: {fileID: 1997188400}
+  btController: {fileID: 1997188400}
   uiText: {fileID: 32724697}
 --- !u!114 &1058552193
 MonoBehaviour:
@@ -1310,6 +1310,7 @@ MonoBehaviour:
   playerRigidbody: {fileID: 1058552189}
   playerPhysicsController: {fileID: 1058552193}
   playerWeaponController: {fileID: 1058552192}
+  saveGameController: {fileID: 1323330352}
   uiWeaponText: {fileID: 32724697}
   uiLifeText: {fileID: 824058877}
   uiCoinText: {fileID: 800481785}
@@ -1461,7 +1462,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1161536757
 MonoBehaviour:
@@ -1755,6 +1756,50 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1323330351
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1323330353}
+  - component: {fileID: 1323330352}
+  m_Layer: 0
+  m_Name: SaveGameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1323330352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1323330351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16d6cc45d5cb3af4b827289a1d29f990, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weaponController: {fileID: 1058552192}
+--- !u!4 &1323330353
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1323330351}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 21.105879, y: 0.8336821, z: -0.7359461}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1418006597
 GameObject:
   m_ObjectHideFlags: 0
@@ -2177,23 +2222,11 @@ MonoBehaviour:
   canHit:
     serializedVersion: 2
     m_Bits: 0
+  saveGameController: {fileID: 1323330352}
+  playerWeaponController: {fileID: 1058552192}
   lineRenderer: {fileID: 1608039797}
   impactEffect: {fileID: 8903732707973066783, guid: 8ec4367781f8a014e9a950aef3d5ecd4,
     type: 3}
-  OnShootEvent:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1058552192}
-        m_MethodName: updateOnShootEvent
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!1 &1895029712
 GameObject:
   m_ObjectHideFlags: 0
@@ -2289,7 +2322,7 @@ RectTransform:
   - {fileID: 410246491}
   - {fileID: 1320181462}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -2342,23 +2375,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   firePoint: {fileID: 1714068654}
   damage: 1
-  ammo: 50
+  ammo: 0
+  saveGameController: {fileID: 1323330352}
+  playerWeaponController: {fileID: 1058552192}
   bulletPrefab: {fileID: 2455185176149681972, guid: 1de898449d48c6448aab066e58167d5f,
     type: 3}
-  OnShootEvent:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1058552192}
-        m_MethodName: updateOnShootEvent
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!1 &1971166413
 GameObject:
   m_ObjectHideFlags: 0
@@ -2444,7 +2465,7 @@ GameObject:
   - component: {fileID: 1997188399}
   - component: {fileID: 1997188400}
   m_Layer: 0
-  m_Name: Lanzagranadas
+  m_Name: Bombthrower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2479,11 +2500,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   firePoint: {fileID: 1457885150}
-  damage: 20
   ammo: 50
   launchForce: 5
   smokeBombPrefab: {fileID: 4342386746702954664, guid: b1c3a8d3dc7eb2740b4ba0f127f90c36,
     type: 3}
+  saveGameController: {fileID: 1323330352}
+  playerWeaponController: {fileID: 1058552192}
   trajectoryRenderer: {fileID: 36710008}
   resolution: 30
   yLimit: -20
@@ -2492,20 +2514,6 @@ MonoBehaviour:
   canHit:
     serializedVersion: 2
     m_Bits: 256
-  OnShootEvent:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1058552192}
-        m_MethodName: updateOnShootEvent
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!1 &2141967770
 GameObject:
   m_ObjectHideFlags: 0
@@ -2534,7 +2542,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &3677747480855145975
 PrefabInstance:
@@ -2546,7 +2554,7 @@ PrefabInstance:
     - target: {fileID: 3677747482029203831, guid: c93900b6da3f4be40a1f47befc3a267c,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3677747482029203831, guid: c93900b6da3f4be40a1f47befc3a267c,
         type: 3}
