@@ -1,16 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
-public class LanzagranadasController : MonoBehaviour
+public class BombthrowerController : MonoBehaviour
 {
 
   #region Attributes
   [Header("Basic Attributes")]
   public Transform firePoint;
-  [SerializeField]
-  private int damage = 20;
   [SerializeField]
   private int ammo = 50;
   public int Ammo
@@ -22,6 +19,7 @@ public class LanzagranadasController : MonoBehaviour
     set
     {
       ammo = value;
+      playerWeaponController.updateAmmoUI(value);
     }
   }
 
@@ -30,6 +28,8 @@ public class LanzagranadasController : MonoBehaviour
 
   [Header("Weapon dependencies")]
   public GameObject smokeBombPrefab;
+  [SerializeField] private SaveGameController saveGameController;
+  [SerializeField] private PlayerWeaponController playerWeaponController;
 
   [Header("Curve Trajectory Renderer")]
   public LineRenderer trajectoryRenderer;
@@ -48,34 +48,24 @@ public class LanzagranadasController : MonoBehaviour
   private float timePressed;
   private float trajectoryBouncer;
   private bool trajectoryBouncerDirection;
-
-  [System.Serializable]
-  public class IntEvent : UnityEvent<int> {}
-
-  [Header("Laser Events")]
-  [Space]
-  public IntEvent OnShootEvent;
-
   #endregion
 
   #region UnityMethods
   // Awake is called when the script instance is being loaded
   void Awake()
   {
+    SetAmmoFromSaveGameController();
     timePressed = 0;
     trajectoryBouncer = 0f;
     trajectoryBouncerDirection = true;
 
     g = Mathf.Abs(Physics2D.gravity.y);
     trajectoryVelocity = new Vector2(0f, 0f);
-
-    if (OnShootEvent == null)
-      OnShootEvent = new IntEvent();
   }
 
   void OnEnable()
   {
-    OnShootEvent.Invoke(ammo);
+    SetAmmoFromSaveGameController();
   }
 
   // Update is called once per frame
@@ -115,7 +105,7 @@ public class LanzagranadasController : MonoBehaviour
   }
   #endregion
 
-  #region LanzagranadasMethods
+  #region BombthrowerMethods
   void ShootSmokeBomb()
   {
     if (ammo > 0)
@@ -123,13 +113,20 @@ public class LanzagranadasController : MonoBehaviour
       GameObject bombIns = Instantiate(smokeBombPrefab, firePoint.position, firePoint.rotation);
       bombIns.GetComponent<Rigidbody2D>().velocity = (transform.up + transform.right) * launchForce * trajectoryBouncer;
 
-      ammo--;
-      OnShootEvent.Invoke(ammo);
+      Ammo--;
+      saveGameController.UpdateAmmo(Ammo);
     }
     else
     {
       // Should play some empty ammo sound
     }
+  }
+
+  private void SetAmmoFromSaveGameController()
+  {
+    SaveData data = SaveGameController.GetSavedData();
+    Ammo = data.smokeBombAmmo;
+
   }
   #endregion
 

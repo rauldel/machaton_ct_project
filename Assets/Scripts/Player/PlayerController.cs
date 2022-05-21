@@ -10,10 +10,11 @@ public class PlayerController : MonoBehaviour
   [Header("Player Attribtes")]
   [Space]
   [SerializeField]
-  private int playerLife = 5;
+  private int playerLife = 10;
 
   [SerializeField]
-  private int playerCoins = 10;
+  private int playerCoins;
+  public int PlayerCoins { private set { playerCoins = value; } get { return playerCoins; } }
 
   [SerializeField]
   private bool autoMovement = false;
@@ -28,8 +29,9 @@ public class PlayerController : MonoBehaviour
 
   public Animator playerAnimator;
   public Rigidbody2D playerRigidbody;
-  public PlayerPhysicsController playerPhysicsController;
-  public PlayerWeaponController playerWeaponController;
+  [SerializeField] private PlayerPhysicsController playerPhysicsController;
+  [SerializeField] private PlayerWeaponController playerWeaponController;
+  [SerializeField] private SaveGameController saveGameController;
 
   [Header("Player UI Attributes")]
   [Space]
@@ -40,17 +42,17 @@ public class PlayerController : MonoBehaviour
   private float horizontalMove = 0f;
   private bool jump = false;
   private bool crouch = false;
-  
+
   [Header("Player Controller Events")]
   [Space]
   public UnityEvent OnGameOver;
   #endregion
 
   #region UnityEvents
-  // Start is called before the first frame update
-  void Start()
+  void Awake()
   {
-    playerCoins = 10;
+    SaveData savedData = SaveGameController.GetSavedData();
+    playerCoins = savedData.playerCoins;
     uiLifeText.text = "Life(s) - " + playerLife;
     uiCoinText.text = "Coin: " + playerCoins;
   }
@@ -143,6 +145,8 @@ public class PlayerController : MonoBehaviour
   public void OnIncreaseCoin(int newCoins)
   {
     playerCoins += newCoins;
+    saveGameController.UpdateCoin(playerCoins);
+    saveGameController.UpdateCoinEarned(newCoins);
     uiCoinText.text = "Coin: " + playerCoins;
   }
 

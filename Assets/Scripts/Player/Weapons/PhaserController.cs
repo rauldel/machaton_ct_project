@@ -1,15 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
-public class MachineGunController : MonoBehaviour
+public class PhaserController : MonoBehaviour
 {
   #region Attributes
   [Header("Basic Attributes")]
   public Transform firePoint;
   public int damage = 20;
-  public int ammo = 50;
+  public int ammo;
   public int Ammo
   {
     get
@@ -19,32 +18,26 @@ public class MachineGunController : MonoBehaviour
     set
     {
       ammo = value;
+      playerWeaponController.updateAmmoUI(value);
     }
   }
 
-  [Header("Machine Gun dependencies")]
+  [Header("Phaser dependencies")]
+  [SerializeField] private SaveGameController saveGameController;
+  [SerializeField] private PlayerWeaponController playerWeaponController;
   public GameObject bulletPrefab;
-
-  [System.Serializable]
-  public class IntEvent : UnityEvent<int> { }
-
-  [Header("Laser Events")]
-  [Space]
-  public IntEvent OnShootEvent;
   #endregion
 
   #region UnityMethods
   // Awake is called when the script instance is being loaded
   void Awake()
   {
-    Debug.Log("AWAKE MGC " + ammo);
-    if (OnShootEvent == null)
-      OnShootEvent = new IntEvent();
+    SetAmmoFromSaveGameController();
   }
 
   void OnEnable()
   {
-    OnShootEvent.Invoke(ammo);
+    SetAmmoFromSaveGameController();
   }
 
   // Update is called once per frame
@@ -60,14 +53,20 @@ public class MachineGunController : MonoBehaviour
   }
   #endregion
 
-  #region MachineGunMethods
+  #region PhaserMethods
+  private void SetAmmoFromSaveGameController()
+  {
+    SaveData data = SaveGameController.GetSavedData();
+    Ammo = data.phaserAmmo;
+  }
+
   void ShootBullet()
   {
     if (ammo > 0)
     {
       Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
-      ammo--;
-      OnShootEvent.Invoke(ammo);
+      Ammo--;
+      saveGameController.UpdateAmmo(Ammo);
     }
     else
     {
