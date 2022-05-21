@@ -48,7 +48,6 @@ public class SaveGameController : MonoBehaviour
       saveData.SetSmokeBombAmmo(ammo);
     }
 
-    Debug.Log("Saving Data: " + ammo);
     WriteDataToStorage(saveData);
   }
 
@@ -95,12 +94,10 @@ public class SaveGameController : MonoBehaviour
       FileStream stream = new FileStream(path, FileMode.Open);
       SaveData data = formatter.Deserialize(stream) as SaveData;
       stream.Close();
-      Debug.Log("YOLO: " + data.phaserAmmo);
       return data;
     }
     else
     {
-      Debug.Log("NOT YOLO");
       return new SaveData();
     }
   }
