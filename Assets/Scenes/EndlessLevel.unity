@@ -3410,8 +3410,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 483ad9aec22e9274da78e061a7814049, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  saveGameController: {fileID: 1323330352}
   consumableListController: {fileID: 497344945}
   weaponsListController: {fileID: 1993789980}
+  playerCoinsText: {fileID: 1569690601}
 --- !u!1 &1323330351
 GameObject:
   m_ObjectHideFlags: 0

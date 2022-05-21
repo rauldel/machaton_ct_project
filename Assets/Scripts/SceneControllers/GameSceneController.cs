@@ -118,7 +118,7 @@ public class GameSceneController : MonoBehaviour
 
   public void OnCloseStore()
   {
-    StoreIsOpen = true;
+    StoreIsOpen = false;
     Time.timeScale = 1;
 
     storeUI.gameObject.SetActive(false);

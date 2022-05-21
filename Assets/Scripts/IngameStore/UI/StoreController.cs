@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 using myCT.Common;
 using myCT.Products;
@@ -10,10 +11,16 @@ public class StoreController : MonoBehaviour
 {
   #region StoreAttrbiutes
   [SerializeField]
+  private SaveGameController saveGameController;
+
+  [SerializeField]
   private ProductListController consumableListController;
 
   [SerializeField]
   private ProductListController weaponsListController;
+
+  [SerializeField]
+  private Text playerCoinsText;
 
   private List<Product> consumableProductsList;
   private List<Product> weaponProductsList;
@@ -24,6 +31,7 @@ public class StoreController : MonoBehaviour
   // Start is called before the first frame update
   void Start()
   {
+    LoadPlayerCoins();
     LoadConsumableProducts();
     LoadWeaponProducts();
   }
@@ -36,6 +44,11 @@ public class StoreController : MonoBehaviour
   #endregion
 
   #region StoreMethods
+  private void LoadPlayerCoins()
+  {
+    SaveData data = SaveGameController.GetSavedData();
+    playerCoinsText.text = data.playerCoins.ToString();
+  }
   private async void LoadConsumableProducts()
   {
     Client client = CommercetoolsManager.GetClient();
