@@ -108,6 +108,7 @@ public class PlayerController : MonoBehaviour
 
     if (playerRigidbody.velocity.y <= GAME_OVER_VELOCITY_THRESOLD)
     {
+      playerWeaponController.DeactivateAllWeapons();
       OnGameOver.Invoke();
     }
   }
@@ -118,6 +119,7 @@ public class PlayerController : MonoBehaviour
   {
     this.gameObject.transform.position = playerInitialPosition.transform.position;
     playerRigidbody.velocity = Vector2.zero;
+    playerWeaponController.setWeapon(playerWeaponController.GetWeaponSelected());
   }
   public void OnLanding()
   {

@@ -20,6 +20,10 @@ public class GameSceneController : MonoBehaviour
   public GameObject pauseUI;
   public GameObject storeUI;
 
+  [Header("Game Scene Dependencies")]
+  [Space]
+  public PlayerController playerController;
+
   // Start is called before the first frame update
   void Awake()
   {
@@ -29,7 +33,38 @@ public class GameSceneController : MonoBehaviour
   // Update is called once per frame
   void Update()
   {
+    if (Input.GetButtonDown("Cancel"))
+    {
+      // Needed condition for pausing the game
+      if (StoreIsOpen == false && GameIsOver == false)
+      {
+        if (GameIsPaused == false)
+        {
+          OnPauseGame();
+        }
+        else
+        {
+          OnResumeGame();
+        }
+      }
 
+    }
+
+    if (Input.GetButtonDown("Store"))
+    {
+      // Needed condition for opening the store
+      if (GameIsOver == false && GameIsPaused == false)
+      {
+        if (StoreIsOpen == false)
+        {
+          OnOpenStore();
+        }
+        else
+        {
+          OnCloseStore();
+        }
+      }
+    }
   }
 
   public void OnGameOver()
@@ -45,12 +80,13 @@ public class GameSceneController : MonoBehaviour
   {
     LevelGenerator levelGenerator = gameObject.GetComponent<LevelGenerator>();
     levelGenerator.RestartGame();
-
-    GameIsOver = false;
-    Time.timeScale = 1;
+    playerController.OnRestartGame();
 
     gameUI.gameObject.SetActive(true);
     gameOverUI.gameObject.SetActive(false);
+
+    GameIsOver = false;
+    Time.timeScale = 1;
   }
 
   public void OnPauseGame()
@@ -83,7 +119,7 @@ public class GameSceneController : MonoBehaviour
   public void OnCloseStore()
   {
     StoreIsOpen = true;
-    Time.timeScale = 0;
+    Time.timeScale = 1;
 
     storeUI.gameObject.SetActive(false);
     gameUI.gameObject.SetActive(true);

@@ -43,7 +43,7 @@ public class PhaserController : MonoBehaviour
   // Update is called once per frame
   void Update()
   {
-    if (!GameSceneController.GameIsPaused)
+    if (!GameSceneController.GameIsPaused && !GameSceneController.GameIsOver && !GameSceneController.StoreIsOpen)
     {
       if (Input.GetButtonDown("Fire1"))
       {

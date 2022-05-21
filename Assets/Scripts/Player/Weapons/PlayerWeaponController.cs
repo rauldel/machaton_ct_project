@@ -73,12 +73,16 @@ public class PlayerWeaponController : MonoBehaviour
     }
   }
 
-  private void UpdateWeaponState(Weapons newWeapon)
+  public void DeactivateAllWeapons()
   {
-    // Desactivate all weapons
     phaserController.gameObject.SetActive(false);
     laserController.gameObject.SetActive(false);
     btController.gameObject.SetActive(false);
+  }
+
+  private void UpdateWeaponState(Weapons newWeapon)
+  {
+    DeactivateAllWeapons();
 
     // Activate weapon we're told to
     switch (newWeapon)

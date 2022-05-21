@@ -71,7 +71,7 @@ public class BombthrowerController : MonoBehaviour
   // Update is called once per frame
   void Update()
   {
-    if (!GameSceneController.GameIsPaused)
+    if (!GameSceneController.GameIsPaused && !GameSceneController.GameIsOver && !GameSceneController.StoreIsOpen)
     {
       if (Input.GetButton("Fire1"))
       {
