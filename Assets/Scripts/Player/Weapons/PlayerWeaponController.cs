@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum Weapons { Laser, Phaser, SmokeBomb };
+public enum Weapons { None, Laser, Phaser, SmokeBomb };
 
 public class PlayerWeaponController : MonoBehaviour
 {
@@ -20,7 +20,8 @@ public class PlayerWeaponController : MonoBehaviour
 
   void Awake()
   {
-    weaponSelected = Weapons.Phaser;
+    InitialiseWeaponSelected();
+    gameUIController.UpdateWeaponsUI(weaponSelected);
     this.setWeapon(weaponSelected);
   }
 
@@ -44,10 +45,39 @@ public class PlayerWeaponController : MonoBehaviour
   }
 
   #region WeaponControllerMethods
+  private void InitialiseWeaponSelected()
+  {
+    SaveData saveData = SaveGameController.GetSavedData();
+
+    if (saveData.hasPhaser)
+    {
+      weaponSelected = Weapons.Phaser;
+    }
+    else if (saveData.hasLaser)
+    {
+      weaponSelected = Weapons.Laser;
+    }
+    else if (saveData.hasBombthrower)
+    {
+      weaponSelected = Weapons.SmokeBomb;
+    }
+    else
+    {
+      weaponSelected = Weapons.None;
+    }
+  }
   public void setWeapon(Weapons weapon)
   {
-    weaponSelected = weapon;
-    this.UpdateWeaponState(weapon);
+    SaveData saveData = SaveGameController.GetSavedData();
+    bool conditionOne = saveData.hasPhaser && weapon == Weapons.Phaser;
+    bool conditionTwo = saveData.hasLaser && weapon == Weapons.Laser;
+    bool conditionThree = saveData.hasBombthrower && weapon == Weapons.SmokeBomb;
+
+    if (conditionOne || conditionTwo || conditionThree || weapon == Weapons.None)
+    {
+      weaponSelected = weapon;
+      this.UpdateWeaponState(weapon);
+    }
   }
 
   public Weapons GetWeaponSelected()
@@ -57,20 +87,7 @@ public class PlayerWeaponController : MonoBehaviour
 
   public void updateAmmoUI(int uiAmmo)
   {
-    switch (weaponSelected)
-    {
-      case Weapons.Phaser:
-        gameUIController.SetWeaponText("Phaser", uiAmmo);
-        break;
-      case Weapons.Laser:
-        gameUIController.SetWeaponText("Laser", uiAmmo);
-        break;
-      case Weapons.SmokeBomb:
-        gameUIController.SetWeaponText("Smoke Bomb", uiAmmo);
-        break;
-      default:
-        break;
-    }
+    gameUIController.SetAmmoText(uiAmmo);
   }
 
   public void DeactivateAllWeapons()
@@ -99,6 +116,7 @@ public class PlayerWeaponController : MonoBehaviour
       default:
         break;
     }
+    gameUIController.UpdateWeaponsUI(newWeapon);
   }
   #endregion
 }

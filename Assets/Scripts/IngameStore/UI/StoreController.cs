@@ -212,6 +212,7 @@ public class StoreController : MonoBehaviour
           saveGameController.UpdateCoin(newCoins);
           saveGameController.UpdateCoinSpent((int)(order.TotalPrice.CentAmount / 100));
           LoadPlayerCoins();
+          ProcessOrderToSaveData(order);
         }
         else
         {
@@ -235,6 +236,55 @@ public class StoreController : MonoBehaviour
     consumableListController.EnableButtons();
     weaponsListController.EnableButtons();
     ammoListController.EnableButtons();
+  }
+  #endregion
+
+  #region Utils
+  private void ProcessOrderToSaveData(Order order)
+  {
+    string orderedProductName = order.LineItems[0].Name.GetValue("en-US");
+    SaveData saveData = SaveGameController.GetSavedData();
+
+    switch (orderedProductName)
+    {
+      case "Potion":
+        saveData.SetPotionsCount(saveData.potionsCount + 1);
+        break;
+
+      case "Superpotion":
+        saveData.SetSuperPotionsCount(saveData.superPotionsCount + 1);
+        break;
+
+      case "Hyperpotion":
+        saveData.SetHyperPotionsCount(saveData.hyperPotionsCount + 1);
+        break;
+
+      case "Phaser":
+        saveData.SetHasPhaser(true);
+        break;
+
+      case "Laser":
+        saveData.SetHasLaser(true);
+        break;
+
+      case "Cannon":
+        saveData.SetHasBombthrower(true);
+        break;
+
+      case "Phaser Charge":
+        saveData.SetPhaserAmmo(saveData.phaserAmmo + 10);
+        break;
+
+      case "Laser Charge":
+        saveData.SetLaserAmmo(saveData.laserAmmo + 10);
+        break;
+
+      case "Cannon Charge":
+        saveData.SetSmokeBombAmmo(saveData.smokeBombAmmo + 10);
+        break;
+    }
+  
+    SaveGameController.WriteDataToStorage(saveData);
   }
   #endregion
 }
