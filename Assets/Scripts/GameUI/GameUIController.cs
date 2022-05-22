@@ -20,21 +20,15 @@ public class GameUIController : MonoBehaviour
 
   }
 
-  // Update is called once per frame
-  void Update()
-  {
-
-  }
-
   public void SetLifeText(int lifes) {
-      uiLifeText.text = "Life(s) - " + lifes;
+      uiLifeText.text = "" + lifes;
   }
 
   public void SetWeaponText(string name, int ammo) {
-      uiWeaponText.text = name + " - " + ammo;
+      uiWeaponText.text = "" + ammo;
   }
 
   public void SetCoinText(int coins) {
-      uiCoinText.text = "Coin: " + coins;
+      uiCoinText.text = "" + coins;
   }
 }

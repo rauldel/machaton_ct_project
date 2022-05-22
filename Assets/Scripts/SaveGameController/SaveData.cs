@@ -12,6 +12,12 @@ public class SaveData
   public int smokeBombAmmo = 50;
   public int laserAmmo = 50;
   public string anonymousId = "";
+  public bool hasPhaser = false;
+  public bool hasLaser = false;
+  public bool hasBombthrower = false;
+  public int potionsCount = 0;
+  public int superPotionsCount = 0;
+  public int hyperPotionsCount = 0;
 
   public void SetLaserAmmo(int ammo)
   {
@@ -46,5 +52,35 @@ public class SaveData
   public void SetAnonyomusId(string anonId)
   {
     anonymousId = anonId;
+  }
+
+  public void SetHasPhaser(bool newHasPhaser)
+  {
+    hasPhaser = newHasPhaser;
+  }
+
+  public void SetHasLaser(bool newHasLaser)
+  {
+    hasLaser = newHasLaser;
+  }
+
+  public void SetHasBombthrower(bool newHasBombthrower)
+  {
+    hasPhaser = newHasBombthrower;
+  }
+
+  public void SetPotionsCount(int newPotionsCount)
+  {
+    potionsCount = newPotionsCount;
+  }
+
+  public void SetSuperPotionsCount(int newSuperPotionsCount)
+  {
+    superPotionsCount = newSuperPotionsCount;
+  }
+
+  public void SetHyperPotionsCount(int newHyperPotionsCount)
+  {
+    hyperPotionsCount = newHyperPotionsCount;
   }
 }
