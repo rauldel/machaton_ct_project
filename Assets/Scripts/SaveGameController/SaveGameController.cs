@@ -61,14 +61,20 @@ public class SaveGameController : MonoBehaviour
   {
     int totalMoneyEarned = saveData.totalMoneyEarned + coinsEarned;
     saveData.SetTotalMoneyEarned(totalMoneyEarned);
+    WriteDataToStorage(saveData);
   }
 
   public void UpdateCoinSpent(int coinsSpent)
   {
     int totalMoneySpent = saveData.totalMoneySpent + coinsSpent;
-    saveData.SetTotalMoneyEarned(totalMoneySpent);
+    saveData.SetTotalMoneySpent(totalMoneySpent);
+    WriteDataToStorage(saveData);
   }
 
+  public void UpdateAnonymousId(string anonId) {
+    saveData.SetAnonyomusId(anonId);
+    WriteDataToStorage(saveData);
+  }
   private static void DeleteSavedData()
   {
     string path = Application.persistentDataPath + "/savedData.dat";

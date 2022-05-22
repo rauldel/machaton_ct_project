@@ -13,7 +13,7 @@ public class PlayerWeaponController : MonoBehaviour
   public BombthrowerController btController;
 
   [Header("UI Stuff")]
-  public Text uiText;
+  [SerializeField] private GameUIController gameUIController;
 
   // Private Attributes
   private Weapons weaponSelected;
@@ -60,13 +60,13 @@ public class PlayerWeaponController : MonoBehaviour
     switch (weaponSelected)
     {
       case Weapons.Phaser:
-        uiText.text = "Phaser - " + uiAmmo;
+        gameUIController.SetWeaponText("Phaser", uiAmmo);
         break;
       case Weapons.Laser:
-        uiText.text = "Laser - " + uiAmmo;
+        gameUIController.SetWeaponText("Laser", uiAmmo);
         break;
       case Weapons.SmokeBomb:
-        uiText.text = "Smoke Bomb - " + uiAmmo;
+        gameUIController.SetWeaponText("Smoke Bomb", uiAmmo);
         break;
       default:
         break;

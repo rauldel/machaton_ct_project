@@ -24,12 +24,6 @@ public class GameSceneController : MonoBehaviour
   [Space]
   public PlayerController playerController;
 
-  // Start is called before the first frame update
-  void Awake()
-  {
-
-  }
-
   // Update is called once per frame
   void Update()
   {
@@ -61,7 +55,12 @@ public class GameSceneController : MonoBehaviour
         }
         else
         {
-          OnCloseStore();
+          StoreController sc = storeUI.GetComponent<StoreController>();
+          if (sc.isOrdering == false)
+          {
+            gameUI.GetComponent<GameUIController>().SetCoinText(SaveGameController.GetSavedData().playerCoins);
+            OnCloseStore();
+          }
         }
       }
     }

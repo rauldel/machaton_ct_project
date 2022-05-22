@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 
-using myCT.Products;
+using myCT.ProductProjections;
 
 public class ProductButtonController : MonoBehaviour
 {
@@ -18,7 +18,13 @@ public class ProductButtonController : MonoBehaviour
   [SerializeField]
   private UnityEngine.UI.Image productImage;
 
-  private Product product;
+  [SerializeField]
+  private Sprite loadingSprite;
+
+  [SerializeField]
+  private StoreController storeController;
+
+  private ProductProjection product;
 
   #endregion
 
@@ -28,27 +34,33 @@ public class ProductButtonController : MonoBehaviour
   #endregion
 
   #region Methods
-  public void setProduct(Product p)
+  public void setProduct(ProductProjection p)
   {
     product = p;
 
-    productName.text = product.MasterData.Current.Name.GetValue("en-US");
-    productPrice.text = (((float)product.MasterData.Current.MasterVariant.Prices[0].Value.CentAmount) / 100).ToString();
+    productName.text = product.Name.GetValue("en-US");
+    productPrice.text = (((float)product.MasterVariant.Prices[0].Value.CentAmount) / 100).ToString();
 
-    if (product.MasterData.Current.MasterVariant.Images.Count > 0)
+    if (product.MasterVariant.Images.Count > 0)
     {
-      StartCoroutine(LoadImageFromURL(product.MasterData.Current.MasterVariant.Images[0].Url));
+      StartCoroutine(LoadImageFromURL(product.MasterVariant.Images[0].Url));
     }
     else
     {
       productImage.color = Color.cyan;
     }
 
+    SaveData saveData = SaveGameController.GetSavedData();
+    if (saveData.playerCoins < (product.MasterVariant.Prices[0].Value.CentAmount / 100))
+    {
+      DisableButton();
+    }
   }
 
-  public void DummyPopulation() {
-      SetProductName("Dummy name");
-      SetProductPrice("5.00");
+  public void DummyPopulation()
+  {
+    SetProductName("Dummy name");
+    SetProductPrice("5.00");
   }
 
   public void SetProductName(string pName)
@@ -66,13 +78,30 @@ public class ProductButtonController : MonoBehaviour
     productImage = pImage;
   }
 
+  public void DisableButton()
+  {
+    Button button = GetComponent<Button>();
+    button.interactable = false;
+  }
+
+  public void EnableButton()
+  {
+    Button button = GetComponent<Button>();
+    button.interactable = true;
+  }
+
   public void OnClick()
   {
     Debug.Log("Button clicked -> " + productName.text + " - Money: " + productPrice.text);
+    if (product != null)
+    {
+      storeController.BuyProduct(product);
+    }
   }
 
   public IEnumerator LoadImageFromURL(string imageURL)
   {
+    productImage.sprite = loadingSprite;
     //Debug.Log("Loading image -> " + imageURL);
     UnityWebRequest imageLoader = UnityWebRequestTexture.GetTexture(imageURL);
     yield return imageLoader.SendWebRequest();

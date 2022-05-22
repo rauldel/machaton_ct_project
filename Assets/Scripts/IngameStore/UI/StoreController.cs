@@ -3,13 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+using myCT.Carts;
 using myCT.Common;
+using myCT.Orders;
 using myCT.Products;
+using myCT.ProductProjections;
 using myCT.ProductTypes;
 
 public class StoreController : MonoBehaviour
 {
   #region StoreAttrbiutes
+  [Header("Store Attributes")]
+  [Space]
+  [SerializeField]
+  private GameObject loadingPopUpUI;
+
   [SerializeField]
   private SaveGameController saveGameController;
 
@@ -20,20 +28,35 @@ public class StoreController : MonoBehaviour
   private ProductListController weaponsListController;
 
   [SerializeField]
+  private ProductListController ammoListController;
+
+  [SerializeField]
   private Text playerCoinsText;
 
-  private List<Product> consumableProductsList;
-  private List<Product> weaponProductsList;
-  private List<Product> ammoProductsList;
+  public bool isOrdering = false;
+  private List<ProductProjection> consumableProductsList;
+  private List<ProductProjection> weaponProductsList;
+  private List<ProductProjection> ammoProductsList;
   #endregion
 
   #region UnityMethods
   // Start is called before the first frame update
   void Start()
   {
+    isOrdering = false;
     LoadPlayerCoins();
     LoadConsumableProducts();
     LoadWeaponProducts();
+    LoadAmmoProducts();
+  }
+
+  void OnEnable()
+  {
+    isOrdering = false;
+    LoadPlayerCoins();
+    LoadConsumableProducts();
+    LoadWeaponProducts();
+    LoadAmmoProducts();
   }
 
   // Update is called once per frame
@@ -43,7 +66,7 @@ public class StoreController : MonoBehaviour
   }
   #endregion
 
-  #region StoreMethods
+  #region LoadStoreMethods
   private void LoadPlayerCoins()
   {
     SaveData data = SaveGameController.GetSavedData();
@@ -51,26 +74,26 @@ public class StoreController : MonoBehaviour
   }
   private async void LoadConsumableProducts()
   {
-    Client client = CommercetoolsManager.GetClient();
-    consumableProductsList = new List<Product>();
-    ProductManager productManager = new ProductManager(client);
+    Client client = CommercetoolsManager.GetClient(ProjectScope.ViewProducts);
+    consumableProductsList = new List<ProductProjection>();
+    ProductProjectionManager ppManager = new ProductProjectionManager(client);
     ProductTypeManager productTypeManager = new ProductTypeManager(client);
     string productTypeName = "Consumable";
 
     string ptWhereName = "name=\"" + productTypeName + "\"";
     Response<ProductTypeQueryResult> productTypeResponse = await productTypeManager.QueryProductTypesAsync(ptWhereName);
-    Response<ProductQueryResult> productsResponse;
+    Response<ProductProjectionQueryResult> productProjectionsResponse;
 
     if (productTypeResponse.Success && productTypeResponse.Result.Results.Count > 0)
     {
       ProductType myProductType = productTypeResponse.Result.Results[0];
 
       string productsWhere = "productType(id=\"" + myProductType.Id + "\")";
-      productsResponse = await productManager.QueryProductsAsync(productsWhere);
+      productProjectionsResponse = await ppManager.QueryProductProjectionsAsync(productsWhere);
 
-      if (productsResponse.Success)
+      if (productProjectionsResponse.Success)
       {
-        consumableProductsList = productsResponse.Result.Results;
+        consumableProductsList = productProjectionsResponse.Result.Results;
         consumableListController.PopulateList(consumableProductsList);
       }
     }
@@ -78,29 +101,140 @@ public class StoreController : MonoBehaviour
 
   private async void LoadWeaponProducts()
   {
-    Client client = CommercetoolsManager.GetClient();
-    consumableProductsList = new List<Product>();
-    ProductManager productManager = new ProductManager(client);
+    Client client = CommercetoolsManager.GetClient(ProjectScope.ViewProducts);
+    consumableProductsList = new List<ProductProjection>();
+    ProductProjectionManager ppManager = new ProductProjectionManager(client);
     ProductTypeManager productTypeManager = new ProductTypeManager(client);
     string productTypeName = "Weapon";
 
     string ptWhereName = "name=\"" + productTypeName + "\"";
     Response<ProductTypeQueryResult> productTypeResponse = await productTypeManager.QueryProductTypesAsync(ptWhereName);
-    Response<ProductQueryResult> productsResponse;
+    Response<ProductProjectionQueryResult> productProjectionsResponse;
 
     if (productTypeResponse.Success && productTypeResponse.Result.Results.Count > 0)
     {
       ProductType myProductType = productTypeResponse.Result.Results[0];
 
       string productsWhere = "productType(id=\"" + myProductType.Id + "\")";
-      productsResponse = await productManager.QueryProductsAsync(productsWhere);
+      productProjectionsResponse = await ppManager.QueryProductProjectionsAsync(productsWhere);
 
-      if (productsResponse.Success)
+      if (productProjectionsResponse.Success)
       {
-        weaponProductsList = productsResponse.Result.Results;
+        weaponProductsList = productProjectionsResponse.Result.Results;
         weaponsListController.PopulateList(weaponProductsList);
       }
     }
+  }
+
+  private async void LoadAmmoProducts()
+  {
+    Client client = CommercetoolsManager.GetClient(ProjectScope.ViewProducts);
+    consumableProductsList = new List<ProductProjection>();
+    ProductProjectionManager ppManager = new ProductProjectionManager(client);
+    ProductTypeManager productTypeManager = new ProductTypeManager(client);
+    string productTypeName = "Ammo";
+
+    string ptWhereName = "name=\"" + productTypeName + "\"";
+    Response<ProductTypeQueryResult> productTypeResponse = await productTypeManager.QueryProductTypesAsync(ptWhereName);
+    Response<ProductProjectionQueryResult> productsProjectionsResponse;
+
+    if (productTypeResponse.Success && productTypeResponse.Result.Results.Count > 0)
+    {
+      ProductType myProductType = productTypeResponse.Result.Results[0];
+
+      string productsWhere = "productType(id=\"" + myProductType.Id + "\")";
+      productsProjectionsResponse = await ppManager.QueryProductProjectionsAsync(productsWhere);
+
+      if (productsProjectionsResponse.Success)
+      {
+        ammoProductsList = productsProjectionsResponse.Result.Results;
+        ammoListController.PopulateList(ammoProductsList);
+      }
+    }
+  }
+
+  #endregion
+
+  #region CartStoreMethods
+  private string GetAnonymousId()
+  {
+    SaveData saveData = SaveGameController.GetSavedData();
+    string anonymousId = saveData.anonymousId;
+
+    if (anonymousId == "" || anonymousId == null)
+    {
+      anonymousId = CommercetoolsManager.GenerateAnonymousId();
+      saveGameController.UpdateAnonymousId(anonymousId);
+    }
+
+    return anonymousId;
+  }
+
+  public async void BuyProduct(ProductProjection product)
+  {
+    isOrdering = true;
+    consumableListController.DisableButtons();
+    weaponsListController.DisableButtons();
+    ammoListController.DisableButtons();
+    loadingPopUpUI.gameObject.SetActive(true);
+
+    SaveData saveData = SaveGameController.GetSavedData();
+    if (saveData.playerCoins >= (product.MasterVariant.Prices[0].Value.CentAmount / 100))
+    {
+      CartManager cartManager = new CartManager(CommercetoolsManager.GetClient(ProjectScope.ManageOrders));
+      CartDraft cartDraft = new CartDraft("EUR");
+      LineItemDraft lineItemDraft = new LineItemDraft(product.Id, product.MasterVariant.Id);
+      lineItemDraft.Quantity = 1;
+      List<LineItemDraft> lineItemDraftList = new List<LineItemDraft>() { lineItemDraft };
+
+      cartDraft.LineItems = lineItemDraftList;
+      cartDraft.AnonymousId = GetAnonymousId();
+      cartDraft.ShippingAddress = CommercetoolsManager.GetMockedAddress();
+
+      Response<Cart> responseCart = await cartManager.CreateCartAsync(cartDraft);
+
+      if (responseCart.Success)
+      {
+        Debug.Log("Cart created! : " + responseCart.Result.ToJsonString());
+        // If there's a cart, let's create an order from it
+        OrderManager orderManager = new OrderManager(CommercetoolsManager.GetClient(ProjectScope.ManageOrders));
+        OrderFromCartDraft orderFromCartDraft = new OrderFromCartDraft(responseCart.Result);
+        orderFromCartDraft.OrderNumber = CommercetoolsManager.GenerateOrderNumber();
+
+        Response<Order> responseOrder = await orderManager.CreateOrderFromCartAsync(orderFromCartDraft);
+
+        if (responseOrder.Success)
+        {
+          Debug.Log("Order created! : " + responseOrder.Result.ToJsonString());
+          Order order = responseOrder.Result;
+
+          int newCoins = saveData.playerCoins - (int)(order.TotalPrice.CentAmount / 100);
+          saveGameController.UpdateCoin(newCoins);
+          saveGameController.UpdateCoinSpent((int)(order.TotalPrice.CentAmount / 100));
+          LoadPlayerCoins();
+        }
+        else
+        {
+          Debug.LogError("Order Error: " + responseOrder.Errors.ToJsonString());
+        }
+      }
+      else
+      {
+        Debug.LogError("RES: " + responseCart.ToJsonString());
+        Debug.LogError("Cart Error: " + responseCart.Errors.ToJsonString());
+        Debug.LogError("CD: " + cartDraft.ToJsonString());
+      }
+    }
+    else
+    {
+      // Don't have enough money
+    }
+
+    isOrdering = false;
+    loadingPopUpUI.gameObject.SetActive(false);
+    consumableListController.EnableButtons();
+    weaponsListController.EnableButtons();
+    ammoListController.EnableButtons();
   }
   #endregion
 }

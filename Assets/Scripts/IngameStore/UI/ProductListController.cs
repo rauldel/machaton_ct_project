@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-using myCT.Products;
+using myCT.ProductProjections;
 
 [System.Serializable]
 public class ProductListController : MonoBehaviour
@@ -50,9 +50,8 @@ public class ProductListController : MonoBehaviour
     }
   }
 
-  public void PopulateList(List<Product> productsList)
+  public void PopulateList(List<ProductProjection> productsList)
   {
-    Debug.Log("PL: " + productsList.Count);
     if (productButtonsList == null)
     {
       productButtonsList = new List<GameObject>();
@@ -67,7 +66,7 @@ public class ProductListController : MonoBehaviour
       productButtonsList.Clear();
     }
 
-    foreach (Product p in productsList)
+    foreach (ProductProjection p in productsList)
     {
       GameObject productButton = Instantiate(productButtonTemplate) as GameObject;
       productButton.SetActive(true);
@@ -78,5 +77,18 @@ public class ProductListController : MonoBehaviour
     }
   }
 
+  public void DisableButtons() {
+    foreach(GameObject g in productButtonsList) {
+      ProductButtonController pbc = g.GetComponent<ProductButtonController>();
+      pbc.DisableButton();
+    }
+  }
+
+  public void EnableButtons() {
+    foreach(GameObject g in productButtonsList) {
+      ProductButtonController pbc = g.GetComponent<ProductButtonController>();
+      pbc.EnableButton();
+    }
+  }
   #endregion
 }

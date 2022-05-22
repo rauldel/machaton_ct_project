@@ -32,12 +32,7 @@ public class PlayerController : MonoBehaviour
   [SerializeField] private PlayerPhysicsController playerPhysicsController;
   [SerializeField] private PlayerWeaponController playerWeaponController;
   [SerializeField] private SaveGameController saveGameController;
-
-  [Header("Player UI Attributes")]
-  [Space]
-  public Text uiWeaponText;
-  public Text uiLifeText;
-  public Text uiCoinText;
+  [SerializeField] private GameUIController gameUIController;
 
   private float horizontalMove = 0f;
   private bool jump = false;
@@ -53,8 +48,8 @@ public class PlayerController : MonoBehaviour
   {
     SaveData savedData = SaveGameController.GetSavedData();
     playerCoins = savedData.playerCoins;
-    uiLifeText.text = "Life(s) - " + playerLife;
-    uiCoinText.text = "Coin: " + playerCoins;
+    gameUIController.SetLifeText(playerLife);
+    gameUIController.SetCoinText(playerCoins);
   }
 
   // Update is called once per frame
@@ -134,14 +129,14 @@ public class PlayerController : MonoBehaviour
   public void DecrementLife()
   {
     playerLife--;
-    uiLifeText.text = "Life(s) - " + playerLife.ToString();
+    gameUIController.SetLifeText(playerLife);
     playerAnimator.SetBool("isDamaged", true);
   }
 
   public void IncrementLife()
   {
     playerLife++;
-    uiLifeText.text = "Life(s) - " + playerLife.ToString();
+    gameUIController.SetLifeText(playerLife);
   }
 
   public void OnIncreaseCoin(int newCoins)
@@ -149,7 +144,7 @@ public class PlayerController : MonoBehaviour
     playerCoins += newCoins;
     saveGameController.UpdateCoin(playerCoins);
     saveGameController.UpdateCoinEarned(newCoins);
-    uiCoinText.text = "Coin: " + playerCoins;
+    gameUIController.SetCoinText(playerCoins);
   }
 
   public void OnDecreaseCoin(int newCoins)

@@ -11,6 +11,7 @@ public class SaveData
   public int phaserAmmo = 10;
   public int smokeBombAmmo = 50;
   public int laserAmmo = 50;
+  public string anonymousId = "";
 
   public void SetLaserAmmo(int ammo)
   {
@@ -40,5 +41,10 @@ public class SaveData
   public void SetPhaserAmmo(int ammo)
   {
     phaserAmmo = ammo;
+  }
+
+  public void SetAnonyomusId(string anonId)
+  {
+    anonymousId = anonId;
   }
 }
