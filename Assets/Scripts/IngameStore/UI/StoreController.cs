@@ -283,7 +283,7 @@ public class StoreController : MonoBehaviour
         saveData.SetSmokeBombAmmo(saveData.smokeBombAmmo + 10);
         break;
     }
-  
+
     SaveGameController.WriteDataToStorage(saveData);
   }
   #endregion

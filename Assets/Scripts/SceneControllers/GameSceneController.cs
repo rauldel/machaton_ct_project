@@ -55,36 +55,13 @@ public class GameSceneController : MonoBehaviour
         }
         else
         {
-          StoreController sc = storeUI.GetComponent<StoreController>();
-          if (sc.isOrdering == false)
-          {
-            PlayerWeaponController pwc = playerController.gameObject.GetComponent<PlayerWeaponController>();
-            GameUIController gameUIController = gameUI.GetComponent<GameUIController>();
-            SaveData saveData = SaveGameController.GetSavedData();
-            gameUIController.SetCoinText(saveData.playerCoins);
-
-            switch (pwc.GetWeaponSelected())
-            {
-              case Weapons.Phaser:
-                gameUIController.SetAmmoText(saveData.phaserAmmo);
-                break;
-              case Weapons.Laser:
-                gameUIController.SetAmmoText(saveData.laserAmmo);
-                break;
-
-              case Weapons.SmokeBomb:
-                gameUIController.SetAmmoText(saveData.smokeBombAmmo);
-                break;
-            }
-            gameUIController.UpdateWeaponsUI(pwc.GetWeaponSelected());
-
-            OnCloseStore();
-          }
+          OnCloseStore();
         }
       }
     }
   }
 
+  #region SceneStateMethods
   public void OnGameOver()
   {
     GameIsOver = true;
@@ -136,10 +113,36 @@ public class GameSceneController : MonoBehaviour
 
   public void OnCloseStore()
   {
-    StoreIsOpen = false;
-    Time.timeScale = 1;
+    StoreController sc = storeUI.GetComponent<StoreController>();
+    if (sc.isOrdering == false)
+    {
+      PlayerWeaponController pwc = playerController.gameObject.GetComponent<PlayerWeaponController>();
+      GameUIController gameUIController = gameUI.GetComponent<GameUIController>();
+      SaveData saveData = SaveGameController.GetSavedData();
+      gameUIController.SetCoinText(saveData.playerCoins);
 
-    storeUI.gameObject.SetActive(false);
-    gameUI.gameObject.SetActive(true);
+      switch (pwc.GetWeaponSelected())
+      {
+        case Weapons.Phaser:
+          gameUIController.SetAmmoText(saveData.phaserAmmo);
+          break;
+        case Weapons.Laser:
+          gameUIController.SetAmmoText(saveData.laserAmmo);
+          break;
+
+        case Weapons.SmokeBomb:
+          gameUIController.SetAmmoText(saveData.smokeBombAmmo);
+          break;
+      }
+      gameUIController.UpdateWeaponsUI(pwc.GetWeaponSelected());
+
+      StoreIsOpen = false;
+      Time.timeScale = 1;
+
+      storeUI.gameObject.SetActive(false);
+      gameUI.gameObject.SetActive(true);
+    }
   }
+  #endregion
+
 }
