@@ -8,8 +8,7 @@ on:
 jobs:
   build-deploy:
     name: Build + Deploy Cloud Runner ✨
-    permissions:
-      contents: write
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
