@@ -5740,7 +5740,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1058552194}
-        m_MethodName: DecrementLife
+        m_MethodName: OnDecrementLife
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
