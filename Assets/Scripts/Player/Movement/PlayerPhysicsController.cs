@@ -50,7 +50,7 @@ public class PlayerPhysicsController : MonoBehaviour
   // For determining which way the player is currently facing.
   private bool m_FacingRight = true;
   // For determining if Player is invincible
-  private bool isInvincible = false;
+  //private bool isInvincible = false;
   // Vector for calculating velocity of the player
   private Vector3 m_Velocity = Vector3.zero;
 
@@ -121,7 +121,7 @@ public class PlayerPhysicsController : MonoBehaviour
   private void OnTriggerEnter2D(Collider2D collision)
   {
     BeeController bee = collision.transform.GetComponent<BeeController>();
-    HeadlessController headless = collision.transform.GetComponent<HeadlessController>();
+    // HeadlessController headless = collision.transform.GetComponent<HeadlessController>();
     CoinController coin = collision.transform.GetComponent<CoinController>();
 
     // 12 es el layer de la cámara
@@ -131,10 +131,10 @@ public class PlayerPhysicsController : MonoBehaviour
     }
 
     // This means we hit an enemy with our body
-    if ((bee != null || headless != null) && !m_BeingDamaged)
+    if ((bee != null /* || headless != null */) && !m_BeingDamaged)
     {
       m_BeingDamaged = true;
-      isInvincible = true;
+      // isInvincible = true;
       Vector2 impulso;
 
       if (m_Grounded)

@@ -82,16 +82,16 @@ public class LaserController : MonoBehaviour
         Debug.Log("Laser hit " + hitInfo.transform.name);
 
         BeeController bee = hitInfo.transform.GetComponent<BeeController>();
-        HeadlessController headless = hitInfo.transform.GetComponent<HeadlessController>();
+        //HeadlessController headless = hitInfo.transform.GetComponent<HeadlessController>();
 
         if (bee != null)
         {
           bee.TakeDamage(damage);
         }
-        else if (headless != null)
+        /* else if (headless != null)
         {
           headless.TakeDamage(damage);
-        }
+        } */
 
         //Instanciar animacion impacto
         Instantiate(impactEffect, hitInfo.point, Quaternion.identity);
