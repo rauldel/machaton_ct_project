@@ -44,7 +44,7 @@ jobs:
           path: build
 
       - name: Deploy 🚀
-          uses: JamesIves/github-pages-deploy-action@v4.3.3
-          with:
-            branch: gh-pages
-            folder: build
+        uses: JamesIves/github-pages-deploy-action@v4.3.3
+        with:
+          branch: gh-pages
+          folder: build
