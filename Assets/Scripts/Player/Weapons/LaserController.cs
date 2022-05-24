@@ -59,7 +59,7 @@ public class LaserController : MonoBehaviour
   private void SetAmmoFromSaveGameController()
   {
     SaveData data = SaveGameController.GetSavedData();
-    Ammo = data.laserAmmo;
+    Ammo = data.laserAmmo.GetQuantity();
   }
 
   IEnumerator ShootLaser()

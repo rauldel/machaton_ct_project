@@ -126,22 +126,31 @@ public class PlayerController : MonoBehaviour
     playerAnimator.SetBool("isCrouching", isCrouching);
   }
 
-  public void DecrementLife()
+  public void OnDecrementLife()
   {
-    playerLife--;
-    gameUIController.SetLifeText(playerLife);
-    playerAnimator.SetBool("isDamaged", true);
+    Debug.Log("PLAYER HIT");
+    if (playerLife - 1 == 0)
+    {
+      OnGameOver.Invoke();
+    }
+    else
+    {
+      playerLife--;
+      gameUIController.SetLifeText(playerLife);
+      playerAnimator.SetBool("isDamaged", true);
+    }
   }
 
-  public void IncrementLife()
+  public void OnIncrementLife(int newLifePoints)
   {
-    playerLife++;
+    playerLife += newLifePoints;
     gameUIController.SetLifeText(playerLife);
   }
 
   public void OnIncreaseCoin(int newCoins)
   {
-    playerCoins += newCoins;
+    SaveData saveData = SaveGameController.GetSavedData();
+    playerCoins = saveData.playerCoins + newCoins;
     saveGameController.UpdateCoin(playerCoins);
     saveGameController.UpdateCoinEarned(newCoins);
     gameUIController.SetCoinText(playerCoins);

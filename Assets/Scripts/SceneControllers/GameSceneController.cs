@@ -124,14 +124,14 @@ public class GameSceneController : MonoBehaviour
       switch (pwc.GetWeaponSelected())
       {
         case Weapons.Phaser:
-          gameUIController.SetAmmoText(saveData.phaserAmmo);
+          gameUIController.SetAmmoText(saveData.phaserAmmo.GetQuantity());
           break;
         case Weapons.Laser:
-          gameUIController.SetAmmoText(saveData.laserAmmo);
+          gameUIController.SetAmmoText(saveData.laserAmmo.GetQuantity());
           break;
 
         case Weapons.SmokeBomb:
-          gameUIController.SetAmmoText(saveData.smokeBombAmmo);
+          gameUIController.SetAmmoText(saveData.smokeBombAmmo.GetQuantity());
           break;
       }
       gameUIController.UpdateWeaponsUI(pwc.GetWeaponSelected());
