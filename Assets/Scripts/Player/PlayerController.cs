@@ -10,6 +10,9 @@ public class PlayerController : MonoBehaviour
   [Header("Player Attribtes")]
   [Space]
   [SerializeField]
+  private int INITIAL_PLAYER_LIFES = 10;
+
+  [SerializeField]
   private int playerLife = 10;
 
   [SerializeField]
@@ -46,6 +49,7 @@ public class PlayerController : MonoBehaviour
   #region UnityEvents
   void Awake()
   {
+    playerLife = INITIAL_PLAYER_LIFES;
     SaveData savedData = SaveGameController.GetSavedData();
     playerCoins = savedData.playerCoins;
     gameUIController.SetLifeText(playerLife);
@@ -112,6 +116,8 @@ public class PlayerController : MonoBehaviour
   #region PlayerPublicActions
   public void OnRestartGame()
   {
+    playerLife = INITIAL_PLAYER_LIFES;
+    gameUIController.SetLifeText(playerLife);
     this.gameObject.transform.position = playerInitialPosition.transform.position;
     playerRigidbody.velocity = Vector2.zero;
     playerWeaponController.setWeapon(playerWeaponController.GetWeaponSelected());
@@ -126,22 +132,31 @@ public class PlayerController : MonoBehaviour
     playerAnimator.SetBool("isCrouching", isCrouching);
   }
 
-  public void DecrementLife()
+  public void OnDecrementLife()
   {
-    playerLife--;
-    gameUIController.SetLifeText(playerLife);
-    playerAnimator.SetBool("isDamaged", true);
+    Debug.Log("PLAYER HIT");
+    if (playerLife - 1 == 0)
+    {
+      OnGameOver.Invoke();
+    }
+    else
+    {
+      playerLife--;
+      gameUIController.SetLifeText(playerLife);
+      playerAnimator.SetBool("isDamaged", true);
+    }
   }
 
-  public void IncrementLife()
+  public void OnIncrementLife(int newLifePoints)
   {
-    playerLife++;
+    playerLife += newLifePoints;
     gameUIController.SetLifeText(playerLife);
   }
 
   public void OnIncreaseCoin(int newCoins)
   {
-    playerCoins += newCoins;
+    SaveData saveData = SaveGameController.GetSavedData();
+    playerCoins = saveData.playerCoins + newCoins;
     saveGameController.UpdateCoin(playerCoins);
     saveGameController.UpdateCoinEarned(newCoins);
     gameUIController.SetCoinText(playerCoins);

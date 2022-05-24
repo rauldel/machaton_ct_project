@@ -233,9 +233,9 @@ public class StoreController : MonoBehaviour
 
     isOrdering = false;
     loadingPopUpUI.gameObject.SetActive(false);
-    consumableListController.EnableButtons();
-    weaponsListController.EnableButtons();
-    ammoListController.EnableButtons();
+    LoadConsumableProducts();
+    LoadWeaponProducts();
+    LoadAmmoProducts();
   }
   #endregion
 
@@ -272,15 +272,15 @@ public class StoreController : MonoBehaviour
         break;
 
       case "Phaser Charge":
-        saveData.SetPhaserAmmo(saveData.phaserAmmo + 10);
+        saveData.SetPhaserAmmo(saveData.phaserAmmo.GetQuantity() + 10);
         break;
 
       case "Laser Charge":
-        saveData.SetLaserAmmo(saveData.laserAmmo + 10);
+        saveData.SetLaserAmmo(saveData.laserAmmo.GetQuantity() + 10);
         break;
 
       case "Cannon Charge":
-        saveData.SetSmokeBombAmmo(saveData.smokeBombAmmo + 10);
+        saveData.SetSmokeBombAmmo(saveData.smokeBombAmmo.GetQuantity() + 10);
         break;
     }
 

@@ -86,7 +86,6 @@ public class BeeController : MonoBehaviour
         }
         break;
       case BEE_STATE.FOLLOWING:
-        Debug.Log("1 follower: " + transform.position + " | " + player.position);
         float player_distance = Vector2.Distance(transform.position, player.position);
         if (player_distance <= maxFollowingDistance)
         {
@@ -142,7 +141,8 @@ public class BeeController : MonoBehaviour
       SwapSpeeds();
       beeState = BEE_STATE.SCARED;
     }
-    else if (player != null && beeState != BEE_STATE.STINGING)
+    
+    if (player != null && beeState != BEE_STATE.STINGING)
     {
       beeState = BEE_STATE.STINGING;
       beeAnimator.SetBool("sting", true);

@@ -125,7 +125,7 @@ public class BombthrowerController : MonoBehaviour
   private void SetAmmoFromSaveGameController()
   {
     SaveData data = SaveGameController.GetSavedData();
-    Ammo = data.smokeBombAmmo;
+    Ammo = data.smokeBombAmmo.GetQuantity();
 
   }
   #endregion

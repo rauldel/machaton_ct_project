@@ -57,7 +57,7 @@ public class PhaserController : MonoBehaviour
   private void SetAmmoFromSaveGameController()
   {
     SaveData data = SaveGameController.GetSavedData();
-    Ammo = data.phaserAmmo;
+    Ammo = data.phaserAmmo.GetQuantity();
   }
 
   void ShootBullet()

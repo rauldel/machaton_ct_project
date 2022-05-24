@@ -12,7 +12,7 @@ public class SaveGameController : MonoBehaviour
 
   void Awake()
   {
-    saveData = LoadDataFromStorage();
+    GetSavedData();
   }
 
   void Update()
@@ -71,7 +71,8 @@ public class SaveGameController : MonoBehaviour
     WriteDataToStorage(saveData);
   }
 
-  public void UpdateAnonymousId(string anonId) {
+  public void UpdateAnonymousId(string anonId)
+  {
     saveData.SetAnonyomusId(anonId);
     WriteDataToStorage(saveData);
   }

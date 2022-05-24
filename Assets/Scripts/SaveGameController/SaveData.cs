@@ -5,12 +5,12 @@ using UnityEngine;
 [System.Serializable]
 public class SaveData
 {
-  public int playerCoins = 40;
+  public int playerCoins = 50;
   public int totalMoneyEarned = 50;
   public int totalMoneySpent = 0;
-  public int phaserAmmo = 10;
-  public int smokeBombAmmo = 50;
-  public int laserAmmo = 50;
+  public AmmoPhaser phaserAmmo;
+  public AmmoCannonSmoke smokeBombAmmo;
+  public AmmoLaser laserAmmo;
   public string anonymousId = "";
   public bool hasPhaser = false;
   public bool hasLaser = false;
@@ -19,14 +19,36 @@ public class SaveData
   public int superPotionsCount = 0;
   public int hyperPotionsCount = 0;
 
+  public SaveData()
+  {
+    playerCoins = 50;
+    totalMoneyEarned = 50;
+    totalMoneySpent = 0;
+    phaserAmmo = new AmmoPhaser();
+    laserAmmo = new AmmoLaser();
+    smokeBombAmmo = new AmmoCannonSmoke();
+    anonymousId = "";
+    hasPhaser = false;
+    hasLaser = false;
+    hasBombthrower = false;
+    potionsCount = 0;
+    superPotionsCount = 0;
+    hyperPotionsCount = 0;
+  }
+
   public void SetLaserAmmo(int ammo)
   {
-    laserAmmo = ammo;
+    phaserAmmo.SetQuantity(ammo);
+  }
+
+  public void SetPhaserAmmo(int ammo)
+  {
+    phaserAmmo.SetQuantity(ammo);
   }
 
   public void SetSmokeBombAmmo(int ammo)
   {
-    smokeBombAmmo = ammo;
+    smokeBombAmmo.SetQuantity(ammo);
   }
 
   public void SetPlayerCoins(int coins)
@@ -42,11 +64,6 @@ public class SaveData
   public void SetTotalMoneySpent(int newMoneySpent)
   {
     totalMoneySpent = newMoneySpent;
-  }
-
-  public void SetPhaserAmmo(int ammo)
-  {
-    phaserAmmo = ammo;
   }
 
   public void SetAnonyomusId(string anonId)
