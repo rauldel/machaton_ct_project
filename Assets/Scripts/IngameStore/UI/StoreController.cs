@@ -233,9 +233,9 @@ public class StoreController : MonoBehaviour
 
     isOrdering = false;
     loadingPopUpUI.gameObject.SetActive(false);
-    consumableListController.EnableButtons();
-    weaponsListController.EnableButtons();
-    ammoListController.EnableButtons();
+    LoadConsumableProducts();
+    LoadWeaponProducts();
+    LoadAmmoProducts();
   }
   #endregion
 

@@ -51,7 +51,7 @@ public class ProductButtonController : MonoBehaviour
     }
 
     SaveData saveData = SaveGameController.GetSavedData();
-    if (saveData.playerCoins < (product.MasterVariant.Prices[0].Value.CentAmount / 100))
+    if (saveData.playerCoins < (product.MasterVariant.Prices[0].Value.CentAmount / 100) || DisableWeaponIfAlreadyBought(saveData))
     {
       DisableButton();
     }
@@ -92,7 +92,6 @@ public class ProductButtonController : MonoBehaviour
 
   public void OnClick()
   {
-    Debug.Log("Button clicked -> " + productName.text + " - Money: " + productPrice.text);
     if (product != null)
     {
       storeController.BuyProduct(product);
@@ -116,6 +115,34 @@ public class ProductButtonController : MonoBehaviour
       Texture2D texture2D = ((DownloadHandlerTexture)imageLoader.downloadHandler).texture;
       productImage.sprite = Sprite.Create(texture2D, new Rect(0, 0, texture2D.width, texture2D.height), new Vector2(0, 0));
     }
+  }
+
+  private bool DisableWeaponIfAlreadyBought(SaveData saveData)
+  {
+
+    switch (productName.text)
+    {
+      case "Phaser":
+        if (saveData.hasPhaser)
+        {
+          return true;
+        }
+        break;
+      case "Laser":
+        if (saveData.hasLaser)
+        {
+          return true;
+        }
+        break;
+      case "Cannon":
+        if (saveData.hasBombthrower)
+        {
+          return true;
+        }
+        break;
+    }
+
+    return false;
   }
   #endregion
 }
