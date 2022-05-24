@@ -6,8 +6,10 @@ on:
       - "main"
 
 jobs:
-  build:
-    name: Build Cloud Runner ✨
+  build-deploy:
+    name: Build + Deploy Cloud Runner ✨
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
