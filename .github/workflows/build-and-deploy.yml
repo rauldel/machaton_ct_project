@@ -48,7 +48,7 @@ jobs:
       - name: Deploy 🚀
         uses: akhileshns/heroku-deploy@v3.12.12
         with:
+          args: deploy --dir=build
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "cloud-runner"
           heroku_email: "steph.sprinkle@tuta.io"
-          appdir: "build"
