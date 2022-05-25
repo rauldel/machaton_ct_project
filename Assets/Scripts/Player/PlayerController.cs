@@ -41,6 +41,8 @@ public class PlayerController : MonoBehaviour
   private bool jump = false;
   private bool crouch = false;
 
+  private bool landed = true;
+
   [Header("Player Controller Events")]
   [Space]
   public UnityEvent OnGameOver;
@@ -54,6 +56,9 @@ public class PlayerController : MonoBehaviour
     playerCoins = savedData.playerCoins;
     gameUIController.SetLifeText(playerLife);
     gameUIController.SetCoinText(playerCoins);
+
+    AudioManager audioManager = AudioManager.instance;
+    audioManager.PlaySound("BackgroundMusic", true);
   }
 
   // Update is called once per frame
@@ -61,6 +66,7 @@ public class PlayerController : MonoBehaviour
   {
     if (!GameSceneController.GameIsPaused && !GameSceneController.GameIsOver && !GameSceneController.StoreIsOpen)
     {
+      AudioManager audioManager = AudioManager.instance;
       if (autoMovement == true)
       {
         horizontalMove = runSpeed;
@@ -70,11 +76,30 @@ public class PlayerController : MonoBehaviour
         horizontalMove = Input.GetAxisRaw("Horizontal") * runSpeed;
       }
 
+      if (horizontalMove != 0 && landed == true)
+      {
+        if (!audioManager.IsPlaying("WalkingSFX"))
+        {
+          audioManager.PlaySound("WalkingSFX", true);
+        }
+
+      }
+      else
+      {
+        audioManager.StopSound("WalkingSFX");
+      }
+
       playerAnimator.SetFloat("Speed", Mathf.Abs(horizontalMove));
 
       if (Input.GetButtonDown("Jump"))
       {
+        if (landed == true)
+        {
+          audioManager.StopSound("WalkingSFX");
+          audioManager.PlaySound("JumpSFX", false);
+        }
         jump = true;
+        landed = false;
         playerAnimator.SetBool("isJumping", true);
       }
 
@@ -124,6 +149,9 @@ public class PlayerController : MonoBehaviour
   }
   public void OnLanding()
   {
+    AudioManager audioManager = AudioManager.instance;
+    audioManager.PlaySound("LandingSFX", false);
+    landed = true;
     playerAnimator.SetBool("isJumping", false);
   }
 
@@ -134,13 +162,14 @@ public class PlayerController : MonoBehaviour
 
   public void OnDecrementLife()
   {
-    Debug.Log("PLAYER HIT");
     if (playerLife - 1 == 0)
     {
       OnGameOver.Invoke();
     }
     else
     {
+      AudioManager audioManager = AudioManager.instance;
+      audioManager.PlaySound("PlayerDamageSFX", false);
       playerLife--;
       gameUIController.SetLifeText(playerLife);
       playerAnimator.SetBool("isDamaged", true);

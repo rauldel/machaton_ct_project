@@ -64,6 +64,7 @@ public class LaserController : MonoBehaviour
 
   IEnumerator ShootLaser()
   {
+    AudioManager audioManager = AudioManager.instance;
     if (ammo > 0)
     {
       Debug.Log("Laser Local Position -> " + firePoint.localPosition);
@@ -114,10 +115,11 @@ public class LaserController : MonoBehaviour
       lineRenderer.gameObject.SetActive(false);
       Ammo--;
       saveGameController.UpdateAmmo(Ammo);
+      audioManager.PlaySound("LaserSFX", false);
     }
     else
     {
-      // should play some empty ammo sound
+      audioManager.PlaySound("EmptyWeaponSFX", false);
     }
   }
 

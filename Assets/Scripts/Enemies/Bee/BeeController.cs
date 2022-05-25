@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public enum BEE_STATE { FLYING, FOLLOWING, STINGING, SCARED };
 
@@ -39,12 +40,23 @@ public class BeeController : MonoBehaviour
   [SerializeField]
   public BEE_STATE beeState;
 
+  [SerializeField]
+  public float minAudioDistance = 1f;
+
+  [SerializeField]
+  public float maxAudioDistance = 25f;
+
+  [SerializeField]
+  [Range(0, 1)]
+  public float beeMaxVolume = 0.75f;
+
   private Transform player;
 
   private bool isFacingRight = true;
   private Transform currentTarget;
   private int lastIndex;
   private float timeScared;
+  private AudioSource beeAudioSource;
   #endregion
 
   #region UnityEvents
@@ -61,16 +73,19 @@ public class BeeController : MonoBehaviour
     }
 
     beeState = BEE_STATE.FLYING;
+    beeAudioSource = GetComponent<AudioSource>();
   }
 
   void Update()
   {
     Vector2 newPosition = Vector2.zero;
-    //Debug.Log("BS: " + beeState.ToString());
+    float playerDistance = Vector2.Distance(transform.position, player.position);
+
+    HandleBeeSound(playerDistance);
+
     switch (beeState)
     {
       case BEE_STATE.FLYING:
-        float playerDistance = Vector2.Distance(transform.position, player.position);
         if (playerDistance < maxFollowingDistance)
         {
           beeState = BEE_STATE.FOLLOWING;
@@ -86,8 +101,7 @@ public class BeeController : MonoBehaviour
         }
         break;
       case BEE_STATE.FOLLOWING:
-        float player_distance = Vector2.Distance(transform.position, player.position);
-        if (player_distance <= maxFollowingDistance)
+        if (playerDistance <= maxFollowingDistance)
         {
           newPosition = Vector2.MoveTowards(transform.position, player.position, beeSpeed * Time.deltaTime);
         }
@@ -141,7 +155,7 @@ public class BeeController : MonoBehaviour
       SwapSpeeds();
       beeState = BEE_STATE.SCARED;
     }
-    
+
     if (player != null && beeState != BEE_STATE.STINGING)
     {
       beeState = BEE_STATE.STINGING;
@@ -174,6 +188,8 @@ public class BeeController : MonoBehaviour
     {
       player.GetComponent<PlayerController>().OnIncreaseCoin(lootCoins);
       // Destroy object and invoke animation or something
+      AudioManager audioManager = AudioManager.instance;
+      audioManager.PlaySound("BeeDeathSFX", false);
       Destroy(gameObject);
     }
     else
@@ -234,6 +250,31 @@ public class BeeController : MonoBehaviour
     float speedAux = beeSpeed;
     beeSpeed = beeSpeedScared;
     beeSpeedScared = speedAux;
+  }
+
+  private void HandleBeeSound(float playerDistance)
+  {
+    if (playerDistance < minAudioDistance)
+    {
+      beeAudioSource.volume = beeMaxVolume;
+    }
+    else if (playerDistance > maxAudioDistance)
+    {
+      beeAudioSource.volume = 0;
+    }
+    else
+    {
+      beeAudioSource.volume = beeMaxVolume - ((playerDistance - minAudioDistance) / (maxAudioDistance - minAudioDistance));
+    }
+
+    if (GameSceneController.GameIsOver || GameSceneController.GameIsPaused || GameSceneController.StoreIsOpen)
+    {
+      beeAudioSource.Pause();
+    }
+    else
+    {
+      beeAudioSource.UnPause();
+    }
   }
   #endregion
 }

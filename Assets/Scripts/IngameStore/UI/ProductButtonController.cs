@@ -94,6 +94,8 @@ public class ProductButtonController : MonoBehaviour
   {
     if (product != null)
     {
+      AudioManager audioManager = AudioManager.instance;
+      audioManager.PlaySound("ClickSFX", false);
       storeController.BuyProduct(product);
     }
   }

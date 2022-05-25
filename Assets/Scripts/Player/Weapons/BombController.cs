@@ -30,6 +30,8 @@ public class BombController : MonoBehaviour
 
   private void enableParticleSystem()
   {
+    AudioManager audioManager = AudioManager.instance;
+    audioManager.PlaySound("SmokeBombSFX", false);
     smoke.Play();
   }
 }
