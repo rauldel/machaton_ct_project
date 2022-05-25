@@ -91,7 +91,6 @@ public static class CommercetoolsManager
     FileStream stream = new FileStream(path, FileMode.Create);
     formatter.Serialize(stream, new CTClientData());
     stream.Close();
-    //return data;
   }
 
   public static CTClientData ReadSecretsFile()
