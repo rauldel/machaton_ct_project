@@ -38,7 +38,7 @@ public class SaveData
 
   public void SetLaserAmmo(int ammo)
   {
-    phaserAmmo.SetQuantity(ammo);
+    laserAmmo.SetQuantity(ammo);
   }
 
   public void SetPhaserAmmo(int ammo)
@@ -83,7 +83,7 @@ public class SaveData
 
   public void SetHasBombthrower(bool newHasBombthrower)
   {
-    hasPhaser = newHasBombthrower;
+    hasBombthrower = newHasBombthrower;
   }
 
   public void SetPotionsCount(int newPotionsCount)

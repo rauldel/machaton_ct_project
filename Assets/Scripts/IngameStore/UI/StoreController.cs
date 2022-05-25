@@ -243,6 +243,7 @@ public class StoreController : MonoBehaviour
   private void ProcessOrderToSaveData(Order order)
   {
     string orderedProductName = order.LineItems[0].Name.GetValue("en-US");
+    Debug.Log("Dale Don Dale: " + orderedProductName);
     SaveData saveData = SaveGameController.GetSavedData();
 
     switch (orderedProductName)

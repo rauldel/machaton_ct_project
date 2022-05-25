@@ -108,6 +108,7 @@ public class BombthrowerController : MonoBehaviour
   #region BombthrowerMethods
   void ShootSmokeBomb()
   {
+    AudioManager audioManager = AudioManager.instance;
     if (ammo > 0)
     {
       GameObject bombIns = Instantiate(smokeBombPrefab, firePoint.position, firePoint.rotation);
@@ -115,10 +116,12 @@ public class BombthrowerController : MonoBehaviour
 
       Ammo--;
       saveGameController.UpdateAmmo(Ammo);
+      audioManager.PlaySound("CannonSFX", false);
     }
     else
     {
       // Should play some empty ammo sound
+      audioManager.PlaySound("EmptyWeaponSFX", false);
     }
   }
 

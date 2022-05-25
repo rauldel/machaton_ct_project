@@ -112,6 +112,8 @@ public class PauseMenuController : MonoBehaviour
   public void OnConsumeItem(string name)
   {
     SaveData saveData = SaveGameController.GetSavedData();
+    AudioManager audioManager = AudioManager.instance;
+    audioManager.PlaySound("ConsumeItemSFX", false);
     switch (name)
     {
       case "Potion":

@@ -67,6 +67,11 @@ public class GameSceneController : MonoBehaviour
     GameIsOver = true;
     Time.timeScale = 0;
 
+    AudioManager audioManager = AudioManager.instance;
+    audioManager.StopSound("BackgroundMusic");
+    audioManager.StopSound("WalkingSFX");
+    audioManager.PlaySound("GameOverMusic", false);
+
     gameUI.gameObject.SetActive(false);
     gameOverUI.gameObject.SetActive(true);
   }
@@ -76,6 +81,9 @@ public class GameSceneController : MonoBehaviour
     LevelGenerator levelGenerator = gameObject.GetComponent<LevelGenerator>();
     levelGenerator.RestartGame();
     playerController.OnRestartGame();
+
+    AudioManager audioManager = AudioManager.instance;
+    audioManager.PlaySound("BackgroundMusic", true);
 
     gameUI.gameObject.SetActive(true);
     gameOverUI.gameObject.SetActive(false);
@@ -89,6 +97,9 @@ public class GameSceneController : MonoBehaviour
     GameIsPaused = true;
     Time.timeScale = 0;
 
+    AudioManager audioManager = AudioManager.instance;
+    audioManager.PlaySound("OpenMenuSFX", false);
+
     gameUI.gameObject.SetActive(false);
     pauseUI.gameObject.SetActive(true);
   }
@@ -98,6 +109,9 @@ public class GameSceneController : MonoBehaviour
     GameIsPaused = false;
     Time.timeScale = 1;
 
+    AudioManager audioManager = AudioManager.instance;
+    audioManager.PlaySound("CloseMenuSFX", false);
+
     pauseUI.gameObject.SetActive(false);
     gameUI.gameObject.SetActive(true);
   }
@@ -106,6 +120,9 @@ public class GameSceneController : MonoBehaviour
   {
     StoreIsOpen = true;
     Time.timeScale = 0;
+
+    AudioManager audioManager = AudioManager.instance;
+    audioManager.PlaySound("OpenMenuSFX", false);
 
     storeUI.gameObject.SetActive(true);
     gameUI.gameObject.SetActive(false);
@@ -138,6 +155,9 @@ public class GameSceneController : MonoBehaviour
 
       StoreIsOpen = false;
       Time.timeScale = 1;
+
+      AudioManager audioManager = AudioManager.instance;
+      audioManager.PlaySound("CloseMenuSFX", false);
 
       storeUI.gameObject.SetActive(false);
       gameUI.gameObject.SetActive(true);

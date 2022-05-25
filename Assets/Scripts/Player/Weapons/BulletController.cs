@@ -26,6 +26,7 @@ public class BulletController : MonoBehaviour
     }
 
     Debug.Log(collision.name);
+    AudioManager audioManager = AudioManager.instance;
     PlayerController player = collision.transform.GetComponent<PlayerController>();
     BeeController bee = collision.transform.GetComponent<BeeController>();
     // HeadlessController headless = collision.transform.GetComponent<HeadlessController>();
@@ -38,6 +39,7 @@ public class BulletController : MonoBehaviour
 
     if (bee != null)
     {
+      audioManager.PlaySound("HitEffectSFX", false);
       bee.TakeDamage(damage);
       Instantiate(impactEffect, collision.transform.position, Quaternion.identity);
     }
@@ -48,6 +50,7 @@ public class BulletController : MonoBehaviour
     } */
     else
     {
+      audioManager.PlaySound("HitEffectSFX", false);
       Instantiate(impactEffect, gameObject.transform.position, Quaternion.identity);
     }
 

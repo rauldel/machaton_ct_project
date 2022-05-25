@@ -62,15 +62,17 @@ public class PhaserController : MonoBehaviour
 
   void ShootBullet()
   {
+    AudioManager audioManager = AudioManager.instance;
     if (ammo > 0)
     {
       Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
       Ammo--;
       saveGameController.UpdateAmmo(Ammo);
+      audioManager.PlaySound("PhaserSFX", false);
     }
     else
     {
-      // should play some empty ammo sound
+      audioManager.PlaySound("EmptyWeaponSFX", false);
     }
   }
   #endregion

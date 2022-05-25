@@ -32,7 +32,8 @@ public class CoinController : MonoBehaviour
     // If a coin is hit by the player
     if (player != null)
     {
-      // Play sound
+      AudioManager audioManager = AudioManager.instance;
+      audioManager.PlaySound("CoinSFX", false);
       Destroy(gameObject);
     }
   }
