@@ -112,14 +112,14 @@ public class PlayerController : MonoBehaviour
         playerAnimator.SetBool("isShooting", false);
       }
 
-      if (Input.GetButtonDown("Crouch"))
+      /* if (Input.GetButtonDown("Crouch"))
       {
         crouch = true;
       }
       else if (Input.GetButtonUp("Crouch"))
       {
         crouch = false;
-      }
+      } */
     }
   }
 
