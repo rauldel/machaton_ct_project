@@ -64,7 +64,7 @@ public class PlayerController : MonoBehaviour
   // Update is called once per frame
   void Update()
   {
-    if (!GameSceneController.GameIsPaused && !GameSceneController.GameIsOver && !GameSceneController.StoreIsOpen)
+    if (!GameSceneController.GameIsPaused && !GameSceneController.GameIsOver && !GameSceneController.StoreIsOpen && !GameSceneController.CountdownIsOn)
     {
       AudioManager audioManager = AudioManager.instance;
       if (autoMovement == true)
@@ -139,12 +139,19 @@ public class PlayerController : MonoBehaviour
   #endregion
 
   #region PlayerPublicActions
+  public void OnReallocatePlayer()
+  {
+    this.gameObject.transform.position = playerInitialPosition.transform.position;
+    playerRigidbody.velocity = Vector2.zero;
+    horizontalMove = 0;
+    playerAnimator.SetBool("isJumping", false);
+    playerAnimator.SetBool("isShooting", false);
+    playerAnimator.SetFloat("Speed", 0);
+  }
   public void OnRestartGame()
   {
     playerLife = INITIAL_PLAYER_LIFES;
     gameUIController.SetLifeText(playerLife);
-    this.gameObject.transform.position = playerInitialPosition.transform.position;
-    playerRigidbody.velocity = Vector2.zero;
     playerWeaponController.setWeapon(playerWeaponController.GetWeaponSelected());
   }
   public void OnLanding()

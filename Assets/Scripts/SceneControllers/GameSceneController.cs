@@ -11,6 +11,7 @@ public class GameSceneController : MonoBehaviour
   public static bool GameIsPaused = false;
   public static bool GameIsOver = false;
   public static bool StoreIsOpen = false;
+  public static bool CountdownIsOn = false;
 
   [Header("UI Game Objects")]
   [Space]
@@ -19,10 +20,20 @@ public class GameSceneController : MonoBehaviour
   public GameObject gameOverUI;
   public GameObject pauseUI;
   public GameObject storeUI;
+  public GameObject countdownUI;
 
   [Header("Game Scene Dependencies")]
   [Space]
-  public PlayerController playerController;
+  [SerializeField]
+  private PlayerController playerController;
+  [SerializeField]
+  private ParallaxBackground parallaxBackground;
+
+  void Start()
+  {
+    CountdownIsOn = true;
+    countdownUI.GetComponent<CountdownController>().StartCountdown();
+  }
 
   // Update is called once per frame
   void Update()
@@ -66,6 +77,8 @@ public class GameSceneController : MonoBehaviour
   {
     GameIsOver = true;
     Time.timeScale = 0;
+    parallaxBackground.OnGameOver();
+    playerController.OnReallocatePlayer();
 
     AudioManager audioManager = AudioManager.instance;
     audioManager.StopSound("BackgroundMusic");
@@ -78,12 +91,16 @@ public class GameSceneController : MonoBehaviour
 
   public void OnRestartGame()
   {
+    CountdownIsOn = true;
+    countdownUI.GetComponent<CountdownController>().StartCountdown();
+    playerController.OnRestartGame();
     LevelGenerator levelGenerator = gameObject.GetComponent<LevelGenerator>();
     levelGenerator.RestartGame();
-    playerController.OnRestartGame();
 
     AudioManager audioManager = AudioManager.instance;
     audioManager.PlaySound("BackgroundMusic", true);
+
+    parallaxBackground.OnRestartGame();
 
     gameUI.gameObject.SetActive(true);
     gameOverUI.gameObject.SetActive(false);
