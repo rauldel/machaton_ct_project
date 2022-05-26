@@ -6,7 +6,7 @@ public class BulletController : MonoBehaviour
 {
 
   public float speed = 20f;
-  public int damage = 10;
+  public int damage = 2;
   public Rigidbody2D rb;
   public GameObject impactEffect;
 

@@ -10,10 +10,10 @@ public class PlayerController : MonoBehaviour
   [Header("Player Attribtes")]
   [Space]
   [SerializeField]
-  private int INITIAL_PLAYER_LIFES = 10;
+  private int INITIAL_PLAYER_LIFES = 3;
 
   [SerializeField]
-  private int playerLife = 10;
+  private int playerLife = 3;
 
   [SerializeField]
   private int playerCoins;

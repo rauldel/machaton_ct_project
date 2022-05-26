@@ -8,7 +8,7 @@ public class HyperPotion : Consumable
   {
     this.interactable = true;
     this.name = "Hyperpotion";
-    this.value = 30;
+    this.value = 8;
   }
 
   public HyperPotion(string name, int value)

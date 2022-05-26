@@ -7,7 +7,7 @@ public class LaserController : MonoBehaviour
   #region Attributes
   [Header("Basic Attributes")]
   public Transform firePoint;
-  public int damage = 20;
+  public int damage = 5;
   public int ammo = 50;
   public int Ammo
   {
