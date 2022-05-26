@@ -48,10 +48,10 @@ public class ParallaxMountains : MonoBehaviour
   void LateUpdate()
   {
     Vector3 deltaMovement = cameraTransform.position - lastCameraPosition;
-    deltaMovement.y *= parallaxEffectMultiplier.y;
+    deltaMovement *= parallaxEffectMultiplier;
     foreach (GameObject mountain in mountainList)
     {
-      mountain.transform.position = new Vector3(mountain.transform.position.x, mountain.transform.position.y + deltaMovement.y, 0);
+      mountain.transform.position = new Vector3(mountain.transform.position.x + deltaMovement.x, mountain.transform.position.y + deltaMovement.y, 0);
     }
     lastCameraPosition = cameraTransform.position;
   }

@@ -336,7 +336,7 @@ MonoBehaviour:
   - {fileID: 3701767666597319871}
   - {fileID: 3701767665936420602}
   - {fileID: 3701767666073189326}
-  parallaxEffectMultiplier: {x: 0.1, y: 0.75}
+  parallaxEffectMultiplier: {x: 0.75, y: 0.75}
   maxThresholdMovingMountain: 7
 --- !u!1 &3701767665936420602
 GameObject:
