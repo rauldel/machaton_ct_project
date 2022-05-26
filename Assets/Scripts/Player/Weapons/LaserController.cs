@@ -7,7 +7,7 @@ public class LaserController : MonoBehaviour
   #region Attributes
   [Header("Basic Attributes")]
   public Transform firePoint;
-  public int damage = 20;
+  public int damage = 5;
   public int ammo = 50;
   public int Ammo
   {
@@ -67,12 +67,11 @@ public class LaserController : MonoBehaviour
     AudioManager audioManager = AudioManager.instance;
     if (ammo > 0)
     {
-      Debug.Log("Laser Local Position -> " + firePoint.localPosition);
       Debug.Log("Laser World Position -> " + firePoint.position);
       RaycastHit2D hitInfo;
-      RaycastHit2D hitInfoObstacle = Physics2D.Raycast(firePoint.position, firePoint.right, 10000, LayerMask.GetMask("Obstacle"));
-      RaycastHit2D hitInfoCoin = Physics2D.Raycast(firePoint.position, firePoint.right, 10000, LayerMask.GetMask("Coin"));
-      RaycastHit2D hitInfoEnemy = Physics2D.Raycast(firePoint.position, firePoint.right, 10000, LayerMask.GetMask("Enemy"));
+      RaycastHit2D hitInfoObstacle = Physics2D.Raycast(firePoint.position, firePoint.right, 1000, LayerMask.GetMask("Obstacle"));
+      RaycastHit2D hitInfoCoin = Physics2D.Raycast(firePoint.position, firePoint.right, 1000, LayerMask.GetMask("Coin"));
+      RaycastHit2D hitInfoEnemy = Physics2D.Raycast(firePoint.position, firePoint.right, 1000, LayerMask.GetMask("Enemy"));
 
       List<RaycastHit2D> listRaycasts = new List<RaycastHit2D>() { hitInfoObstacle, hitInfoCoin, hitInfoEnemy };
 
@@ -126,6 +125,13 @@ public class LaserController : MonoBehaviour
   private RaycastHit2D getShortestDistance(List<RaycastHit2D> listRaycasts)
   {
     int lowestIndex = 0;
+
+    for (int i = 0; i < listRaycasts.Count; i++) {
+      if (listRaycasts[i].distance > 0) {
+        lowestIndex = i;
+        break;
+      }
+    }
 
     for (int i = 0; i < listRaycasts.Count; i++)
     {

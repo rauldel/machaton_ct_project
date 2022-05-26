@@ -6,7 +6,6 @@ using UnityEngine.UI;
 using myCT.Carts;
 using myCT.Common;
 using myCT.Orders;
-using myCT.Products;
 using myCT.ProductProjections;
 using myCT.ProductTypes;
 

@@ -84,7 +84,7 @@ public static class CommercetoolsManager
   #region SecretKeepers
   public static void GenerateSecretsFile()
   {
-    string path = "./Assets/Scripts/IngameStore/secrets.dat";
+    string path = Application.streamingAssetsPath + "/secrets.dat";
     Debug.Log("path: " + path);
 
     BinaryFormatter formatter = new BinaryFormatter();
@@ -95,7 +95,7 @@ public static class CommercetoolsManager
 
   public static CTClientData ReadSecretsFile()
   {
-    string path = "./Assets/Scripts/IngameStore/secrets.dat";
+    string path = Application.streamingAssetsPath + "/secrets.dat";
 
     if (File.Exists(path))
     {

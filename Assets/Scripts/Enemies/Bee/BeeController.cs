@@ -11,10 +11,10 @@ public class BeeController : MonoBehaviour
   [Header("Bee Attribtes")]
   [Space]
   [SerializeField]
-  private int healthPoints = 10;
+  private int healthPoints = 7;
 
   [SerializeField]
-  private int lootCoins = 10;
+  private int lootCoins = 7;
 
   [SerializeField]
   private float beeSpeed = 1f;
