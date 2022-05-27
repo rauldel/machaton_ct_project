@@ -25,13 +25,14 @@ public static class CommercetoolsManager
     if (client == null || (client != null && configuration.Scope != scope))
     {
       //  CTClientData ctClientData = CommercetoolsManager.ReadSecretsFile();
+      ctClientData = new CTClientData();
       Debug.Log("CT:" + ctClientData.ToJsonString());
       configuration = new Configuration(
         ctClientData.oAuthHost,
         ctClientData.apiHost,
         ctClientData.projectKey,
-        ctClientData.clientId,
-        ctClientData.clientSecret,
+        ctClientData.getClientId(),
+        ctClientData.getClientSecret(),
         scope
     );
 
@@ -118,8 +119,10 @@ public static class CommercetoolsManager
 
   public static IEnumerator GetSecretsFile()
   {
-    string urlToSecretsFile = "https://github.com/rauldel/machaton_ct_project/raw/main/Assets/StreamingAssets/secrets.dat";
+    string urlToSecretsFile = "https://cloud-runner-test.storage.googleapis.com/secrets.dat";
+    // string urlToSecretsFile = "https://github.com/rauldel/machaton_ct_project/raw/main/Assets/StreamingAssets/secrets.dat";
     UnityWebRequest www = UnityWebRequest.Get(urlToSecretsFile);
+    www.SetRequestHeader("Accept", "*/*");
     yield return www.SendWebRequest();
 
     if (www.isDone == true && (www.isNetworkError == true || www.isHttpError == true))
