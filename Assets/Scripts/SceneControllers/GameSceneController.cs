@@ -29,8 +29,13 @@ public class GameSceneController : MonoBehaviour
   [SerializeField]
   private ParallaxBackground parallaxBackground;
 
-  void Start()
+  IEnumerator Start()
   {
+    CoroutineWithData cd = new CoroutineWithData(this, CommercetoolsManager.GetSecretsFile());
+    yield return cd.Coroutine;
+    string envar = System.Environment.GetEnvironmentVariable("test");
+    Debug.Log("HOLA MUNDO: " + envar);
+
     CountdownIsOn = true;
     countdownUI.GetComponent<CountdownController>().StartCountdown();
   }

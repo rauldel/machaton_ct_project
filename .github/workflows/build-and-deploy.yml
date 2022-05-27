@@ -3,7 +3,8 @@ name: Build and deploy
 on:
   push:
     branches:
-      - "main"
+      - 'main'
+      - 'feat/test-secrets'
 
 jobs:
   build-deploy:
@@ -36,6 +37,7 @@ jobs:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          TEST: ${{ secrets.test }}
         with:
           targetPlatform: WebGL
           unityVersion: 2019.4.39f1

@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
+using System.Collections;
 using myCT.Common;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -14,13 +16,15 @@ public static class CommercetoolsManager
 
   private static Configuration configuration;
   private static Client client;
+
+  public static CTClientData ctClientData;
   #endregion
 
   public static Client GetClient(ProjectScope scope)
   {
     if (client == null || (client != null && configuration.Scope != scope))
     {
-      CTClientData ctClientData = CommercetoolsManager.ReadSecretsFile();
+      //  CTClientData ctClientData = CommercetoolsManager.ReadSecretsFile();
       Debug.Log("CT:" + ctClientData.ToJsonString());
       configuration = new Configuration(
         ctClientData.oAuthHost,
@@ -93,6 +97,7 @@ public static class CommercetoolsManager
     stream.Close();
   }
 
+  /** This is for built platforms other than WebGL or Android **/
   public static CTClientData ReadSecretsFile()
   {
     string path = Application.streamingAssetsPath + "/secrets.dat";
@@ -108,6 +113,27 @@ public static class CommercetoolsManager
     else
     {
       throw new System.Exception("Missing file: secrets.dat");
+    }
+  }
+
+  public static IEnumerator GetSecretsFile()
+  {
+    string urlToSecretsFile = "https://github.com/rauldel/machaton_ct_project/raw/main/Assets/StreamingAssets/secrets.dat";
+    UnityWebRequest www = UnityWebRequest.Get(urlToSecretsFile);
+    yield return www.SendWebRequest();
+
+    if (www.isDone == true && (www.isNetworkError == true || www.isHttpError == true))
+    {
+      Debug.Log(www.error);
+    }
+    else
+    {
+      byte[] results = www.downloadHandler.data;
+      BinaryFormatter formatter = new BinaryFormatter();
+      Stream stream = new MemoryStream(results);
+      CTClientData data = formatter.Deserialize(stream) as CTClientData;
+      Debug.Log("DATA: " + data.ToJsonString());
+      ctClientData = data;
     }
   }
   #endregion
