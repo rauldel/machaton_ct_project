@@ -41,7 +41,7 @@ public class GameSceneController : MonoBehaviour
     if (Input.GetButtonDown("Cancel"))
     {
       // Needed condition for pausing the game
-      if (StoreIsOpen == false && GameIsOver == false)
+      if (StoreIsOpen == false && GameIsOver == false && CountdownIsOn == false)
       {
         if (GameIsPaused == false)
         {
@@ -58,7 +58,7 @@ public class GameSceneController : MonoBehaviour
     if (Input.GetButtonDown("Store"))
     {
       // Needed condition for opening the store
-      if (GameIsOver == false && GameIsPaused == false)
+      if (GameIsOver == false && GameIsPaused == false && CountdownIsOn == false)
       {
         if (StoreIsOpen == false)
         {

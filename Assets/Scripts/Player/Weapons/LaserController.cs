@@ -18,7 +18,7 @@ public class LaserController : MonoBehaviour
     set
     {
       ammo = value;
-      playerWeaponController.updateAmmoUI(value);
+      playerWeaponController.updateAmmoUI(value,Weapons.Laser);
     }
   }
   public LayerMask canHit;

@@ -15,6 +15,7 @@ public class BulletController : MonoBehaviour
   {
     rb.gravityScale = 0f;
     rb.velocity = transform.right * speed;
+    Destroy(gameObject, 10f);
   }
 
   private void OnTriggerEnter2D(Collider2D collision)

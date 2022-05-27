@@ -18,7 +18,7 @@ public class PhaserController : MonoBehaviour
     set
     {
       ammo = value;
-      playerWeaponController.updateAmmoUI(value);
+      playerWeaponController.updateAmmoUI(value, Weapons.Phaser);
     }
   }
 
