@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Events;
+﻿using UnityEngine;
 
 public class GameSceneController : MonoBehaviour
 {
@@ -31,9 +28,6 @@ public class GameSceneController : MonoBehaviour
 
   void Start()
   {
-/*     CoroutineWithData cd = new CoroutineWithData(this, CommercetoolsManager.GetSecretsFile());
-    yield return cd.Coroutine; */
-
     CountdownIsOn = true;
     countdownUI.GetComponent<CountdownController>().StartCountdown();
   }
