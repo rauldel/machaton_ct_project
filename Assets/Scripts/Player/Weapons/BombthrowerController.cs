@@ -19,7 +19,7 @@ public class BombthrowerController : MonoBehaviour
     set
     {
       ammo = value;
-      playerWeaponController.updateAmmoUI(value);
+      playerWeaponController.updateAmmoUI(value, Weapons.SmokeBomb);
     }
   }
 
