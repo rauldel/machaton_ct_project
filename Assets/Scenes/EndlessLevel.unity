@@ -327,7 +327,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &23382307
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1723,7 +1723,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &372602703
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2683,7 +2683,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.079298, y: -1.096, z: -10}
+  m_LocalPosition: {x: 8.076794, y: -1.096, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -6551,6 +6551,11 @@ MonoBehaviour:
   levelPartList:
   - {fileID: 7608279693220985585, guid: 4a262600dd7f8ce4180a04012ea8e28c, type: 3}
   - {fileID: 7889383765370013488, guid: a6d346d6e5cf8c04ca4a0a75be641c7f, type: 3}
+  - {fileID: 710705333110050685, guid: 571edd04d3845486382b10158318ec4e, type: 3}
+  - {fileID: 854515202025252727, guid: 91dc5586acf7e43f6b5f1882043de369, type: 3}
+  - {fileID: 2284315911281168615, guid: ee9cdc4d9fd894173bb53b8d3183a261, type: 3}
+  - {fileID: 7819182770518617412, guid: 6a8afd53323334e64ab5c2f1096fb7ba, type: 3}
+  - {fileID: 2413272883305397128, guid: 6070c8d65e25145fabd18d9f60bab6f8, type: 3}
   player: {fileID: 1058552194}
   PLAYER_DISTANCE_SPAWN_LEVEL_PART: 50
   PLAYER_DISTANCE_DESTROY_LEVEL_PART: 5
@@ -9565,7 +9570,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1750311832
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9914,7 +9919,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1790129464}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.079298, y: -1.096, z: -10}
+  m_LocalPosition: {x: 8.076794, y: -1.096, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 563489153}
