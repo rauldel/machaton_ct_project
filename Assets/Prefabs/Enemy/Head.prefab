@@ -11,7 +11,8 @@ GameObject:
   - component: {fileID: 1547748796420502678}
   - component: {fileID: 5753163179293646031}
   - component: {fileID: -2436878493976539043}
-  m_Layer: 0
+  - component: {fileID: 2774118353792646544}
+  m_Layer: 9
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,3 +96,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2c84c842d643fc4cacd99ccbf8213df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 1
+  particleSystem: {fileID: 1084869335994526334, guid: e2cd530751ce3b544924fbf0b8b3bf4e,
+    type: 3}
+--- !u!58 &2774118353792646544
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5817664301089057058}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.275
