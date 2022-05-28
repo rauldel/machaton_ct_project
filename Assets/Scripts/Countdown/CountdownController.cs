@@ -24,11 +24,9 @@ public class CountdownController : MonoBehaviour
   #region CountdownMethods
   public IEnumerator StartCountdown()
   {
-    Debug.Log("HOLa");
     this.gameObject.SetActive(true);
     yield return new WaitForSeconds(1f);
 
-    Debug.Log("HOLa");
     countdownText.text = "2";
     background.GetComponent<Image>().color = new Color(241f / 255f, 109f / 255f, 14f / 255f);
     yield return new WaitForSeconds(1f);

@@ -37,7 +37,6 @@ public class GameSceneController : MonoBehaviour
     AudioManager.instance.SetVolume("MusicVolume", saveData.musicVolume);
     AudioManager.instance.SetVolume("SFXVolume", saveData.sfxVolume);
     CountdownIsOn = true;
-    Debug.Log("START GAME");
     StartCoroutine(countdownUI.GetComponent<CountdownController>().StartCountdown());
   }
 
