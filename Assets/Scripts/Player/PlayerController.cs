@@ -10,10 +10,10 @@ public class PlayerController : MonoBehaviour
   [Header("Player Attribtes")]
   [Space]
   [SerializeField]
-  private int INITIAL_PLAYER_LIFES = 10;
+  private int INITIAL_PLAYER_LIFES = 3;
 
   [SerializeField]
-  private int playerLife = 10;
+  private int playerLife = 3;
 
   [SerializeField]
   private int playerCoins;
@@ -64,7 +64,7 @@ public class PlayerController : MonoBehaviour
   // Update is called once per frame
   void Update()
   {
-    if (!GameSceneController.GameIsPaused && !GameSceneController.GameIsOver && !GameSceneController.StoreIsOpen)
+    if (!GameSceneController.GameIsPaused && !GameSceneController.GameIsOver && !GameSceneController.StoreIsOpen && !GameSceneController.CountdownIsOn)
     {
       AudioManager audioManager = AudioManager.instance;
       if (autoMovement == true)
@@ -112,14 +112,14 @@ public class PlayerController : MonoBehaviour
         playerAnimator.SetBool("isShooting", false);
       }
 
-      if (Input.GetButtonDown("Crouch"))
+      /* if (Input.GetButtonDown("Crouch"))
       {
         crouch = true;
       }
       else if (Input.GetButtonUp("Crouch"))
       {
         crouch = false;
-      }
+      } */
     }
   }
 
@@ -139,12 +139,19 @@ public class PlayerController : MonoBehaviour
   #endregion
 
   #region PlayerPublicActions
+  public void OnReallocatePlayer()
+  {
+    this.gameObject.transform.position = playerInitialPosition.transform.position;
+    playerRigidbody.velocity = Vector2.zero;
+    horizontalMove = 0;
+    playerAnimator.SetBool("isJumping", false);
+    playerAnimator.SetBool("isShooting", false);
+    playerAnimator.SetFloat("Speed", 0);
+  }
   public void OnRestartGame()
   {
     playerLife = INITIAL_PLAYER_LIFES;
     gameUIController.SetLifeText(playerLife);
-    this.gameObject.transform.position = playerInitialPosition.transform.position;
-    playerRigidbody.velocity = Vector2.zero;
     playerWeaponController.setWeapon(playerWeaponController.GetWeaponSelected());
   }
   public void OnLanding()
@@ -193,7 +200,17 @@ public class PlayerController : MonoBehaviour
 
   public void OnDecreaseCoin(int newCoins)
   {
-    playerCoins -= newCoins;
+    SaveData saveData = SaveGameController.GetSavedData();
+    if (saveData.playerCoins - newCoins < 0)
+    {
+      playerCoins = 0;
+    }
+    else
+    {
+      playerCoins = saveData.playerCoins - newCoins;
+    }
+    saveGameController.UpdateCoin(playerCoins);
+    gameUIController.SetCoinText(playerCoins);
   }
   #endregion
 

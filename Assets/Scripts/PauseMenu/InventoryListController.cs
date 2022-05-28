@@ -1,12 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InventoryListController : MonoBehaviour
 {
   #region InventoryListControllerAttributes
   [SerializeField]
   private GameObject inventoryButtonTemplate;
+  [SerializeField]
+  private List<Sprite> imagesList;
+
+  [SerializeField]
+  private List<string> productNameList;
 
   private List<GameObject> inventoryButtonsList;
   #endregion
@@ -75,11 +81,27 @@ public class InventoryListController : MonoBehaviour
 
       ibc.SetItemName(pair.Key);
       ibc.SetQtyText(pair.Value);
+      ibc.SetImage(GetItemSprite(pair.Key));
 
       inventoryButton.SetActive(true);
       inventoryButton.transform.SetParent(inventoryButtonTemplate.transform.parent, false);
       inventoryButtonsList.Add(inventoryButton);
     }
+  }
+
+  private Sprite GetItemSprite(string productName)
+  {
+    int index = 0;
+
+    for (int i = 0; i < productNameList.Count; i++)
+    {
+      if (productNameList[i] == productName)
+      {
+        index = i;
+      }
+    }
+
+    return imagesList[index];
   }
   #endregion
 }

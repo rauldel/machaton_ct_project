@@ -8,7 +8,7 @@ public class Potion : Consumable
   {
     this.interactable = true;
     this.name = "Potion";
-    this.value = 10;
+    this.value = 1;
   }
 
   public Potion(string name, int value)

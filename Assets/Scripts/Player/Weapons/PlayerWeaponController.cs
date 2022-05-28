@@ -85,9 +85,12 @@ public class PlayerWeaponController : MonoBehaviour
     return weaponSelected;
   }
 
-  public void updateAmmoUI(int uiAmmo)
+  public void updateAmmoUI(int uiAmmo, Weapons weapon)
   {
-    gameUIController.SetAmmoText(uiAmmo);
+    if (weaponSelected == weapon)
+    {
+      gameUIController.SetAmmoText(uiAmmo);
+    }
   }
 
   public void DeactivateAllWeapons()
@@ -117,6 +120,15 @@ public class PlayerWeaponController : MonoBehaviour
         break;
     }
     gameUIController.UpdateWeaponsUI(newWeapon);
+  }
+
+  public void UpdateAllWeaponsAmmo()
+  {
+    SaveData saveData = SaveGameController.GetSavedData();
+
+    phaserController.Ammo = saveData.phaserAmmo.quantity;
+    laserController.Ammo = saveData.laserAmmo.quantity;
+    btController.Ammo = saveData.smokeBombAmmo.quantity;
   }
   #endregion
 }

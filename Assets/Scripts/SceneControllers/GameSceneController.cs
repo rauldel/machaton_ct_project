@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 public class GameSceneController : MonoBehaviour
 {
@@ -11,6 +11,7 @@ public class GameSceneController : MonoBehaviour
   public static bool GameIsPaused = false;
   public static bool GameIsOver = false;
   public static bool StoreIsOpen = false;
+  public static bool CountdownIsOn = false;
 
   [Header("UI Game Objects")]
   [Space]
@@ -19,10 +20,25 @@ public class GameSceneController : MonoBehaviour
   public GameObject gameOverUI;
   public GameObject pauseUI;
   public GameObject storeUI;
+  public GameObject countdownUI;
 
   [Header("Game Scene Dependencies")]
   [Space]
-  public PlayerController playerController;
+  [SerializeField]
+  private PlayerController playerController;
+  [SerializeField]
+  private ParallaxBackground parallaxBackground;
+
+  void Start()
+  {
+    Time.timeScale = 1f;
+    SaveData saveData = SaveGameController.GetSavedData();
+    AudioManager.instance.SetVolume("MainVolume", saveData.mainVolume);
+    AudioManager.instance.SetVolume("MusicVolume", saveData.musicVolume);
+    AudioManager.instance.SetVolume("SFXVolume", saveData.sfxVolume);
+    CountdownIsOn = true;
+    StartCoroutine(countdownUI.GetComponent<CountdownController>().StartCountdown());
+  }
 
   // Update is called once per frame
   void Update()
@@ -30,7 +46,7 @@ public class GameSceneController : MonoBehaviour
     if (Input.GetButtonDown("Cancel"))
     {
       // Needed condition for pausing the game
-      if (StoreIsOpen == false && GameIsOver == false)
+      if (StoreIsOpen == false && GameIsOver == false && CountdownIsOn == false)
       {
         if (GameIsPaused == false)
         {
@@ -47,7 +63,7 @@ public class GameSceneController : MonoBehaviour
     if (Input.GetButtonDown("Store"))
     {
       // Needed condition for opening the store
-      if (GameIsOver == false && GameIsPaused == false)
+      if (GameIsOver == false && GameIsPaused == false && CountdownIsOn == false)
       {
         if (StoreIsOpen == false)
         {
@@ -62,10 +78,18 @@ public class GameSceneController : MonoBehaviour
   }
 
   #region SceneStateMethods
+  public void OnExitGame()
+  {
+    AudioManager.instance.PlaySound("ClickSFX", false);
+    SceneManager.LoadScene("MainMenu");
+  }
   public void OnGameOver()
   {
     GameIsOver = true;
     Time.timeScale = 0;
+    parallaxBackground.OnGameOver();
+    playerController.OnReallocatePlayer();
+    playerController.OnDecreaseCoin(10);
 
     AudioManager audioManager = AudioManager.instance;
     audioManager.StopSound("BackgroundMusic");
@@ -78,12 +102,17 @@ public class GameSceneController : MonoBehaviour
 
   public void OnRestartGame()
   {
+    AudioManager.instance.PlaySound("ClickSFX", false);
+    CountdownIsOn = true;
+    StartCoroutine(countdownUI.GetComponent<CountdownController>().StartCountdown());
+    playerController.OnRestartGame();
     LevelGenerator levelGenerator = gameObject.GetComponent<LevelGenerator>();
     levelGenerator.RestartGame();
-    playerController.OnRestartGame();
 
     AudioManager audioManager = AudioManager.instance;
     audioManager.PlaySound("BackgroundMusic", true);
+
+    parallaxBackground.OnRestartGame();
 
     gameUI.gameObject.SetActive(true);
     gameOverUI.gameObject.SetActive(false);

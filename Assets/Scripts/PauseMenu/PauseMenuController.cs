@@ -64,6 +64,7 @@ public class PauseMenuController : MonoBehaviour
     }
     if (saveData.superPotionsCount > 0)
     {
+      Debug.Log("SD: " + saveData.superPotionsCount);
       KeyValuePair<string, int> pair = new KeyValuePair<string, int>("Superpotion", saveData.superPotionsCount);
       inventoryList.Add(pair);
     }
@@ -128,7 +129,7 @@ public class PauseMenuController : MonoBehaviour
         playerController.OnIncrementLife(p.GetValue());
         break;
       case "Superpotion":
-        saveData.potionsCount = saveData.superPotionsCount - 1;
+        saveData.superPotionsCount = saveData.superPotionsCount - 1;
         SaveGameController.WriteDataToStorage(saveData);
 
         // We do this, as a semi hardcoded way of increasing life points.
@@ -138,7 +139,7 @@ public class PauseMenuController : MonoBehaviour
         playerController.OnIncrementLife(sp.GetValue());
         break;
       case "Hyperpotion":
-        saveData.potionsCount = saveData.hyperPotionsCount - 1;
+        saveData.hyperPotionsCount = saveData.hyperPotionsCount - 1;
         SaveGameController.WriteDataToStorage(saveData);
 
         // We do this, as a semi hardcoded way of increasing life points.

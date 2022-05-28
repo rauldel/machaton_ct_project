@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class AudioManager : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class AudioManager : MonoBehaviour
   [Space]
   [SerializeField]
   Sound[] sounds;
+  [SerializeField]
+  private AudioMixer audioMixer;
   #endregion
 
   #region UnityMethods
@@ -89,6 +92,12 @@ public class AudioManager : MonoBehaviour
 
     Debug.LogWarning("IsPlaying -> No sound found with name: " + name);
     return false;
+  }
+  #endregion
+
+  #region VolumeMethods
+  public void SetVolume(string group, float volume) {
+    audioMixer.SetFloat(group, Mathf.Log10(volume) * 20);
   }
   #endregion
 }
