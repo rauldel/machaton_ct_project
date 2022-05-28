@@ -21,7 +21,7 @@ public static class CommercetoolsManager
     if (client == null || (client != null && configuration.Scope != scope))
     {
       CTClientData ctClientData = CommercetoolsManager.ReadSecretsFile();
-      Debug.Log("CT:" + ctClientData.ToJsonString());
+      // Debug.Log("CT:" + ctClientData.ToJsonString());
       configuration = new Configuration(
         ctClientData.oAuthHost,
         ctClientData.apiHost,

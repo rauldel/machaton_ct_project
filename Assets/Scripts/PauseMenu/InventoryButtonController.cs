@@ -54,6 +54,11 @@ public class InventoryButtonController : MonoBehaviour
     itemQtyText.text = "" + qty;
   }
 
+  public void SetImage(Sprite sprite)
+  {
+    itemImage.sprite = sprite;
+  }
+
   public void DummyPopulation()
   {
     SetItemName("Dummy name");

@@ -18,6 +18,9 @@ public class SaveData
   public int potionsCount = 0;
   public int superPotionsCount = 0;
   public int hyperPotionsCount = 0;
+  public float mainVolume = 1f;
+  public float musicVolume = 1f;
+  public float sfxVolume = 1f;
 
   public SaveData()
   {
@@ -99,5 +102,19 @@ public class SaveData
   public void SetHyperPotionsCount(int newHyperPotionsCount)
   {
     hyperPotionsCount = newHyperPotionsCount;
+  }
+  public void SetMainVolume(float volume)
+  {
+    mainVolume = volume;
+  }
+
+  public void SetMusicVolume(float volume)
+  {
+    musicVolume = volume;
+  }
+
+  public void SetSFXVolume(float volume)
+  {
+    sfxVolume = volume;
   }
 }
