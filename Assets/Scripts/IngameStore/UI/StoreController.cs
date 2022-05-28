@@ -212,6 +212,7 @@ public class StoreController : MonoBehaviour
           saveGameController.UpdateCoinSpent((int)(order.TotalPrice.CentAmount / 100));
           LoadPlayerCoins();
           ProcessOrderToSaveData(order);
+          FindObjectOfType<PlayerWeaponController>().UpdateAllWeaponsAmmo();
         }
         else
         {

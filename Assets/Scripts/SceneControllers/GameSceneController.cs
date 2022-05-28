@@ -103,7 +103,7 @@ public class GameSceneController : MonoBehaviour
   {
     AudioManager.instance.PlaySound("ClickSFX", false);
     CountdownIsOn = true;
-    countdownUI.GetComponent<CountdownController>().StartCountdown();
+    StartCoroutine(countdownUI.GetComponent<CountdownController>().StartCountdown());
     playerController.OnRestartGame();
     LevelGenerator levelGenerator = gameObject.GetComponent<LevelGenerator>();
     levelGenerator.RestartGame();
