@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 public class GameSceneController : MonoBehaviour
 {
@@ -31,8 +31,14 @@ public class GameSceneController : MonoBehaviour
 
   void Start()
   {
+    Time.timeScale = 1f;
+    SaveData saveData = SaveGameController.GetSavedData();
+    AudioManager.instance.SetVolume("MainVolume", saveData.mainVolume);
+    AudioManager.instance.SetVolume("MusicVolume", saveData.musicVolume);
+    AudioManager.instance.SetVolume("SFXVolume", saveData.sfxVolume);
     CountdownIsOn = true;
-    countdownUI.GetComponent<CountdownController>().StartCountdown();
+    Debug.Log("START GAME");
+    StartCoroutine(countdownUI.GetComponent<CountdownController>().StartCountdown());
   }
 
   // Update is called once per frame
@@ -73,6 +79,11 @@ public class GameSceneController : MonoBehaviour
   }
 
   #region SceneStateMethods
+  public void OnExitGame()
+  {
+    AudioManager.instance.PlaySound("ClickSFX", false);
+    SceneManager.LoadScene("MainMenu");
+  }
   public void OnGameOver()
   {
     GameIsOver = true;
@@ -91,6 +102,7 @@ public class GameSceneController : MonoBehaviour
 
   public void OnRestartGame()
   {
+    AudioManager.instance.PlaySound("ClickSFX", false);
     CountdownIsOn = true;
     countdownUI.GetComponent<CountdownController>().StartCountdown();
     playerController.OnRestartGame();
