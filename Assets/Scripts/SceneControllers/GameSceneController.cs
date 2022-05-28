@@ -89,6 +89,7 @@ public class GameSceneController : MonoBehaviour
     Time.timeScale = 0;
     parallaxBackground.OnGameOver();
     playerController.OnReallocatePlayer();
+    playerController.OnDecreaseCoin(10);
 
     AudioManager audioManager = AudioManager.instance;
     audioManager.StopSound("BackgroundMusic");

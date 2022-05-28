@@ -200,7 +200,17 @@ public class PlayerController : MonoBehaviour
 
   public void OnDecreaseCoin(int newCoins)
   {
-    playerCoins -= newCoins;
+    SaveData saveData = SaveGameController.GetSavedData();
+    if (saveData.playerCoins - newCoins < 0)
+    {
+      playerCoins = 0;
+    }
+    else
+    {
+      playerCoins = saveData.playerCoins - newCoins;
+    }
+    saveGameController.UpdateCoin(playerCoins);
+    gameUIController.SetCoinText(playerCoins);
   }
   #endregion
 
