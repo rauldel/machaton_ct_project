@@ -54,7 +54,7 @@ public class BeeController : MonoBehaviour
 
   private bool isFacingRight = true;
   private Transform currentTarget;
-  private int lastIndex;
+  private bool positivePath;
   private float timeScared;
   private AudioSource beeAudioSource;
   #endregion
@@ -69,7 +69,7 @@ public class BeeController : MonoBehaviour
     if (movementPoints.Count > 0)
     {
       currentTarget = movementPoints[0];
-      lastIndex = 0;
+      positivePath = true;
     }
 
     beeState = BEE_STATE.FLYING;
@@ -205,14 +205,50 @@ public class BeeController : MonoBehaviour
     int index = movementPoints.FindIndex(0, movementPoints.Count, element => element == currentTarget);
     if (loopedPath == true)
     {
-      lastIndex = index;
-      if (index == movementPoints.Count - 1)
+      calculateNextLoopedTarget(index);
+    }
+    else
+    {
+      calculateNextQueuedTarget(index);
+    }
+  }
+
+  private void calculateNextLoopedTarget(int index)
+  {
+    if (index == movementPoints.Count - 1)
+    {
+      index = 0;
+    }
+    else
+    {
+      index++;
+    }
+    currentTarget = movementPoints[index];
+  }
+
+  private void calculateNextQueuedTarget(int index)
+  {
+    if (positivePath == true)
+    {
+      if (index == 0)
       {
-        index = 0;
+        index++;
+        positivePath = true;
+        currentTarget = movementPoints[index];
+        return;
+      }
+      else if (index == movementPoints.Count - 1)
+      {
+        index--;
+        positivePath = false;
+        currentTarget = movementPoints[index];
+        return;
       }
       else
       {
         index++;
+        currentTarget = movementPoints[index];
+        return;
       }
     }
     else
@@ -220,25 +256,25 @@ public class BeeController : MonoBehaviour
       if (index == 0)
       {
         index++;
+        positivePath = true;
+        currentTarget = movementPoints[index];
+        return;
       }
       else if (index == movementPoints.Count - 1)
       {
         index--;
+        positivePath = false;
+        currentTarget = movementPoints[index];
+        return;
       }
-      else if (index > lastIndex)
-      {
-        index++;
-        lastIndex = index;
-      }
-      else if (index < lastIndex)
+      else
       {
         index--;
-        lastIndex = index;
+        currentTarget = movementPoints[index];
+        return;
       }
     }
-    currentTarget = movementPoints[index];
   }
-
   private void Flip()
   {
     isFacingRight = !isFacingRight;
