@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Head : MonoBehaviour
+public class Head : MonoBehaviour, Enemy
 {
     private Transform target;
     private Transform master;
-    private bool hitTarget = false;
+    private bool hitTarget;
     private float timeStart;
     private float maxFlightDuration = 4;
     private CircleCollider2D collider;
@@ -19,7 +19,7 @@ public class Head : MonoBehaviour
         collider = GetComponent<CircleCollider2D>();
     }
 
-    public void TakeHit(int damage)
+    public void TakeDamage(int damage)
     {
         PlayEffect();
         master.GetComponent<HeadlessController>()?.Die();

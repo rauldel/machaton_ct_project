@@ -5,7 +5,7 @@ using UnityEngine.Audio;
 
 public enum BEE_STATE { FLYING, FOLLOWING, STINGING, SCARED };
 
-public class BeeController : MonoBehaviour
+public class BeeController : MonoBehaviour, Enemy
 {
   #region BeeAttributes
   [Header("Bee Attribtes")]

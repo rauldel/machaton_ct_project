@@ -6,7 +6,7 @@ public enum MOVE_DIRECTION
     RIGHT
 }
 
-public class HeadlessController : MonoBehaviour
+public class HeadlessController : MonoBehaviour, Enemy
 {
     [SerializeField] private int healthPoints = 10;
     [SerializeField] private int lootCoins = 10;
