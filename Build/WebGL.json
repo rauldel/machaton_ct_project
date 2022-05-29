@@ -1,7 +1,7 @@
 {
 "companyName": "DefaultCompany",
 "productName": "Cloud Runner",
-"productVersion": "0.0.75",
+"productVersion": "0.0.79",
 "dataUrl": "WebGL.data.unityweb",
 "wasmCodeUrl": "WebGL.wasm.code.unityweb",
 "wasmFrameworkUrl": "WebGL.wasm.framework.unityweb",
