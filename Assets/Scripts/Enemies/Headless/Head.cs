@@ -67,7 +67,6 @@ public class Head : MonoBehaviour
     }
     void Move()
     {
-        Debug.Log(target);
         if (target == null) return;
         if (Vector2.Distance(target.position, transform.position) <= .5f) {
             hitTarget = true;

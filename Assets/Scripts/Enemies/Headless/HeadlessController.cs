@@ -218,7 +218,7 @@ public class HeadlessController : MonoBehaviour
 
     private void PlaceSelfOnStartPosition(Transform platform)
     {
-        Debug.Log(platform + "platform");
+       
         var platformCollider = platform.GetComponent<BoxCollider2D>();
         var headlessCollider = GetComponent<BoxCollider2D>();
         platformLeftBound = platformCollider.bounds.min.x + headlessCollider.size.x / 2;
