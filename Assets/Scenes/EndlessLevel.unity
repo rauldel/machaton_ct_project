@@ -2683,7 +2683,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.076906, y: -1.096, z: -10}
+  m_LocalPosition: {x: 8.080273, y: -1.096, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -6736,7 +6736,23 @@ MonoBehaviour:
     pitch: 1
     randomVolume: 0
     randomPitch: 0
-  audioMixer: {fileID: 24100000, guid: 201e9b7c76eb899469ac589f0d1314d6, type: 2}
+  - name: HeadlessDeathSFX
+    audioClip: {fileID: 8300000, guid: 64a05dcc70c41a24f95116bc4d71c8c1, type: 3}
+    audioMixerGroup: {fileID: -3684594663522274713, guid: 201e9b7c76eb899469ac589f0d1314d6,
+      type: 2}
+    volume: 1
+    pitch: 1
+    randomVolume: 0
+    randomPitch: 0
+  - name: HeadlessBiteSFX
+    audioClip: {fileID: 8300000, guid: 07eab521b0e88fb4fa5dde2ef0bf6b14, type: 3}
+    audioMixerGroup: {fileID: -3684594663522274713, guid: 201e9b7c76eb899469ac589f0d1314d6,
+      type: 2}
+    volume: 1
+    pitch: 1
+    randomVolume: 0
+    randomPitch: 0
+  audioMixer: {fileID: 0}
 --- !u!1 &1162372209
 GameObject:
   m_ObjectHideFlags: 0
@@ -9920,7 +9936,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1790129464}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.076906, y: -1.096, z: -10}
+  m_LocalPosition: {x: 8.080273, y: -1.096, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 563489153}
@@ -11320,20 +11336,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inventoryButtonTemplate: {fileID: 746893025}
-  imagesList:
-  - {fileID: 21300000, guid: a1d41b9f6cac6e84bbf052a0be48c710, type: 3}
-  - {fileID: 21300000, guid: a04f14fc5ea548247abaf7ba9c325aac, type: 3}
-  - {fileID: 21300000, guid: 34e6a9796bb0d1948904056eaa3ef18a, type: 3}
-  - {fileID: 21300000, guid: 398272e43eb962640bf4bb06f2c7dc3c, type: 3}
-  - {fileID: 21300000, guid: a04b0a1ce478f5a41ada67a58345a990, type: 3}
-  - {fileID: 21300000, guid: f7b667ec29a061e489152f558ca4cfc2, type: 3}
-  productNameList:
-  - Potion
-  - Superpotion
-  - Hyperpotion
-  - Phaser charge
-  - Laser charge
-  - Cannon charge
+  imagesList: []
+  productNameList: []
 --- !u!1 &2141967770
 GameObject:
   m_ObjectHideFlags: 0
@@ -11449,6 +11453,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2655634419509327418, guid: c93900b6da3f4be40a1f47befc3a267c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3677747482029203831, guid: c93900b6da3f4be40a1f47befc3a267c,
         type: 3}
       propertyPath: m_RootOrder
