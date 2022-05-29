@@ -102,23 +102,30 @@ public class GameSceneController : MonoBehaviour
 
   public void OnRestartGame()
   {
-    AudioManager.instance.PlaySound("ClickSFX", false);
-    CountdownIsOn = true;
-    StartCoroutine(countdownUI.GetComponent<CountdownController>().StartCountdown());
-    playerController.OnRestartGame();
-    LevelGenerator levelGenerator = gameObject.GetComponent<LevelGenerator>();
-    levelGenerator.RestartGame();
-
-    AudioManager audioManager = AudioManager.instance;
-    audioManager.PlaySound("BackgroundMusic", true);
-
-    parallaxBackground.OnRestartGame();
-
-    gameUI.gameObject.SetActive(true);
-    gameOverUI.gameObject.SetActive(false);
-
+    
+    Scene scene = SceneManager.GetActiveScene(); 
     GameIsOver = false;
     Time.timeScale = 1;
+    SceneManager.LoadScene(scene.name);
+
+    
+    // AudioManager.instance.PlaySound("ClickSFX", false);
+    // CountdownIsOn = true;
+    // StartCoroutine(countdownUI.GetComponent<CountdownController>().StartCountdown());
+    // playerController.OnRestartGame();
+    // LevelGenerator levelGenerator = gameObject.GetComponent<LevelGenerator>();
+    // levelGenerator.RestartGame();
+    //
+    // AudioManager audioManager = AudioManager.instance;
+    // audioManager.PlaySound("BackgroundMusic", true);
+    //
+    // parallaxBackground.OnRestartGame();
+    //
+    // gameUI.gameObject.SetActive(true);
+    // gameOverUI.gameObject.SetActive(false);
+    //
+    // GameIsOver = false;
+    // Time.timeScale = 1;
   }
 
   public void OnPauseGame()

@@ -19,21 +19,16 @@ public class AudioManager : MonoBehaviour
   #region UnityMethods
   void Awake()
   {
-    if (instance != null)
+  
+    instance = this;
+    for (int i = 0; i < sounds.Length; i++)
     {
-      Debug.LogError("More than one instance for AudioManager");
+      GameObject newSound = new GameObject("Sound_" + i + "_" + sounds[i].name);
+      newSound.transform.SetParent(this.transform);
+      sounds[i].SetSource(newSound.AddComponent<AudioSource>());
     }
-    else
-    {
-      for (int i = 0; i < sounds.Length; i++)
-      {
-        GameObject newSound = new GameObject("Sound_" + i + "_" + sounds[i].name);
-        newSound.transform.SetParent(this.transform);
-        sounds[i].SetSource(newSound.AddComponent<AudioSource>());
-      }
 
-      instance = this;
-    }
+
   }
   #endregion
 
