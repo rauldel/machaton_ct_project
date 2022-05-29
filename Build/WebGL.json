@@ -1,7 +1,7 @@
 {
 "companyName": "DefaultCompany",
-"productName": "machathon_ct_project",
-"productVersion": "0.0.74",
+"productName": "Cloud Runner",
+"productVersion": "0.0.75",
 "dataUrl": "WebGL.data.unityweb",
 "wasmCodeUrl": "WebGL.wasm.code.unityweb",
 "wasmFrameworkUrl": "WebGL.wasm.framework.unityweb",
