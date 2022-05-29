@@ -19,7 +19,6 @@ public class AudioManager : MonoBehaviour
   #region UnityMethods
   void Awake()
   {
-  
     instance = this;
     for (int i = 0; i < sounds.Length; i++)
     {
@@ -27,8 +26,6 @@ public class AudioManager : MonoBehaviour
       newSound.transform.SetParent(this.transform);
       sounds[i].SetSource(newSound.AddComponent<AudioSource>());
     }
-
-
   }
   #endregion
 
