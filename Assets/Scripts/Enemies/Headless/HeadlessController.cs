@@ -11,8 +11,7 @@ public class HeadlessController : MonoBehaviour
     [SerializeField] private int healthPoints = 10;
     [SerializeField] private int lootCoins = 10;
     [SerializeField] private Transform platform;
-    [SerializeField] private Transform player;
-    [SerializeField] private float attackDistance = 1;
+    [SerializeField] private float attackDistance = 6;
     [SerializeField] private Head headPrefab;
     [SerializeField] private float zombieSpeed = 1;
     [SerializeField] public float minAudioDistance = 1f;
@@ -31,6 +30,7 @@ public class HeadlessController : MonoBehaviour
     private MOVE_DIRECTION moveDirection;
     private float platformLeftBound;
     private float platformRightBound;
+    private Transform player;
     private bool playerIsInAttackRange;
 
     private bool IsWalking
@@ -70,6 +70,7 @@ public class HeadlessController : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         lastChangedDirection = Time.time;
+        player = GameObject.Find("Player")?.transform;
     }
 
     private void Start()
@@ -83,7 +84,6 @@ public class HeadlessController : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log(head == null);
         Attack();
         Move();
         HandleHeadlessSound(Vector2.Distance(transform.position, player.position));
@@ -204,6 +204,7 @@ public class HeadlessController : MonoBehaviour
         Patrol();
     }
 
+    // this method is used to prevent headless from constant changing direction if player is on top of him, which causes awkward visual effect
     private bool CheckIfCanChangeDirectionToPlayer()
     {
         if (lastChangedDirection + .3f < Time.time)
@@ -217,6 +218,7 @@ public class HeadlessController : MonoBehaviour
 
     private void PlaceSelfOnStartPosition(Transform platform)
     {
+        Debug.Log(platform + "platform");
         var platformCollider = platform.GetComponent<BoxCollider2D>();
         var headlessCollider = GetComponent<BoxCollider2D>();
         platformLeftBound = platformCollider.bounds.min.x + headlessCollider.size.x / 2;

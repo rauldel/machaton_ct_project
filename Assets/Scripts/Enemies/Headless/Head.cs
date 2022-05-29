@@ -37,6 +37,7 @@ public class Head : MonoBehaviour
         if (timeStart + maxFlightDuration <= Time.time)
         {
             hitTarget = true;
+            
        
         }
         transform.Rotate(0, 0, 500 * Time.deltaTime);
@@ -70,6 +71,7 @@ public class Head : MonoBehaviour
         if (target == null) return;
         if (Vector2.Distance(target.position, transform.position) <= .5f) {
             hitTarget = true;
+            target.GetComponent<PlayerController>()?.OnDecrementLife();
             PlayEatSound();
         }
         transform.position = hitTarget ? Vector2.MoveTowards(transform.position, master.position + new Vector3(0, .1f, 0), Time.deltaTime *speed) : Vector2.MoveTowards(transform.position, target.position, Time.deltaTime * speed);
