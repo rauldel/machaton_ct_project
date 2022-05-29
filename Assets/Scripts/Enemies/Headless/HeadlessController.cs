@@ -142,6 +142,7 @@ public class HeadlessController : MonoBehaviour
         if (head) return;
 
         head = Instantiate(headPrefab);
+        head.transform.SetParent(this.transform);
         head.transform.position = transform.position + new Vector3(-.5f, .5f, 0);
         head.ThrowAtTarget(player, transform);
     }
