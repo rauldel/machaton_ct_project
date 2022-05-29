@@ -6752,7 +6752,7 @@ MonoBehaviour:
     pitch: 1
     randomVolume: 0
     randomPitch: 0
-  audioMixer: {fileID: 0}
+  audioMixer: {fileID: 24100000, guid: 201e9b7c76eb899469ac589f0d1314d6, type: 2}
 --- !u!1 &1162372209
 GameObject:
   m_ObjectHideFlags: 0
