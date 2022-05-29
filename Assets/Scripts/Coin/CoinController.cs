@@ -55,7 +55,7 @@ public class CoinController : MonoBehaviour
     }
     else if (value >= 100)
     {
-      gameObject.GetComponent<SpriteRenderer>().color = Color.yellow;
+      gameObject.GetComponent<SpriteRenderer>().color = new Color(255f/255f, 118f/255f, 28f/255f);
     }
   }
 
