@@ -9,6 +9,7 @@ public class BombController : MonoBehaviour
   [Range(0, 5)]
   public float particleSystemDelay = 1f;
   public ParticleSystem smoke;
+  [SerializeField] private int damage = 10;
 
   // Start is called before the first frame update
   void Start()
@@ -25,7 +26,8 @@ public class BombController : MonoBehaviour
 
   private void OnCollisionEnter2D(Collision2D collision)
   {
-
+    var enemy = collision.collider?.GetComponent<Enemy>();
+    enemy?.TakeDamage(damage);
   }
 
   private void enableParticleSystem()
