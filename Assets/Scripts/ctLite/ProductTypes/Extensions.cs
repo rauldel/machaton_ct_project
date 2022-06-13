@@ -11,7 +11,7 @@ namespace ctLite.ProductTypes
         /// Creates an instance of the ProductTypeManager.
         /// </summary>
         /// <returns>ProductTypeManager</returns>
-        public static ProductTypeManager ProductTypes(this IClient client)
+        public static ProductTypeManager ProductTypes(this UnityClient client)
         {
             return new ProductTypeManager(client);
         }
