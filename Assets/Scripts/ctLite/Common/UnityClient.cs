@@ -1,15 +1,22 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Net.Http;
+using System.Net;
 using System.Net.Http.Headers;
+using System.Text;
+
 using UnityEngine;
 using UnityEngine.Networking;
 
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 namespace ctLite.Common
 {
-  public class UnityClient : UnityIClient
+  public class UnityClient
   {
     #region Properties
 
@@ -21,23 +28,15 @@ namespace ctLite.Common
     /// <summary>
     /// Token
     /// </summary>
-    public Token Token { get; private set; }
+    public static Token Token { get; private set; }
 
     /// <summary>
     /// The identifiying user agent that is included in all API requests.
     /// </summary>
     public string UserAgent { get; private set; }
 
-    /// <summary>
-    /// The HttpClient to utilize in all API requests.
-    /// </summary>
-    private RestClient RestClientInstance { get; set; }
+    public MonoBehaviour monoBehaviour { get; private set; }
 
-    public HttpClient HttpClientInstance
-    {
-      get { return RestClientInstance.Client; }
-      set { RestClientInstance = new RestClient(value); }
-    }
     #endregion
 
     #region Constructors
@@ -45,14 +44,14 @@ namespace ctLite.Common
     /// <summary>
     /// Constructor
     /// </summary>
-    public UnityClient(Configuration configuration, HttpClient httpClientInstance = null)
+    public UnityClient(Configuration configuration, MonoBehaviour mono)
     {
       this.Configuration = configuration;
-      this.HttpClientInstance = httpClientInstance;
       Assembly assembly = Assembly.GetExecutingAssembly();
       string assemblyVersion = assembly.GetName().Version.ToString();
       string dotNetVersion = Environment.Version.ToString();
       this.UserAgent = string.Format("commercetools-dotnet-sdk/{0} .NET/{1}", assemblyVersion, dotNetVersion);
+      monoBehaviour = mono;
     }
 
     #endregion
@@ -65,17 +64,27 @@ namespace ctLite.Common
     /// <param name="endpoint">API endpoint, excluding the project key</param>
     /// <param name="values">Values</param>
     /// <returns>JSON object</returns>
-    public async Task<Response<T>> GetAsync<T>(string endpoint, NameValueCollection values = null)
+    public IEnumerator GetAsync<T>(string endpoint, Action<Response<T>> onSuccess, Action<Response<T>> onError, NameValueCollection values = null)
     {
       Response<T> response = new Response<T>();
+      Debug.Log("GETASYNC");
+      yield return monoBehaviour.StartCoroutine(
+        EnsureToken(
+          (Response<Token> token) =>
+          {
+            Debug.Log("TOKEN ENSURED: " + token.ToJsonString());
+            UnityClient.Token = token.Result;
+          },
+          (Response<Token> error) =>
+          {
+            Debug.LogError("TOKEN ERROR: " + error.ToJsonString());
+          }));
 
-      await EnsureToken();
-
-      if (this.Token == null)
+      if (UnityClient.Token == null)
       {
         response.Success = false;
         response.Errors.Add(new ErrorMessage("no_token", "Could not retrieve token"));
-        return response;
+        onError(response);
       }
 
       if (!string.IsNullOrWhiteSpace(endpoint) && !endpoint.StartsWith("/"))
@@ -86,28 +95,40 @@ namespace ctLite.Common
       string url = string.Concat(this.Configuration.ApiUrl, "/", this.Configuration.ProjectKey, endpoint, values.ToQueryString());
 
       HttpRequestMessage httpRequestMessage = CreateRequestMessage(url, HttpMethod.Get);
-      httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue(this.Token.TokenType, this.Token.AccessToken);
-      response = await SendAsync<T>(httpRequestMessage);
-      return response;
+      httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue(UnityClient.Token.TokenType, UnityClient.Token.AccessToken);
+      Debug.Log("GET REQUEST: " + httpRequestMessage.ToJsonString());
+      yield return monoBehaviour.StartCoroutine(SendAsync<T>(httpRequestMessage, (Response<T> res) =>
+      {
+        response = res;
+        onSuccess(res);
+      }, (Response<T> error) =>
+      {
+        Debug.LogError("GETASYNC ERROR: " + error.ToJsonString());
+        onError(error);
+      }));
     }
 
-    /// <summary>
-    /// Executes a POST request.
-    /// </summary>
-    /// <param name="endpoint"></param>
-    /// <param name="payload">Body of the request</param>
-    /// <returns>JSON object</returns>
-    public async Task<Response<T>> PostAsync<T>(string endpoint, string payload)
+    public IEnumerator PostAsync<T>(string endpoint, string payload, Action<Response<T>> onSuccess, Action<Response<T>> onError)
     {
       Response<T> response = new Response<T>();
 
-      await EnsureToken();
+      yield return monoBehaviour.StartCoroutine(
+        EnsureToken(
+          (Response<Token> token) =>
+          {
+            Debug.Log("TOKEN ENSURED: " + token.ToJsonString());
+            UnityClient.Token = token.Result;
+          },
+          (Response<Token> error) =>
+          {
+            Debug.LogError("TOKEN ERROR: " + error.ToJsonString());
+          }));
 
-      if (this.Token == null)
+      if (UnityClient.Token == null)
       {
         response.Success = false;
         response.Errors.Add(new ErrorMessage("no_token", "Could not retrieve token"));
-        return response;
+        onError(response);
       }
 
       if (!string.IsNullOrWhiteSpace(endpoint) && !endpoint.StartsWith("/"))
@@ -118,28 +139,41 @@ namespace ctLite.Common
       string url = string.Concat(this.Configuration.ApiUrl, "/", this.Configuration.ProjectKey, endpoint);
 
       HttpRequestMessage httpRequestMessage = CreateRequestMessage(url, HttpMethod.Post, payload);
-      httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue(this.Token.TokenType, this.Token.AccessToken);
-      response = await SendAsync<T>(httpRequestMessage);
-      return response;
+      httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue(UnityClient.Token.TokenType, UnityClient.Token.AccessToken);
+      Debug.Log("POST REQUEST: " + httpRequestMessage.ToJsonString());
+      yield return monoBehaviour.StartCoroutine(SendAsync<T>(httpRequestMessage, (Response<T> res) =>
+      {
+        response = res;
+        onSuccess(res);
+      }, (Response<T> error) =>
+      {
+        Debug.LogError("POSTASYNC ERROR: " + error.ToJsonString());
+        onError(error);
+      }));
     }
 
-    /// <summary>
-    /// Executes a DELETE request.
-    /// </summary>
-    /// <param name="endpoint">API endpoint, excluding the project key</param>
-    /// <param name="values">Values</param>
-    /// <returns>JSON object</returns>
-    public async Task<Response<T>> DeleteAsync<T>(string endpoint, NameValueCollection values = null)
+    public IEnumerator DeleteAsync<T>(string endpoint, Action<Response<T>> onSuccess, Action<Response<T>> onError, NameValueCollection values = null)
     {
       Response<T> response = new Response<T>();
 
-      await EnsureToken();
+      Debug.Log("DELETEASYNC");
+      yield return monoBehaviour.StartCoroutine(
+        EnsureToken(
+          (Response<Token> token) =>
+          {
+            Debug.Log("TOKEN ENSURED: " + token.ToJsonString());
+            UnityClient.Token = token.Result;
+          },
+          (Response<Token> error) =>
+          {
+            Debug.LogError("TOKEN ERROR: " + error.ToJsonString());
+          }));
 
-      if (this.Token == null)
+      if (UnityClient.Token == null)
       {
         response.Success = false;
         response.Errors.Add(new ErrorMessage("no_token", "Could not retrieve token"));
-        return response;
+        onError(response);
       }
 
       if (!string.IsNullOrWhiteSpace(endpoint) && !endpoint.StartsWith("/"))
@@ -150,9 +184,17 @@ namespace ctLite.Common
       string url = string.Concat(this.Configuration.ApiUrl, "/", this.Configuration.ProjectKey, endpoint, values.ToQueryString());
 
       HttpRequestMessage httpRequestMessage = CreateRequestMessage(url, HttpMethod.Delete);
-      httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue(this.Token.TokenType, this.Token.AccessToken);
-      response = await SendAsync<T>(httpRequestMessage);
-      return response;
+      httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue(UnityClient.Token.TokenType, UnityClient.Token.AccessToken);
+      Debug.Log("DELETE REQUEST: " + httpRequestMessage.ToJsonString());
+      yield return monoBehaviour.StartCoroutine(SendAsync<T>(httpRequestMessage, (Response<T> res) =>
+      {
+        response = res;
+        onSuccess(res);
+      }, (Response<T> error) =>
+      {
+        Debug.LogError("DELETEASYNC ERROR: " + error.ToJsonString());
+        onError(error);
+      }));
     }
 
     private HttpRequestMessage CreateRequestMessage(string url, HttpMethod method, string payload = null)
@@ -178,56 +220,77 @@ namespace ctLite.Common
     /// <param name="endpoint">API endpoint, excluding the project key</param>
     /// <param name="values">Values</param>
     /// <returns>JSON object</returns>
-    private async Task<Response<T>> SendAsync<T>(HttpRequestMessage httpRequestMessage)
+    private IEnumerator SendAsync<T>(HttpRequestMessage httpRequestMessage, Action<Response<T>> onSuccess, Action<Response<T>> onError)
     {
-      Response<T> response = new Response<T>();
+      UnityWebRequest www = new UnityWebRequest(httpRequestMessage.RequestUri.AbsoluteUri);
 
-      for (int internalServerErrorRetries = -1; internalServerErrorRetries < this.Configuration.InternalServerErrorRetries; internalServerErrorRetries++)
+      if (httpRequestMessage.Method == HttpMethod.Get)
       {
-        HttpResponseMessage httpResponseMessage = await RestClientInstance.SendAsync(httpRequestMessage);
-
-        response = await GetResponse<T>(httpResponseMessage);
-
-        if (response.StatusCode != 503)
-        {
-          return response;
-        }
-        else if (this.Configuration.InternalServerErrorRetryInterval > 0)
-        {
-          await Task.Delay(this.Configuration.InternalServerErrorRetryInterval);
-        }
+        www = UnityWebRequest.Get(httpRequestMessage.RequestUri.AbsoluteUri);
+        www.method = UnityWebRequest.kHttpVerbGET;
+        www.SetRequestHeader("Authorization", UnityClient.Token.TokenType + " " + UnityClient.Token.AccessToken);
+        www.SetRequestHeader("Accept", "application/json");
       }
-      return response;
+      else if (httpRequestMessage.Method == HttpMethod.Post)
+      {
+        WWWForm form = new WWWForm();
+        form.AddField("grant_type", "client_credentials");
+        form.AddField("scope", string.Concat(this.Configuration.Scope.ToEnumMemberString(), ":", this.Configuration.ProjectKey));
+        www = UnityWebRequest.Post(httpRequestMessage.RequestUri.AbsoluteUri, form);
+        www.SetRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        www.SetRequestHeader("Authorization", "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Concat(this.Configuration.ClientID, ":", this.Configuration.ClientSecret))));
+        www.method = UnityWebRequest.kHttpVerbPOST;
+      }
+      else if (httpRequestMessage.Method == HttpMethod.Put)
+      {
+        www.method = UnityWebRequest.kHttpVerbPUT;
+      }
+      else if (httpRequestMessage.Method == HttpMethod.Delete)
+      {
+        www.method = UnityWebRequest.kHttpVerbDELETE;
+      }
+
+      yield return www.SendWebRequest();
+      Debug.Log("SendAsync result: " + www.ToJsonString());
+
+      Response<T> response = GetResponse<T>(www);
+
+      if (response.Success)
+      {
+        Debug.Log("ONSUCESS SendAsync: " + response.ToJsonString());
+        onSuccess(response);
+        yield return onSuccess;
+      }
+      else
+      {
+        Debug.Log("OnError SendAsync: " + response.ToJsonString());
+        onError(response);
+        yield return onError;
+      }
     }
 
     #endregion
 
     #region Token Methods
-
-    /// <summary>
-    /// Ensures that the token for this instance has been retrieved and that it has not expired.
-    /// </summary>
-    private async Task EnsureToken()
+    private IEnumerator EnsureToken(Action<Response<Token>> onSuccess, Action<Response<Token>> onError)
     {
-      if (this.Token == null || this.Token.IsExpired())
+      if (UnityClient.Token == null || UnityClient.Token.IsExpired())
       {
-        this.Token = null;
-        Response<Token> tokenResponse = await GetTokenAsync();
-
-        if (tokenResponse.Success)
+        UnityClient.Token = null;
+        yield return monoBehaviour.StartCoroutine(GetTokenAsync((Response<Token> res) =>
         {
-          this.Token = tokenResponse.Result;
-        }
-      }
-      /*
-       * The refresh token flow is currently only available for the password flow, which is currently not supported by the SDK.
-       * More info: https://dev.commercetools.com/http-api-authorization.html#password-flow
-       *
-          else if (this.Token.IsExpired())
+          if (res != null && res.Success)
           {
-              this.Token = RefreshTokenAsync(this.Token.RefreshToken);
+            Debug.Log("Token safe: " + res.ToJsonString());
+            UnityClient.Token = res.Result;
+            onSuccess(res);
           }
-       */
+        }, (Response<Token> error) =>
+        {
+          Debug.LogError("Error EnsureToken: " + error.ToJsonString());
+          onError(error);
+        }));
+      }
     }
 
     /// <summary>
@@ -235,7 +298,7 @@ namespace ctLite.Common
     /// </summary>
     /// <returns>Token</returns>
     /// <see href="http://dev.commercetools.com/http-api-authorization.html#authorization-flows"/>
-    public async Task<Response<Token>> GetTokenAsync()
+    public IEnumerator GetTokenAsync(Action<Response<Token>> onSuccess, Action<Response<Token>> onError)
     {
       var pairs = new List<KeyValuePair<string, string>>
             {
@@ -248,36 +311,54 @@ namespace ctLite.Common
       httpRequestMessage.Content = new FormUrlEncodedContent(pairs);
       httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Basic", credentials);
 
-      Response<Token> response = await SendAsync<Token>(httpRequestMessage);
-
-      return response;
+      Response<Token> response = null;
+      yield return monoBehaviour.StartCoroutine(SendAsync<Token>(httpRequestMessage, (Response<Token> res) =>
+      {
+        response = res;
+        Debug.Log("Success GetTokenAsync: " + res.ToJsonString());
+        onSuccess(res);
+      }, (Response<Token> error) =>
+      {
+        Debug.LogError("Error GetTokenAsync: " + error.ToJsonString());
+        onError(error);
+      }));
     }
 
-    /// <summary>
-    /// Refreshes a token from the authorization API using the refresh token flow.
-    /// </summary>
-    /// <param name="refreshToken">Refresh token value from the current token</param>
-    /// <returns>Token</returns>
-    /// <see href="http://dev.commercetools.com/http-api-authorization.html#authorization-flows"/>
-    public async Task<Response<Token>> RefreshTokenAsync(string refreshToken)
+    #endregion
+
+    #region Utility
+    private Response<T> GetResponse<T>(UnityWebRequest www)
     {
-      var pairs = new List<KeyValuePair<string, string>>
-            {
-                new KeyValuePair<string, string>("grant_type", "refresh_token"),
-                new KeyValuePair<string, string>("refresh_token", refreshToken)
-            };
+      Debug.Log("GETRESPONSE: " + www.ToJsonString());
+      Response<T> response = new Response<T>();
+      Type resultType = typeof(T);
 
-      string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Concat(this.Configuration.ClientID, ":", this.Configuration.ClientSecret)));
+      if (www.isNetworkError || www.responseCode < 200 || www.responseCode >= 300)
+      {
+        response.Success = false;
+        response.Errors = new List<ErrorMessage>();
+        response.Errors.Add(new ErrorMessage(www.responseCode.ToString(), www.error));
+      }
+      else
+      {
+        response.Success = true;
+        if (resultType == typeof(JObject) || resultType == typeof(JArray) || resultType.IsArray || (resultType.IsGenericType && resultType.Name.Equals(typeof(List<>).Name)))
+        {
+          response.Result = JsonConvert.DeserializeObject<T>(www.downloadHandler.text);
+        }
+        else
+        {
+          JsonSerializerSettings serializerSettings = new JsonSerializerSettings();
+          serializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
+          serializerSettings.NullValueHandling = NullValueHandling.Ignore;
 
-
-      HttpRequestMessage httpRequestMessage = CreateRequestMessage(this.Configuration.OAuthUrl, HttpMethod.Post);
-      httpRequestMessage.Content = new FormUrlEncodedContent(pairs);
-      httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Basic", credentials);
-      Response<Token> response = await SendAsync<Token>(httpRequestMessage);
+          T t = JsonConvert.DeserializeObject<T>(www.downloadHandler.text, serializerSettings);
+          response.Result = t;
+        }
+      }
 
       return response;
     }
-
     #endregion
   }
 }
