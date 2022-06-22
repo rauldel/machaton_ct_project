@@ -11,7 +11,7 @@ namespace ctLite.ProductProjections
         /// Creates an instance of the ProductProjectionManager.
         /// </summary>
         /// <returns>ProductProjectionManager</returns>
-        public static ProductProjectionManager ProductProjections(this IClient client)
+        public static ProductProjectionManager ProductProjections(this UnityClient client)
         {
             return new ProductProjectionManager(client);
         }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-using myCT.ProductProjections;
+using ctLite.ProductProjections;
 
 [System.Serializable]
 public class ProductListController : MonoBehaviour

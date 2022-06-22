@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Threading.Tasks;
 
 using ctLite.Common;
 
@@ -24,7 +24,7 @@ namespace ctLite.Orders
 
         #region Member Variables
 
-        private readonly IClient _client;
+        private readonly UnityClient _client;
 
         #endregion
 
@@ -34,7 +34,7 @@ namespace ctLite.Orders
         /// Constructor
         /// </summary>
         /// <param name="client">Client</param>
-        public OrderManager(IClient client)
+        public OrderManager(UnityClient client)
         {
             _client = client;
         }
@@ -49,7 +49,7 @@ namespace ctLite.Orders
         /// <param name="orderId">Order ID</param>
         /// <returns>Order</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-orders.html#get-order-by-id"/>
-        public Task<Response<Order>> GetOrderByIdAsync(string orderId)
+        public IEnumerator GetOrderByIdAsync(string orderId, Action<Response<Order>> onSuccess, Action<Response<Order>> onError)
         {
             if (string.IsNullOrWhiteSpace(orderId))
             {
@@ -57,7 +57,7 @@ namespace ctLite.Orders
             }
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", orderId);
-            return _client.GetAsync<Order>(endpoint);
+            return _client.GetAsync<Order>(endpoint, onSuccess, onError);
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace ctLite.Orders
         /// <param name="offset">Offset</param>
         /// <returns>OrderQueryResult</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-orders.html#query-orders"/>
-        public Task<Response<OrderQueryResult>> QueryOrdersAsync(string where = null, string sort = null, int limit = -1, int offset = -1)
+        public IEnumerator QueryOrdersAsync(Action<Response<OrderQueryResult>> onSuccess, Action<Response<OrderQueryResult>> onError, string where = null, string sort = null, int limit = -1, int offset = -1)
         {
             NameValueCollection values = new NameValueCollection();
 
@@ -93,7 +93,7 @@ namespace ctLite.Orders
                 values.Add("offset", offset.ToString());
             }
 
-            return _client.GetAsync<OrderQueryResult>(ENDPOINT_PREFIX, values);
+            return _client.GetAsync<OrderQueryResult>(ENDPOINT_PREFIX, onSuccess, onError, values);
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace ctLite.Orders
         /// <param name="draft">OrderFromCartDraft</param>
         /// <returns>Order</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-orders.html#create-order-from-cart"/>
-        public Task<Response<Order>> CreateOrderFromCartAsync(OrderFromCartDraft draft)
+        public IEnumerator CreateOrderFromCartAsync(OrderFromCartDraft draft, Action<Response<Order>> onSuccess, Action<Response<Order>> onError)
         {
             if (draft == null)
             {
@@ -110,7 +110,7 @@ namespace ctLite.Orders
             }
 
             string payload = JsonConvert.SerializeObject(draft, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            return _client.PostAsync<Order>(ENDPOINT_PREFIX, payload);
+            return _client.PostAsync<Order>(ENDPOINT_PREFIX, payload, onSuccess, onError);
         }
 
         /// <summary>
@@ -120,9 +120,9 @@ namespace ctLite.Orders
         /// <param name="action">The update action to be performed on the order.</param>
         /// <returns>Order</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-orders.html#update-order"/>
-        public Task<Response<Order>> UpdateOrderAsync(Order order, UpdateAction action)
+        public IEnumerator UpdateOrderAsync(Order order, UpdateAction action, Action<Response<Order>> onSuccess, Action<Response<Order>> onError)
         {
-            return UpdateOrderAsync(order.Id, order.Version, new List<UpdateAction> { action });
+            return UpdateOrderAsync(order.Id, order.Version, new List<UpdateAction> { action }, onSuccess, onError);
         }
 
         /// <summary>
@@ -132,9 +132,9 @@ namespace ctLite.Orders
         /// <param name="actions">The list of update actions to be performed on the order.</param>
         /// <returns>Order</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-orders.html#update-order"/>
-        public Task<Response<Order>> UpdateOrderAsync(Order order, List<UpdateAction> actions)
+        public IEnumerator UpdateOrderAsync(Order order, List<UpdateAction> actions, Action<Response<Order>> onSuccess, Action<Response<Order>> onError)
         {
-            return UpdateOrderAsync(order.Id, order.Version, actions);
+            return UpdateOrderAsync(order.Id, order.Version, actions, onSuccess, onError);
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace ctLite.Orders
         /// <param name="actions">The list of update actions to be performed on the order.</param>
         /// <returns>Order</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-orders.html#update-order"/>
-        public Task<Response<Order>> UpdateOrderAsync(string orderId, int version, List<UpdateAction> actions)
+        public IEnumerator UpdateOrderAsync(string orderId, int version, List<UpdateAction> actions, Action<Response<Order>> onSuccess, Action<Response<Order>> onError)
         {
             if (string.IsNullOrWhiteSpace(orderId))
             {
@@ -169,7 +169,7 @@ namespace ctLite.Orders
             });
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", orderId);
-            return _client.PostAsync<Order>(endpoint, data.ToString());
+            return _client.PostAsync<Order>(endpoint, data.ToString(), onSuccess, onError);
         }
 
         /// <summary>
@@ -177,9 +177,9 @@ namespace ctLite.Orders
         /// </summary>
         /// <param name="order">Order</param>
         /// <see href="http://dev.commercetools.com/http-api-projects-orders.html#delete-order"/>
-        public Task<Response<JObject>> DeleteOrderAsync(Order order)
+        public IEnumerator DeleteOrderAsync(Order order, Action<Response<JObject>> onSuccess, Action<Response<JObject>> onError)
         {
-            return DeleteOrderAsync(order.Id, order.Version);
+            return DeleteOrderAsync(order.Id, order.Version, onSuccess, onError);
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace ctLite.Orders
         /// <param name="orderId">Order ID</param>
         /// <param name="version">Order version</param>
         /// <see href="http://dev.commercetools.com/http-api-projects-orders.html#delete-order"/>
-        public Task<Response<JObject>> DeleteOrderAsync(string orderId, int version)
+        public IEnumerator DeleteOrderAsync(string orderId, int version, Action<Response<JObject>> onSuccess, Action<Response<JObject>> onError)
         {
             if (string.IsNullOrWhiteSpace(orderId))
             {
@@ -206,7 +206,7 @@ namespace ctLite.Orders
             };
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", orderId);
-            return _client.DeleteAsync<JObject>(endpoint, values);
+            return _client.DeleteAsync<JObject>(endpoint, onSuccess, onError, values);
         }
 
         #endregion

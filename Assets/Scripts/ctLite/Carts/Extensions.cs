@@ -11,7 +11,7 @@ namespace ctLite.Carts
         /// Creates an instance of the CartManager.
         /// </summary>
         /// <returns>CartManager</returns>
-        public static CartManager Carts(this IClient client)
+        public static CartManager Carts(this UnityClient client)
         {
             return new CartManager(client);
         }

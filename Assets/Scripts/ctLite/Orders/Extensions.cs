@@ -11,7 +11,7 @@ namespace ctLite.Orders
         /// Creates an instance of the OrderManager.
         /// </summary>
         /// <returns>OrderManager</returns>
-        public static OrderManager Orders(this IClient client)
+        public static OrderManager Orders(this UnityClient client)
         {
             return new OrderManager(client);
         }

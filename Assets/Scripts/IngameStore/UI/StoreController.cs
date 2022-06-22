@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-using myCT.Carts;
+/* using myCT.Carts;
 using myCT.Common;
 using myCT.Orders;
 using myCT.ProductProjections;
-using myCT.ProductTypes;
+using myCT.ProductTypes; */
+using ctLite.Carts;
+using ctLite.Common;
+using ctLite.Orders;
+using ctLite.ProductProjections;
+using ctLite.ProductTypes;
 
 public class StoreController : MonoBehaviour
 {
@@ -44,18 +49,18 @@ public class StoreController : MonoBehaviour
   {
     isOrdering = false;
     LoadPlayerCoins();
-    LoadConsumableProducts();
-    LoadWeaponProducts();
-    LoadAmmoProducts();
+    StartCoroutine(LoadConsumableProducts());
+    StartCoroutine(LoadWeaponProducts());
+    StartCoroutine(LoadAmmoProducts());
   }
 
   void OnEnable()
   {
     isOrdering = false;
     LoadPlayerCoins();
-    LoadConsumableProducts();
-    LoadWeaponProducts();
-    LoadAmmoProducts();
+    StartCoroutine(LoadConsumableProducts());
+    StartCoroutine(LoadWeaponProducts());
+    StartCoroutine(LoadAmmoProducts());
   }
 
   // Update is called once per frame
@@ -71,24 +76,51 @@ public class StoreController : MonoBehaviour
     SaveData data = SaveGameController.GetSavedData();
     playerCoinsText.text = data.playerCoins.ToString();
   }
-  private async void LoadConsumableProducts()
+  private IEnumerator LoadConsumableProducts()
   {
-    Client client = CommercetoolsManager.GetClient(ProjectScope.ViewProducts);
+    UnityClient client = CommercetoolsManager.GetClient(ProjectScope.ViewProducts, this);
     consumableProductsList = new List<ProductProjection>();
     ProductProjectionManager ppManager = new ProductProjectionManager(client);
     ProductTypeManager productTypeManager = new ProductTypeManager(client);
     string productTypeName = "Consumable";
 
     string ptWhereName = "name=\"" + productTypeName + "\"";
-    Response<ProductTypeQueryResult> productTypeResponse = await productTypeManager.QueryProductTypesAsync(ptWhereName);
-    Response<ProductProjectionQueryResult> productProjectionsResponse;
+    Response<ProductTypeQueryResult> productTypeResponse = null;
+
+    yield return StartCoroutine(
+      productTypeManager.QueryProductTypesAsync(
+        (Response<ProductTypeQueryResult> onSuccess) =>
+        {
+          productTypeResponse = onSuccess;
+        },
+        (Response<ProductTypeQueryResult> onError) =>
+        {
+          Debug.LogError("Error fetching product types: " + onError.ToJsonString());
+        },
+        ptWhereName
+      )
+    );
+
+    Response<ProductProjectionQueryResult> productProjectionsResponse = null;
 
     if (productTypeResponse.Success && productTypeResponse.Result.Results.Count > 0)
     {
       ProductType myProductType = productTypeResponse.Result.Results[0];
 
       string productsWhere = "productType(id=\"" + myProductType.Id + "\")";
-      productProjectionsResponse = await ppManager.QueryProductProjectionsAsync(productsWhere);
+      yield return StartCoroutine(
+        ppManager.QueryProductProjectionsAsync(
+          (Response<ProductProjectionQueryResult> onSuccess) =>
+          {
+            productProjectionsResponse = onSuccess;
+          },
+          (Response<ProductProjectionQueryResult> onError) =>
+          {
+            Debug.LogError("Error fetching product projections: " + onError.ToJsonString());
+          },
+          productsWhere
+        )
+      );
 
       if (productProjectionsResponse.Success)
       {
@@ -98,24 +130,51 @@ public class StoreController : MonoBehaviour
     }
   }
 
-  private async void LoadWeaponProducts()
+  private IEnumerator LoadWeaponProducts()
   {
-    Client client = CommercetoolsManager.GetClient(ProjectScope.ViewProducts);
+    UnityClient client = CommercetoolsManager.GetClient(ProjectScope.ViewProducts, this);
     consumableProductsList = new List<ProductProjection>();
     ProductProjectionManager ppManager = new ProductProjectionManager(client);
     ProductTypeManager productTypeManager = new ProductTypeManager(client);
     string productTypeName = "Weapon";
 
     string ptWhereName = "name=\"" + productTypeName + "\"";
-    Response<ProductTypeQueryResult> productTypeResponse = await productTypeManager.QueryProductTypesAsync(ptWhereName);
-    Response<ProductProjectionQueryResult> productProjectionsResponse;
+    Response<ProductTypeQueryResult> productTypeResponse = null;
+
+    yield return StartCoroutine(
+      productTypeManager.QueryProductTypesAsync(
+        (Response<ProductTypeQueryResult> onSuccess) =>
+        {
+          productTypeResponse = onSuccess;
+        },
+        (Response<ProductTypeQueryResult> onError) =>
+        {
+          Debug.LogError("Error fetching product types: " + onError.ToJsonString());
+        },
+        ptWhereName
+      )
+    );
+
+    Response<ProductProjectionQueryResult> productProjectionsResponse = null;
 
     if (productTypeResponse.Success && productTypeResponse.Result.Results.Count > 0)
     {
       ProductType myProductType = productTypeResponse.Result.Results[0];
 
       string productsWhere = "productType(id=\"" + myProductType.Id + "\")";
-      productProjectionsResponse = await ppManager.QueryProductProjectionsAsync(productsWhere);
+      yield return StartCoroutine(
+        ppManager.QueryProductProjectionsAsync(
+          (Response<ProductProjectionQueryResult> onSuccess) =>
+          {
+            productProjectionsResponse = onSuccess;
+          },
+          (Response<ProductProjectionQueryResult> onError) =>
+          {
+            Debug.LogError("Error fetching product projections: " + onError.ToJsonString());
+          },
+          productsWhere
+        )
+      );
 
       if (productProjectionsResponse.Success)
       {
@@ -125,28 +184,55 @@ public class StoreController : MonoBehaviour
     }
   }
 
-  private async void LoadAmmoProducts()
+  private IEnumerator LoadAmmoProducts()
   {
-    Client client = CommercetoolsManager.GetClient(ProjectScope.ViewProducts);
+    UnityClient client = CommercetoolsManager.GetClient(ProjectScope.ViewProducts, this);
     consumableProductsList = new List<ProductProjection>();
     ProductProjectionManager ppManager = new ProductProjectionManager(client);
     ProductTypeManager productTypeManager = new ProductTypeManager(client);
     string productTypeName = "Ammo";
 
     string ptWhereName = "name=\"" + productTypeName + "\"";
-    Response<ProductTypeQueryResult> productTypeResponse = await productTypeManager.QueryProductTypesAsync(ptWhereName);
-    Response<ProductProjectionQueryResult> productsProjectionsResponse;
+    Response<ProductTypeQueryResult> productTypeResponse = null;
+
+    yield return StartCoroutine(
+      productTypeManager.QueryProductTypesAsync(
+        (Response<ProductTypeQueryResult> onSuccess) =>
+        {
+          productTypeResponse = onSuccess;
+        },
+        (Response<ProductTypeQueryResult> onError) =>
+        {
+          Debug.LogError("Error fetching product types: " + onError.ToJsonString());
+        },
+        ptWhereName
+      )
+    );
+
+    Response<ProductProjectionQueryResult> productProjectionsResponse = null;
 
     if (productTypeResponse.Success && productTypeResponse.Result.Results.Count > 0)
     {
       ProductType myProductType = productTypeResponse.Result.Results[0];
 
       string productsWhere = "productType(id=\"" + myProductType.Id + "\")";
-      productsProjectionsResponse = await ppManager.QueryProductProjectionsAsync(productsWhere);
+      yield return StartCoroutine(
+        ppManager.QueryProductProjectionsAsync(
+          (Response<ProductProjectionQueryResult> onSuccess) =>
+          {
+            productProjectionsResponse = onSuccess;
+          },
+          (Response<ProductProjectionQueryResult> onError) =>
+          {
+            Debug.LogError("Error fetching product projections: " + onError.ToJsonString());
+          },
+          productsWhere
+        )
+      );
 
-      if (productsProjectionsResponse.Success)
+      if (productProjectionsResponse.Success)
       {
-        ammoProductsList = productsProjectionsResponse.Result.Results;
+        ammoProductsList = productProjectionsResponse.Result.Results;
         ammoListController.PopulateList(ammoProductsList);
       }
     }
@@ -169,7 +255,7 @@ public class StoreController : MonoBehaviour
     return anonymousId;
   }
 
-  public async void BuyProduct(ProductProjection product)
+  public IEnumerator BuyProduct(ProductProjection product)
   {
     isOrdering = true;
     consumableListController.DisableButtons();
@@ -178,9 +264,10 @@ public class StoreController : MonoBehaviour
     loadingPopUpUI.gameObject.SetActive(true);
 
     SaveData saveData = SaveGameController.GetSavedData();
+    UnityClient client = CommercetoolsManager.GetClient(ProjectScope.ManageOrders, this);
     if (saveData.playerCoins >= (product.MasterVariant.Prices[0].Value.CentAmount / 100))
     {
-      CartManager cartManager = new CartManager(CommercetoolsManager.GetClient(ProjectScope.ManageOrders));
+      CartManager cartManager = new CartManager(client);
       CartDraft cartDraft = new CartDraft("EUR");
       LineItemDraft lineItemDraft = new LineItemDraft(product.Id, product.MasterVariant.Id);
       lineItemDraft.Quantity = 1;
@@ -190,19 +277,46 @@ public class StoreController : MonoBehaviour
       cartDraft.AnonymousId = GetAnonymousId();
       cartDraft.ShippingAddress = CommercetoolsManager.GetMockedAddress();
 
-      Response<Cart> responseCart = await cartManager.CreateCartAsync(cartDraft);
+      Response<Cart> responseCart = null;
+      yield return StartCoroutine(
+        cartManager.CreateCartAsync(
+          cartDraft,
+          (Response<Cart> onSuccess) =>
+            {
+              responseCart = onSuccess;
+            },
+          (Response<Cart> onError) =>
+            {
+              Debug.LogError("Error Creating Cart: " + onError.ToJsonString());
+            }
+        )
+      );
 
-      if (responseCart.Success)
+
+      if (responseCart != null && responseCart.Success)
       {
         Debug.Log("Cart created! : " + responseCart.Result.ToJsonString());
         // If there's a cart, let's create an order from it
-        OrderManager orderManager = new OrderManager(CommercetoolsManager.GetClient(ProjectScope.ManageOrders));
+        OrderManager orderManager = new OrderManager(client);
         OrderFromCartDraft orderFromCartDraft = new OrderFromCartDraft(responseCart.Result);
         orderFromCartDraft.OrderNumber = CommercetoolsManager.GenerateOrderNumber();
 
-        Response<Order> responseOrder = await orderManager.CreateOrderFromCartAsync(orderFromCartDraft);
+        Response<Order> responseOrder = null;
+        yield return StartCoroutine(
+          orderManager.CreateOrderFromCartAsync(
+            orderFromCartDraft,
+            (Response<Order> onSuccess) =>
+              {
+                responseOrder = onSuccess;
+              },
+            (Response<Order> onError) =>
+              {
+                Debug.LogError("Error Creating Order: " + onError.ToJsonString());
+              }
+          )
+        );
 
-        if (responseOrder.Success)
+        if (responseOrder != null && responseOrder.Success)
         {
           Debug.Log("Order created! : " + responseOrder.Result.ToJsonString());
           Order order = responseOrder.Result;

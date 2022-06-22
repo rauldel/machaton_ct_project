@@ -189,8 +189,9 @@ namespace ctLite.Common.Converters {
                 JObject referenceTypeId;
                 if(myReferenceType.ReferenceTypeId != null)
                 {
-                    referenceTypeId = new JObject(myReferenceType.ReferenceTypeId.ToJsonString());
-                    jObject.Add("referenceTypeId", referenceTypeId);
+                    Debug.LogWarning("Gotta do something for parsing this correctly: " + myReferenceType.ReferenceTypeId);
+                    /* referenceTypeId = new JObject(myReferenceType.ReferenceTypeId.ToJsonString());
+                    jObject.Add("referenceTypeId", referenceTypeId); */
                 }
 
                 jObject.WriteTo(writer);

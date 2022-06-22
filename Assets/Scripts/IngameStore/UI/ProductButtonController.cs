@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 
-using myCT.ProductProjections;
+using ctLite.ProductProjections;
 
 public class ProductButtonController : MonoBehaviour
 {

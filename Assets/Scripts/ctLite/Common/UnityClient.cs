@@ -3,9 +3,6 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Net.Http;
-using System.Net;
-using System.Net.Http.Headers;
 using System.Text;
 
 using UnityEngine;
@@ -94,10 +91,9 @@ namespace ctLite.Common
 
       string url = string.Concat(this.Configuration.ApiUrl, "/", this.Configuration.ProjectKey, endpoint, values.ToQueryString());
 
-      HttpRequestMessage httpRequestMessage = CreateRequestMessage(url, HttpMethod.Get);
-      httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue(UnityClient.Token.TokenType, UnityClient.Token.AccessToken);
-      Debug.Log("GET REQUEST: " + httpRequestMessage.ToJsonString());
-      yield return monoBehaviour.StartCoroutine(SendAsync<T>(httpRequestMessage, (Response<T> res) =>
+      UnityClientRequestMessage unityClientRequestMessage = CreateRequestMessage(url, UnityWebRequest.kHttpVerbGET, false);
+      Debug.Log("GET REQUEST: " + unityClientRequestMessage.ToJsonString());
+      yield return monoBehaviour.StartCoroutine(SendAsync<T>(unityClientRequestMessage, false, (Response<T> res) =>
       {
         response = res;
         onSuccess(res);
@@ -138,10 +134,9 @@ namespace ctLite.Common
 
       string url = string.Concat(this.Configuration.ApiUrl, "/", this.Configuration.ProjectKey, endpoint);
 
-      HttpRequestMessage httpRequestMessage = CreateRequestMessage(url, HttpMethod.Post, payload);
-      httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue(UnityClient.Token.TokenType, UnityClient.Token.AccessToken);
-      Debug.Log("POST REQUEST: " + httpRequestMessage.ToJsonString());
-      yield return monoBehaviour.StartCoroutine(SendAsync<T>(httpRequestMessage, (Response<T> res) =>
+      UnityClientRequestMessage unityClientRequestMessage = CreateRequestMessage(url, UnityWebRequest.kHttpVerbPOST, false, payload);
+      Debug.Log("POST REQUEST: " + unityClientRequestMessage.ToJsonString());
+      yield return monoBehaviour.StartCoroutine(SendAsync<T>(unityClientRequestMessage, false, (Response<T> res) =>
       {
         response = res;
         onSuccess(res);
@@ -183,10 +178,9 @@ namespace ctLite.Common
 
       string url = string.Concat(this.Configuration.ApiUrl, "/", this.Configuration.ProjectKey, endpoint, values.ToQueryString());
 
-      HttpRequestMessage httpRequestMessage = CreateRequestMessage(url, HttpMethod.Delete);
-      httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue(UnityClient.Token.TokenType, UnityClient.Token.AccessToken);
-      Debug.Log("DELETE REQUEST: " + httpRequestMessage.ToJsonString());
-      yield return monoBehaviour.StartCoroutine(SendAsync<T>(httpRequestMessage, (Response<T> res) =>
+      UnityClientRequestMessage unityClientRequestMessage = CreateRequestMessage(url, UnityWebRequest.kHttpVerbDELETE, false);
+      Debug.Log("DELETE REQUEST: " + unityClientRequestMessage.ToJsonString());
+      yield return monoBehaviour.StartCoroutine(SendAsync<T>(unityClientRequestMessage, false, (Response<T> res) =>
       {
         response = res;
         onSuccess(res);
@@ -197,21 +191,48 @@ namespace ctLite.Common
       }));
     }
 
-    private HttpRequestMessage CreateRequestMessage(string url, HttpMethod method, string payload = null)
+    private UnityClientRequestMessage CreateRequestMessage(string url, string method, bool isTokenRequest, string payload = null)
     {
-      HttpRequestMessage httpRequestMessage = new HttpRequestMessage(method, new Uri(url))
+      UnityClientRequestMessage requestMessage = new UnityClientRequestMessage();
+      requestMessage.url = url;
+      requestMessage.method = method;
+      requestMessage.isTokenRequest = isTokenRequest;
+      requestMessage.payload = payload;
+
+      switch (requestMessage.method)
       {
-        Version = HttpVersion.Version10
-      };
-      if (payload != null)
-      {
-        httpRequestMessage.Content = new StringContent(payload, Encoding.UTF8, "application/json");
+        case UnityWebRequest.kHttpVerbPOST:
+          if (requestMessage.isTokenRequest)
+          {
+            WWWForm form = new WWWForm();
+            form.AddField("grant_type", "client_credentials");
+            form.AddField("scope", string.Concat(this.Configuration.Scope.ToEnumMemberString(), ":", this.Configuration.ProjectKey));
+            requestMessage.wwwForm = form;
+
+            requestMessage.headers.Add("Content-Type", "application/x-www-form-urlencoded");
+            requestMessage.headers.Add("Authorization", "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Concat(this.Configuration.ClientID, ":", this.Configuration.ClientSecret))));
+          }
+          else
+          {
+            requestMessage.downloadHandler = new DownloadHandlerBuffer();
+            requestMessage.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(payload));
+            requestMessage.uploadHandler.contentType = "application/json";
+            requestMessage.headers.Add("Authorization", UnityClient.Token.TokenType + " " + UnityClient.Token.AccessToken);
+            requestMessage.headers.Add("Content-Type", "application/json");
+          }
+          break;
+        case UnityWebRequest.kHttpVerbDELETE:
+          requestMessage.headers.Add("Authorization", UnityClient.Token.TokenType + " " + UnityClient.Token.AccessToken);
+          requestMessage.headers.Add("Content-Type", "application/json");
+          break;
+        default:
+        case UnityWebRequest.kHttpVerbGET:
+          requestMessage.headers.Add("Authorization", UnityClient.Token.TokenType + " " + UnityClient.Token.AccessToken);
+          requestMessage.headers.Add("Accept", "application/json");
+          break;
       }
-      httpRequestMessage.Headers.Accept.Clear();
-      httpRequestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-      httpRequestMessage.Headers.UserAgent.Clear();
-      httpRequestMessage.Headers.UserAgent.ParseAdd(this.UserAgent);
-      return httpRequestMessage;
+
+      return requestMessage;
     }
 
     /// <summary>
@@ -220,34 +241,45 @@ namespace ctLite.Common
     /// <param name="endpoint">API endpoint, excluding the project key</param>
     /// <param name="values">Values</param>
     /// <returns>JSON object</returns>
-    private IEnumerator SendAsync<T>(HttpRequestMessage httpRequestMessage, Action<Response<T>> onSuccess, Action<Response<T>> onError)
+    private IEnumerator SendAsync<T>(UnityClientRequestMessage unityRequestMessage, bool isTokenRequest, Action<Response<T>> onSuccess, Action<Response<T>> onError)
     {
-      UnityWebRequest www = new UnityWebRequest(httpRequestMessage.RequestUri.AbsoluteUri);
+      UnityWebRequest www = new UnityWebRequest(unityRequestMessage.url);
 
-      if (httpRequestMessage.Method == HttpMethod.Get)
+      if (unityRequestMessage.method == UnityWebRequest.kHttpVerbGET)
       {
-        www = UnityWebRequest.Get(httpRequestMessage.RequestUri.AbsoluteUri);
-        www.method = UnityWebRequest.kHttpVerbGET;
-        www.SetRequestHeader("Authorization", UnityClient.Token.TokenType + " " + UnityClient.Token.AccessToken);
-        www.SetRequestHeader("Accept", "application/json");
+        www = UnityWebRequest.Get(unityRequestMessage.url);
+        www.method = unityRequestMessage.method;
+        foreach (KeyValuePair<string, string> header in unityRequestMessage.headers)
+        {
+          www.SetRequestHeader(header.Key, header.Value);
+        }
       }
-      else if (httpRequestMessage.Method == HttpMethod.Post)
+      else if (unityRequestMessage.method == UnityWebRequest.kHttpVerbPOST)
       {
-        WWWForm form = new WWWForm();
-        form.AddField("grant_type", "client_credentials");
-        form.AddField("scope", string.Concat(this.Configuration.Scope.ToEnumMemberString(), ":", this.Configuration.ProjectKey));
-        www = UnityWebRequest.Post(httpRequestMessage.RequestUri.AbsoluteUri, form);
-        www.SetRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        www.SetRequestHeader("Authorization", "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Concat(this.Configuration.ClientID, ":", this.Configuration.ClientSecret))));
-        www.method = UnityWebRequest.kHttpVerbPOST;
+        if (unityRequestMessage.isTokenRequest)
+        {
+          www = UnityWebRequest.Post(unityRequestMessage.url, unityRequestMessage.wwwForm);
+        }
+        else
+        {
+          www = new UnityWebRequest(unityRequestMessage.url);
+          www.method = unityRequestMessage.method;
+          www.uploadHandler = unityRequestMessage.uploadHandler;
+          www.downloadHandler = unityRequestMessage.downloadHandler;
+        }
+
+        foreach (KeyValuePair<string, string> header in unityRequestMessage.headers)
+        {
+          www.SetRequestHeader(header.Key, header.Value);
+        }
       }
-      else if (httpRequestMessage.Method == HttpMethod.Put)
+      else if (unityRequestMessage.method == UnityWebRequest.kHttpVerbDELETE)
       {
-        www.method = UnityWebRequest.kHttpVerbPUT;
-      }
-      else if (httpRequestMessage.Method == HttpMethod.Delete)
-      {
-        www.method = UnityWebRequest.kHttpVerbDELETE;
+        www = UnityWebRequest.Delete(unityRequestMessage.url);
+        foreach (KeyValuePair<string, string> header in unityRequestMessage.headers)
+        {
+          www.SetRequestHeader(header.Key, header.Value);
+        }
       }
 
       yield return www.SendWebRequest();
@@ -300,28 +332,22 @@ namespace ctLite.Common
     /// <see href="http://dev.commercetools.com/http-api-authorization.html#authorization-flows"/>
     public IEnumerator GetTokenAsync(Action<Response<Token>> onSuccess, Action<Response<Token>> onError)
     {
-      var pairs = new List<KeyValuePair<string, string>>
-            {
-                new KeyValuePair<string, string>("grant_type", "client_credentials"),
-                new KeyValuePair<string, string>("scope", string.Concat(this.Configuration.Scope.ToEnumMemberString(), ":", this.Configuration.ProjectKey))
-            };
-
-      string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Concat(this.Configuration.ClientID, ":", this.Configuration.ClientSecret)));
-      HttpRequestMessage httpRequestMessage = CreateRequestMessage(this.Configuration.OAuthUrl, HttpMethod.Post);
-      httpRequestMessage.Content = new FormUrlEncodedContent(pairs);
-      httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Basic", credentials);
-
+      UnityClientRequestMessage unityClientRequestMessage = CreateRequestMessage(this.Configuration.OAuthUrl, UnityWebRequest.kHttpVerbPOST, true);
       Response<Token> response = null;
-      yield return monoBehaviour.StartCoroutine(SendAsync<Token>(httpRequestMessage, (Response<Token> res) =>
-      {
-        response = res;
-        Debug.Log("Success GetTokenAsync: " + res.ToJsonString());
-        onSuccess(res);
-      }, (Response<Token> error) =>
-      {
-        Debug.LogError("Error GetTokenAsync: " + error.ToJsonString());
-        onError(error);
-      }));
+      yield return monoBehaviour.StartCoroutine(SendAsync<Token>(unityClientRequestMessage, true,
+        (Response<Token> res) =>
+          {
+            response = res;
+            Debug.Log("Success GetTokenAsync: " + res.ToJsonString());
+            onSuccess(res);
+          },
+        (Response<Token> error) =>
+          {
+            Debug.LogError("Error GetTokenAsync: " + error.ToJsonString());
+            onError(error);
+          }
+        )
+      );
     }
 
     #endregion
@@ -333,6 +359,7 @@ namespace ctLite.Common
       Response<T> response = new Response<T>();
       Type resultType = typeof(T);
 
+      response.StatusCode = (int) www.responseCode;
       if (www.isNetworkError || www.responseCode < 200 || www.responseCode >= 300)
       {
         response.Success = false;
@@ -352,8 +379,14 @@ namespace ctLite.Common
           serializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
           serializerSettings.NullValueHandling = NullValueHandling.Ignore;
 
-          T t = JsonConvert.DeserializeObject<T>(www.downloadHandler.text, serializerSettings);
-          response.Result = t;
+          if (www.downloadHandler != null)
+          {
+            T t = JsonConvert.DeserializeObject<T>(www.downloadHandler.text, serializerSettings);
+            response.Result = t;
+          } else {
+            response.Result = default(T);
+          }
+
         }
       }
 

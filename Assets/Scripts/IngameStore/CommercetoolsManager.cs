@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
-using myCT.Common;
+// using myCT.Common;
+using ctLite.Common;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
@@ -13,10 +14,10 @@ public static class CommercetoolsManager
   private static string orderNumberPrefix = "cr";
 
   private static Configuration configuration;
-  private static Client client;
+  private static UnityClient client;
   #endregion
 
-  public static Client GetClient(ProjectScope scope)
+  public static UnityClient GetClient(ProjectScope scope, MonoBehaviour monoBehaviour)
   {
     if (client == null || (client != null && configuration.Scope != scope))
     {
@@ -31,7 +32,7 @@ public static class CommercetoolsManager
         scope
     );
 
-      client = new Client(configuration);
+      client = new UnityClient(configuration, monoBehaviour);
     }
     return client;
   }
@@ -107,7 +108,15 @@ public static class CommercetoolsManager
     }
     else
     {
-      throw new System.Exception("Missing file: secrets.dat");
+      // This is for WebGL
+      CTClientData data = new CTClientData();
+      data.oAuthHost = "https://auth.europe-west1.gcp.commercetools.com/oauth/token";
+      data.apiHost = "https://api.europe-west1.gcp.commercetools.com";
+      data.projectKey = "cloud-runner";
+      data.clientId = "MN-aWtg4QWOx_cNPSW_ycKha";
+      data.clientSecret = "jA7VGjXaaI0kGefijkrcDKm5c3fUqyzV";
+      return data;
+      // throw new System.Exception("Missing file: secrets.dat");
     }
   }
   #endregion

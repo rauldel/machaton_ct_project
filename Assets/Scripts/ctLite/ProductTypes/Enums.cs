@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Runtime.Serialization;
 
 namespace ctLite.ProductTypes
 {
@@ -8,9 +8,13 @@ namespace ctLite.ProductTypes
     /// <see href="http://dev.commercetools.com/http-api-projects-productTypes.html#attributeconstraint-enum"/>
     public enum AttributeConstraint
     {
+        [EnumMember(Value = "None")]
         None,
+        [EnumMember(Value = "Unique")]
         Unique,
+        [EnumMember(Value = "CombinationUnique")]
         CombinationUnique,
+        [EnumMember(Value = "SameForAll")]
         SameForAll
     }
 
@@ -20,7 +24,9 @@ namespace ctLite.ProductTypes
     /// <see href="http://dev.commercetools.com/http-api-projects-productTypes.html#textinputhint"/>
     public enum TextInputHint
     {
+        [EnumMember(Value = "SingleLine")]
         SingleLine,
+        [EnumMember(Value = "MultiLine")]
         MultiLine
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Specialized;
-using System.Threading.Tasks;
 
 using ctLite.Common;
 
@@ -20,7 +20,7 @@ namespace ctLite.ProductProjections
 
         #region Member Variables
 
-        private readonly IClient _client;
+        private readonly UnityClient _client;
 
         #endregion 
 
@@ -30,7 +30,7 @@ namespace ctLite.ProductProjections
         /// Constructor
         /// </summary>
         /// <param name="client">Client</param>
-        public ProductProjectionManager(IClient client)
+        public ProductProjectionManager(UnityClient client)
         {
             _client = client;
         }
@@ -50,7 +50,7 @@ namespace ctLite.ProductProjections
         /// <param name="priceChannel">Enables price selection. Can only be used in conjunction with the priceCurrency parameter.</param>
         /// <returns>ProductProjection</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-productProjections.html#get-productprojection-by-id"/>
-        public Task<Response<ProductProjection>> GetProductProjectionByIdAsync(string productId, bool staged = false, string priceCurrency = null, string priceCountry = null, Guid priceCustomerGroup = new Guid(), Guid priceChannel = new Guid())
+        public IEnumerator GetProductProjectionByIdAsync(string productId, Action<Response<ProductProjection>> onSuccess, Action<Response<ProductProjection>> onError, bool staged = false, string priceCurrency = null, string priceCountry = null, Guid priceCustomerGroup = new Guid(), Guid priceChannel = new Guid())
         {
             if (string.IsNullOrWhiteSpace(productId))
             {
@@ -58,7 +58,7 @@ namespace ctLite.ProductProjections
             }
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", productId);
-            return GetProductProjectionAsync(endpoint, staged, priceCurrency, priceCountry, priceCustomerGroup, priceChannel);
+            return GetProductProjectionAsync(endpoint,onSuccess, onError, staged, priceCurrency, priceCountry, priceCustomerGroup, priceChannel);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace ctLite.ProductProjections
         /// <param name="priceChannel">Enables price selection. Can only be used in conjunction with the priceCurrency parameter.</param>
         /// <returns>ProductProjection</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-productProjections.html#get-productprojection-by-key"/>
-        public Task<Response<ProductProjection>> GetProductProjectionByKeyAsync(string key, bool staged = false, string priceCurrency = null, string priceCountry = null, Guid priceCustomerGroup = new Guid(), Guid priceChannel = new Guid())
+        public IEnumerator GetProductProjectionByKeyAsync(string key, Action<Response<ProductProjection>> onSuccess, Action<Response<ProductProjection>> onError, bool staged = false, string priceCurrency = null, string priceCountry = null, Guid priceCustomerGroup = new Guid(), Guid priceChannel = new Guid())
         {
             if (string.IsNullOrWhiteSpace(key))
             {
@@ -80,7 +80,7 @@ namespace ctLite.ProductProjections
             }
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/key=", key);
-            return GetProductProjectionAsync(endpoint, staged, priceCurrency, priceCountry, priceCustomerGroup, priceChannel);
+            return GetProductProjectionAsync(endpoint, onSuccess, onError, staged, priceCurrency, priceCountry, priceCustomerGroup, priceChannel);
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace ctLite.ProductProjections
         /// <param name="priceChannel">Enables price selection. Can only be used in conjunction with the priceCurrency parameter.</param>
         /// <returns>Product</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-productProjections.html#get-productprojection"/>
-        private Task<Response<ProductProjection>> GetProductProjectionAsync(string endpoint, bool staged = false, string priceCurrency = null, string priceCountry = null, Guid priceCustomerGroup = new Guid(), Guid priceChannel = new Guid())
+        private IEnumerator GetProductProjectionAsync(string endpoint, Action<Response<ProductProjection>> onSuccess, Action<Response<ProductProjection>> onError, bool staged = false, string priceCurrency = null, string priceCountry = null, Guid priceCustomerGroup = new Guid(), Guid priceChannel = new Guid())
         {
             NameValueCollection values = new NameValueCollection
             {
@@ -121,7 +121,7 @@ namespace ctLite.ProductProjections
                 }
             }
 
-            return _client.GetAsync<ProductProjection>(endpoint, values);
+            return _client.GetAsync<ProductProjection>(endpoint, onSuccess, onError, values);
         }
 
         /// <summary>
@@ -141,7 +141,9 @@ namespace ctLite.ProductProjections
         /// <param name="priceChannel">Enables price selection. Can only be used in conjunction with the priceCurrency parameter.</param>
         /// <returns>ProductProjectionQueryResult</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-productProjections.html#query-productprojections"/>
-        public Task<Response<ProductProjectionQueryResult>> QueryProductProjectionsAsync(
+        public IEnumerator QueryProductProjectionsAsync(
+            Action<Response<ProductProjectionQueryResult>> onSuccess, 
+            Action<Response<ProductProjectionQueryResult>> onError,
             string where = null, 
             string sort = null, 
             int limit = -1, 
@@ -197,7 +199,7 @@ namespace ctLite.ProductProjections
                 }
             }
 
-            return _client.GetAsync<ProductProjectionQueryResult>(ENDPOINT_PREFIX, values);
+            return _client.GetAsync<ProductProjectionQueryResult>(ENDPOINT_PREFIX, onSuccess, onError, values);
         }
 
         #endregion
