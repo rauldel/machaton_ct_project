@@ -350,6 +350,11 @@ namespace ctLite.Common
       );
     }
 
+    public void InvalidateToken()
+    {
+      Token = null;
+    }
+
     #endregion
 
     #region Utility

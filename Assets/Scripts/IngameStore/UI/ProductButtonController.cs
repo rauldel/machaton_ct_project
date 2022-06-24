@@ -16,13 +16,16 @@ public class ProductButtonController : MonoBehaviour
   private Text productPrice;
 
   [SerializeField]
-  private UnityEngine.UI.Image productImage;
+  private Image productImage;
 
   [SerializeField]
   private Sprite loadingSprite;
 
   [SerializeField]
   private StoreController storeController;
+
+  [SerializeField]
+  private List<Sprite> listProductImage;
 
   private ProductProjection product;
 
@@ -43,7 +46,15 @@ public class ProductButtonController : MonoBehaviour
 
     if (product.MasterVariant.Images.Count > 0)
     {
+#if UNITY_STANDALONE
       StartCoroutine(LoadImageFromURL(product.MasterVariant.Images[0].Url));
+#endif
+#if UNITY_EDITOR
+      StartCoroutine(LoadImageFromURL(product.MasterVariant.Images[0].Url));
+#endif
+#if UNITY_WEBGL
+      SetImageFromList(productName.text);
+#endif
     }
     else
     {
@@ -96,10 +107,46 @@ public class ProductButtonController : MonoBehaviour
     {
       AudioManager audioManager = AudioManager.instance;
       audioManager.PlaySound("ClickSFX", false);
-      storeController.BuyProduct(product);
+      StartCoroutine(storeController.BuyProduct(product));
     }
   }
 
+  private void SetImageFromList(string name)
+  {
+    switch (name)
+    {
+      case "Potion":
+        productImage.sprite = listProductImage[0];
+        break;
+      case "Superpotion":
+        productImage.sprite = listProductImage[1];
+        break;
+      case "Hyperpotion":
+        productImage.sprite = listProductImage[2];
+        break;
+      case "Phaser":
+        productImage.sprite = listProductImage[3];
+        break;
+      case "Laser":
+        productImage.sprite = listProductImage[4];
+        break;
+      case "Cannon":
+        productImage.sprite = listProductImage[5];
+        break;
+      case "Phaser Charge":
+        productImage.sprite = listProductImage[6];
+        break;
+      case "Laser Charge":
+        productImage.sprite = listProductImage[7];
+        break;
+      case "Cannon Charge":
+        productImage.sprite = listProductImage[8];
+        break;
+      default:
+        productImage.color = Color.cyan;
+        break;
+    }
+  }
   public IEnumerator LoadImageFromURL(string imageURL)
   {
     productImage.sprite = loadingSprite;

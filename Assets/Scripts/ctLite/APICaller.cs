@@ -109,6 +109,25 @@ public class APICaller : MonoBehaviour
 
   public UnityClient GetUnityClient(ProjectScope scope)
   {
+    /**
+    project_key
+    cloud-runner
+
+    client_id
+    PAm7qR4JBSClny1XL1lTj4cU
+
+    secret
+    pVDqgXl8BssvD_hMhujWjEPRSv-PlNsP
+
+    scope
+    view_project_settings:cloud-runner view_stores:cloud-runner view_product_selections:cloud-runner view_cart_discounts:cloud-runner view_tax_categories:cloud-runner view_audit_log:cloud-runner view_orders:cloud-runner view_products:cloud-runner view_discount_codes:cloud-runner view_customers:cloud-runner view_key_value_documents:cloud-runner view_states:cloud-runner view_shipping_methods:cloud-runner view_import_sinks:cloud-runner view_customer_groups:cloud-runner manage_products:cloud-runner view_categories:cloud-runner view_order_edits:cloud-runner view_import_containers:cloud-runner view_standalone_prices:cloud-runner view_types:cloud-runner view_messages:cloud-runner view_attribute_groups:cloud-runner view_published_products:cloud-runner view_shopping_lists:cloud-runner view_payments:cloud-runner
+
+    API URL
+    https://api.europe-west1.gcp.commercetools.com
+
+    Auth URL
+    https://auth.europe-west1.gcp.commercetools.com
+    **/
     if (client == null || (client != null && configuration.Scope != scope))
     {
       CTClientData ctClientData = CommercetoolsManager.ReadSecretsFile();

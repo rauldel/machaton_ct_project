@@ -347,9 +347,9 @@ public class StoreController : MonoBehaviour
 
     isOrdering = false;
     loadingPopUpUI.gameObject.SetActive(false);
-    LoadConsumableProducts();
-    LoadWeaponProducts();
-    LoadAmmoProducts();
+    StartCoroutine(LoadConsumableProducts());
+    StartCoroutine(LoadWeaponProducts());
+    StartCoroutine(LoadAmmoProducts());
   }
   #endregion
 
