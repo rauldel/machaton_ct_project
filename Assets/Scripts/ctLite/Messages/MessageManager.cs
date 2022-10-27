@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Specialized;
-using System.Threading.Tasks;
 
 using ctLite.Common;
 
@@ -19,7 +19,7 @@ namespace ctLite.Messages
 
         #region Member Variables
 
-        private readonly IClient _client;
+        private readonly UnityClient _client;
 
         #endregion
 
@@ -29,7 +29,7 @@ namespace ctLite.Messages
         /// Constructor
         /// </summary>
         /// <param name="client">Client</param>
-        public MessageManager(IClient client)
+        public MessageManager(UnityClient client)
         {
             _client = client;
         }
@@ -44,7 +44,7 @@ namespace ctLite.Messages
         /// <param name="messageId">Message ID</param>
         /// <see href="http://dev.commercetools.com/http-api-projects-messages.html#get-message-by-id"/>
         /// <returns>Message</returns>
-        public Task<Response<Message>> GetMessageByIdAsync(string messageId)
+        public IEnumerator GetMessageByIdAsync(string messageId, Action<Response<Message>> onSuccess, Action<Response<Message>> onError)
         {
             if (string.IsNullOrWhiteSpace(messageId))
             {
@@ -52,7 +52,7 @@ namespace ctLite.Messages
             }
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", messageId);
-            return _client.GetAsync<Message>(endpoint);
+            return _client.GetAsync<Message>(endpoint, onSuccess, onError);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace ctLite.Messages
         /// <param name="limit">Limit</param>
         /// <param name="offset">Offset</param>
         /// <returns>MessageQueryResult</returns>
-        public Task<Response<MessageQueryResult>> QueryMessagesAsync(string where = null, string sort = null, int limit = -1, int offset = -1)
+        public IEnumerator QueryMessagesAsync(Action<Response<MessageQueryResult>> onSuccess, Action<Response<MessageQueryResult>> onError, string where = null, string sort = null, int limit = -1, int offset = -1)
         {
             NameValueCollection values = new NameValueCollection();
 
@@ -87,7 +87,7 @@ namespace ctLite.Messages
                 values.Add("offset", offset.ToString());
             }
 
-            return _client.GetAsync<MessageQueryResult>(ENDPOINT_PREFIX, values);
+            return _client.GetAsync<MessageQueryResult>(ENDPOINT_PREFIX, onSuccess, onError, values);
         }
 
         #endregion

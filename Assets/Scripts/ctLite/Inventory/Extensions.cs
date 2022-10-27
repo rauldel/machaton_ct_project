@@ -11,7 +11,7 @@ namespace ctLite.Inventory
         /// Creates an instance of the InventoryManager.
         /// </summary>
         /// <returns>InventoryManager</returns>
-        public static InventoryManager Inventories(this Client client)
+        public static InventoryManager Inventories(this UnityClient client)
         {
             return new InventoryManager(client);
         }

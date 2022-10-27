@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Threading.Tasks;
 
 using ctLite.Common;
 
@@ -24,7 +24,7 @@ namespace ctLite.Types
 
         #region Member Variables
 
-        private readonly IClient _client;
+        private readonly UnityClient _client;
 
         #endregion
 
@@ -34,7 +34,7 @@ namespace ctLite.Types
         /// Constructor
         /// </summary>
         /// <param name="client">Client</param>
-        public TypeManager(IClient client)
+        public TypeManager(UnityClient client)
         {
             _client = client;
         }
@@ -49,7 +49,7 @@ namespace ctLite.Types
         /// <param name="typeId">Type ID</param>
         /// <returns>Type</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-types.html#get-type-by-id"/>
-        public Task<Response<Type>> GetTypeByIdAsync(string typeId)
+        public IEnumerator GetTypeByIdAsync(string typeId, Action<Response<Type>> onSuccess, Action<Response<Type>> onError)
         {
             if (string.IsNullOrWhiteSpace(typeId))
             {
@@ -57,7 +57,7 @@ namespace ctLite.Types
             }
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", typeId);
-            return _client.GetAsync<Type>(endpoint);
+            return _client.GetAsync<Type>(endpoint, onSuccess, onError);
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace ctLite.Types
         /// <param name="offset">Offset</param>
         /// <returns>TypeQueryResult</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-types.html#get-type-by-id"/>
-        public Task<Response<TypeQueryResult>> QueryTypesAsync(string where = null, string sort = null, int limit = -1, int offset = -1)
+        public IEnumerator QueryTypesAsync(Action<Response<TypeQueryResult>> onSuccess, Action<Response<TypeQueryResult>> onError, string where = null, string sort = null, int limit = -1, int offset = -1)
         {
             NameValueCollection values = new NameValueCollection();
 
@@ -93,7 +93,7 @@ namespace ctLite.Types
                 values.Add("offset", offset.ToString());
             }
 
-            return _client.GetAsync<TypeQueryResult>(ENDPOINT_PREFIX, values);
+            return _client.GetAsync<TypeQueryResult>(ENDPOINT_PREFIX, onSuccess, onError, values);
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace ctLite.Types
         /// <param name="typeDraft">Type Draft</param>
         /// <returns>Type</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-types.html#create-type"/>
-        public Task<Response<Type>> CreateTypeAsync(TypeDraft typeDraft)
+        public IEnumerator CreateTypeAsync(TypeDraft typeDraft, Action<Response<Type>> onSuccess, Action<Response<Type>> onError)
         {
             if (string.IsNullOrWhiteSpace(typeDraft.Key))
             {
@@ -120,7 +120,7 @@ namespace ctLite.Types
             }
 
             string payload = JsonConvert.SerializeObject(typeDraft, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            return _client.PostAsync<Type>(ENDPOINT_PREFIX, payload);
+            return _client.PostAsync<Type>(ENDPOINT_PREFIX, payload, onSuccess, onError);
         }
 
         /// <summary>
@@ -129,9 +129,9 @@ namespace ctLite.Types
         /// <param name="type">Type</param>
         /// <param name="action">The update action to be performed on the type.</param>
         /// <returns>Type</returns>
-        public Task<Response<Type>> UpdateTypeAsync(Type type, UpdateAction action)
+        public IEnumerator UpdateTypeAsync(Type type, UpdateAction action, Action<Response<Type>> onSuccess, Action<Response<Type>> onError)
         {
-            return UpdateTypeByIdAsync(type.Id, type.Version, new List<UpdateAction> { action });
+            return UpdateTypeByIdAsync(type.Id, type.Version, new List<UpdateAction> { action }, onSuccess, onError);
         }
 
         /// <summary>
@@ -140,9 +140,9 @@ namespace ctLite.Types
         /// <param name="type">Type</param>
         /// <param name="actions">The update actions to be performed on the type.</param>
         /// <returns>Type</returns>
-        public Task<Response<Type>> UpdateTypeAsync(Type type, List<UpdateAction> actions)
+        public IEnumerator UpdateTypeAsync(Type type, List<UpdateAction> actions, Action<Response<Type>> onSuccess, Action<Response<Type>> onError)
         {
-            return UpdateTypeByIdAsync(type.Id, type.Version, actions);
+            return UpdateTypeByIdAsync(type.Id, type.Version, actions, onSuccess, onError);
         }
 
         /// <summary>
@@ -153,9 +153,9 @@ namespace ctLite.Types
         /// <param name="action">The update action to be performed on the type.</param>
         /// <returns>Type</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-types.html#update-type-by-id"/>
-        public Task<Response<Type>> UpdateTypeByIdAsync(string typeId, int version, UpdateAction action)
+        public IEnumerator UpdateTypeByIdAsync(string typeId, int version, UpdateAction action, Action<Response<Type>> onSuccess, Action<Response<Type>> onError)
         {
-            return UpdateTypeByIdAsync(typeId, version, new List<UpdateAction> { action });
+            return UpdateTypeByIdAsync(typeId, version, new List<UpdateAction> { action }, onSuccess, onError);
         }
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace ctLite.Types
         /// <param name="actions">The list of update actions to be performed on the type.</param>
         /// <returns>Type</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-types.html#update-type-by-id"/>
-        public Task<Response<Type>> UpdateTypeByIdAsync(string typeId, int version, List<UpdateAction> actions)
+        public IEnumerator UpdateTypeByIdAsync(string typeId, int version, List<UpdateAction> actions, Action<Response<Type>> onSuccess, Action<Response<Type>> onError)
         {
             if (string.IsNullOrWhiteSpace(typeId))
             {
@@ -174,7 +174,7 @@ namespace ctLite.Types
             }
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", typeId);
-            return UpdateTypeAsync(endpoint, version, actions);
+            return UpdateTypeAsync(endpoint, version, actions, onSuccess, onError);
         }
 
         /// <summary>
@@ -185,9 +185,9 @@ namespace ctLite.Types
         /// <param name="action">The update action to be performed on the type.</param>
         /// <returns>Type</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-types.html#update-type-by-id"/>
-        public Task<Response<Type>> UpdateTypeByKeyAsync(string key, int version, UpdateAction action)
+        public IEnumerator UpdateTypeByKeyAsync(string key, int version, UpdateAction action, Action<Response<Type>> onSuccess, Action<Response<Type>> onError)
         {
-            return UpdateTypeByKeyAsync(key, version, new List<UpdateAction> { action });
+            return UpdateTypeByKeyAsync(key, version, new List<UpdateAction> { action }, onSuccess, onError);
         }
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace ctLite.Types
         /// <param name="actions">The list of update actions to be performed on the type.</param>
         /// <returns>Type</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-types.html#update-type-by-id"/>
-        public Task<Response<Type>> UpdateTypeByKeyAsync(string key, int version, List<UpdateAction> actions)
+        public IEnumerator UpdateTypeByKeyAsync(string key, int version, List<UpdateAction> actions, Action<Response<Type>> onSuccess, Action<Response<Type>> onError)
         {
             if (string.IsNullOrWhiteSpace(key))
             {
@@ -206,7 +206,7 @@ namespace ctLite.Types
             }
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/key=", key);
-            return UpdateTypeAsync(endpoint, version, actions);
+            return UpdateTypeAsync(endpoint, version, actions, onSuccess, onError);
         }
 
         /// <summary>
@@ -216,7 +216,7 @@ namespace ctLite.Types
         /// <param name="version">The expected version of the type on which the changes should be applied.</param>
         /// <param name="actions">The list of update actions to apply to the type.</param>
         /// <returns>Type</returns>
-        private Task<Response<Type>> UpdateTypeAsync(string endpoint, int version, List<UpdateAction> actions)
+        private IEnumerator UpdateTypeAsync(string endpoint, int version, List<UpdateAction> actions, Action<Response<Type>> onSuccess, Action<Response<Type>> onError)
         {
             if (version < 1)
             {
@@ -234,7 +234,7 @@ namespace ctLite.Types
                 actions = JArray.FromObject(actions, new JsonSerializer { NullValueHandling = NullValueHandling.Ignore })
             });
 
-            return _client.PostAsync<Type>(endpoint, data.ToString());
+            return _client.PostAsync<Type>(endpoint, data.ToString(), onSuccess, onError);
         }
 
         /// <summary>
@@ -242,9 +242,9 @@ namespace ctLite.Types
         /// </summary>
         /// <param name="type">Type</param>
         /// <returns>Response of type JObject</returns>
-        public Task<Response<JObject>> DeleteTypeAsync(Type type)
+        public IEnumerator DeleteTypeAsync(Type type, Action<Response<JObject>> onSuccess, Action<Response<JObject>> onError)
         {
-            return DeleteTypeByIdAsync(type.Id, type.Version);
+            return DeleteTypeByIdAsync(type.Id, type.Version, onSuccess, onError);
         }
 
         /// <summary>
@@ -254,7 +254,7 @@ namespace ctLite.Types
         /// <param name="version">Type version</param>
         /// <returns>JObject</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-types.html#delete-type-by-id"/>
-        public Task<Response<JObject>> DeleteTypeByIdAsync(string typeId, int version)
+        public IEnumerator DeleteTypeByIdAsync(string typeId, int version, Action<Response<JObject>> onSuccess, Action<Response<JObject>> onError)
         {
             if (string.IsNullOrWhiteSpace(typeId))
             {
@@ -262,7 +262,7 @@ namespace ctLite.Types
             }
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", typeId);
-            return DeleteTypeAsync(endpoint, version);
+            return DeleteTypeAsync(endpoint, version, onSuccess, onError);
         }
 
         /// <summary>
@@ -272,7 +272,7 @@ namespace ctLite.Types
         /// <param name="version">Type version</param>
         /// <returns>JObject</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-types.html#delete-type-by-key"/>
-        public Task<Response<JObject>> DeleteTypeByKeyAsync(string key, int version)
+        public IEnumerator DeleteTypeByKeyAsync(string key, int version, Action<Response<JObject>> onSuccess, Action<Response<JObject>> onError)
         {
             if (string.IsNullOrWhiteSpace(key))
             {
@@ -280,7 +280,7 @@ namespace ctLite.Types
             }
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/key=", key);
-            return DeleteTypeAsync(endpoint, version);
+            return DeleteTypeAsync(endpoint, version, onSuccess, onError);
         }
 
         /// <summary>
@@ -289,7 +289,7 @@ namespace ctLite.Types
         /// <param name="endpoint">Request endpoint</param>
         /// <param name="version">Type version</param>
         /// <returns>JObject</returns>
-        private Task<Response<JObject>> DeleteTypeAsync(string endpoint, int version)
+        private IEnumerator DeleteTypeAsync(string endpoint, int version, Action<Response<JObject>> onSuccess, Action<Response<JObject>> onError)
         {
             if (version < 1)
             {
@@ -301,7 +301,7 @@ namespace ctLite.Types
                 { "version", version.ToString() }
             };
 
-            return _client.DeleteAsync<JObject>(endpoint, values);
+            return _client.DeleteAsync<JObject>(endpoint, onSuccess, onError, values);
         }
 
         #endregion

@@ -11,7 +11,7 @@ namespace ctLite.Messages
         /// Creates an instance of the MessageManager.
         /// </summary>
         /// <returns>MessageManager</returns>
-        public static MessageManager Messages(this IClient client)
+        public static MessageManager Messages(this UnityClient client)
         {
             return new MessageManager(client);
         }

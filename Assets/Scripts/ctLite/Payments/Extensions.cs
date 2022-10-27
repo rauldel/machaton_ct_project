@@ -11,7 +11,7 @@ namespace ctLite.Payments
         /// Creates an instance of the PaymentManager.
         /// </summary>
         /// <returns>PaymentManager</returns>
-        public static PaymentManager Payments(this IClient client)
+        public static PaymentManager Payments(this UnityClient client)
         {
             return new PaymentManager(client);
         }

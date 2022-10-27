@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections;
 
 using ctLite.Common;
 
@@ -12,7 +13,7 @@ namespace ctLite.Project
     {
         #region Member Variables
 
-        private readonly IClient _client;
+        private readonly UnityClient _client;
 
         #endregion 
 
@@ -22,7 +23,7 @@ namespace ctLite.Project
         /// Constructor.
         /// </summary>
         /// <param name="client">Client</param>
-        public ProjectManager(IClient client)
+        public ProjectManager(UnityClient client)
         {
             _client = client;
         }
@@ -36,9 +37,9 @@ namespace ctLite.Project
         /// </summary>
         /// <see href="http://dev.commercetools.com/http-api-projects-project.html#get-project"/>
         /// <returns>Project</returns>
-        public Task<Response<Project>> GetProjectAsync()
+        public IEnumerator GetProjectAsync(Action<Response<Project>> onSuccess, Action<Response<Project>> onError)
         {
-            return _client.GetAsync<Project>(string.Empty);
+            return _client.GetAsync<Project>(string.Empty, onSuccess, onError);
         }
 
         #endregion

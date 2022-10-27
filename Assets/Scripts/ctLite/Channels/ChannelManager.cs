@@ -2,9 +2,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Threading.Tasks;
 
 namespace ctLite.Channels
 {
@@ -22,7 +22,7 @@ namespace ctLite.Channels
 
         #region Member Variables
 
-        private Client _client;
+        private UnityClient _client;
 
         #endregion 
 
@@ -31,7 +31,7 @@ namespace ctLite.Channels
         /// Constructor
         /// </summary>
         /// <param name="client">Client</param>
-        public ChannelManager(Client client)
+        public ChannelManager(UnityClient client)
         {
             _client = client;
         }
@@ -45,7 +45,7 @@ namespace ctLite.Channels
         /// <param name="channelId">Channel ID</param>
         /// <returns>Channel</returns>
         /// /// <see href="https://docs.commercetools.com/http-api-projects-Channel.html#get-channel-by-id"/>
-        public Task<Response<Channel>> GetChannelByIdAsync(string channelId)
+        public IEnumerator GetChannelByIdAsync(string channelId, Action<Response<Channel>> onSuccess, Action<Response<Channel>> onError)
         {
             if (string.IsNullOrWhiteSpace(channelId))
             {
@@ -53,7 +53,7 @@ namespace ctLite.Channels
             }
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", channelId);
-            return _client.GetAsync<Channel>(endpoint);
+            return _client.GetAsync<Channel>(endpoint, onSuccess, onError);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace ctLite.Channels
         /// <param name="offset">Offset</param>
         /// <returns>ChannelQueryResult</returns>
         /// <see href="docs.commercetools.com/http-api-projects-channels.html#query-channels"/>
-        public Task<Response<ChannelQueryResult>> QueryChannelAsync(string where = null, string sort = null, int limit = -1, int offset = -1)
+        public IEnumerator QueryChannelAsync(Action<Response<ChannelQueryResult>> onSuccess, Action<Response<ChannelQueryResult>> onError, string where = null, string sort = null, int limit = -1, int offset = -1)
         {
             NameValueCollection values = new NameValueCollection();
 
@@ -89,7 +89,7 @@ namespace ctLite.Channels
                 values.Add("offset", offset.ToString());
             }
 
-            return _client.GetAsync<ChannelQueryResult>(ENDPOINT_PREFIX, values);
+            return _client.GetAsync<ChannelQueryResult>(ENDPOINT_PREFIX, onSuccess, onError, values);
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace ctLite.Channels
         /// <param name="channelDraft">ChannelDraft object</param>
         /// <returns>Channel</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-channel.html#create-a-channel"/>
-        public Task<Response<Channel>> CreateChannelAsync(ChannelDraft ChannelDraft)
+        public IEnumerator CreateChannelAsync(ChannelDraft ChannelDraft, Action<Response<Channel>> onSuccess, Action<Response<Channel>> onError)
         {
             if (ChannelDraft == null)
             {
@@ -111,7 +111,7 @@ namespace ctLite.Channels
             }
 
             string payload = JsonConvert.SerializeObject(ChannelDraft, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            return _client.PostAsync<Channel>(ENDPOINT_PREFIX, payload);
+            return _client.PostAsync<Channel>(ENDPOINT_PREFIX, payload, onSuccess, onError);
         }
 
         /// <summary>
@@ -121,9 +121,9 @@ namespace ctLite.Channels
         /// <param name="action">The update action to be performed on the Channel .</param>
         /// <returns>Channel</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-channel.html#update-channel"/>
-        public Task<Response<Channel>> UpdateChannelAsync(Channel Channel, UpdateAction action)
+        public IEnumerator UpdateChannelAsync(Channel Channel, UpdateAction action, Action<Response<Channel>> onSuccess, Action<Response<Channel>> onError)
         {
-            return UpdateChannelAsync(Channel.Id, Channel.Version, new List<UpdateAction> { action });
+            return UpdateChannelAsync(Channel.Id, Channel.Version, new List<UpdateAction> { action }, onSuccess, onError);
         }
 
         /// <summary>
@@ -133,9 +133,9 @@ namespace ctLite.Channels
         /// <param name="actions">The list of update actions to be performed on the Channel .</param>
         /// <returns>Channel</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-channel.html#update-a-channel"/>
-        public Task<Response<Channel>> UpdateChannelAsync(Channel Channel, List<UpdateAction> actions)
+        public IEnumerator UpdateChannelAsync(Channel Channel, List<UpdateAction> actions, Action<Response<Channel>> onSuccess, Action<Response<Channel>> onError)
         {
-            return UpdateChannelAsync(Channel.Id, Channel.Version, actions);
+            return UpdateChannelAsync(Channel.Id, Channel.Version, actions, onSuccess, onError);
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace ctLite.Channels
         /// <param name="actions">The list of update actions to be performed on the Channel.</param>
         /// <returns>Channel</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-channel.html#update-channel"/>
-        public Task<Response<Channel>> UpdateChannelAsync(string ChannelId, int version, List<UpdateAction> actions)
+        public IEnumerator UpdateChannelAsync(string ChannelId, int version, List<UpdateAction> actions, Action<Response<Channel>> onSuccess, Action<Response<Channel>> onError)
         {
             if (string.IsNullOrWhiteSpace(ChannelId))
             {
@@ -170,7 +170,7 @@ namespace ctLite.Channels
             });
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", ChannelId);
-            return _client.PostAsync<Channel>(endpoint, data.ToString());
+            return _client.PostAsync<Channel>(endpoint, data.ToString(), onSuccess, onError);
         }
 
         /// <summary>
@@ -179,9 +179,9 @@ namespace ctLite.Channels
         /// <param name="Channel">Channel  object</param>
         /// <returns>Channel</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-channel.html#delete-channel"/>
-        public Task<Response<Channel>> DeleteChannelAsync(Channel Channel)
+        public IEnumerator DeleteChannelAsync(Channel Channel, Action<Response<Channel>> onSuccess, Action<Response<Channel>> onError)
         {
-            return DeleteChannelAsync(Channel.Id, Channel.Version);
+            return DeleteChannelAsync(Channel.Id, Channel.Version, onSuccess, onError);
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace ctLite.Channels
         /// <param name="version">Channel version</param>
         /// <returns>Channel</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-channel.html#delete-channel"/>
-        public Task<Response<Channel>> DeleteChannelAsync(string ChannelId, int version)
+        public IEnumerator DeleteChannelAsync(string ChannelId, int version, Action<Response<Channel>> onSuccess, Action<Response<Channel>> onError)
         {
             if (string.IsNullOrWhiteSpace(ChannelId))
             {
@@ -209,7 +209,7 @@ namespace ctLite.Channels
             };
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", ChannelId);
-            return _client.DeleteAsync<Channel>(endpoint, values);
+            return _client.DeleteAsync<Channel>(endpoint, onSuccess, onError, values);
         }
 
         #endregion

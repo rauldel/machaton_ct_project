@@ -11,7 +11,7 @@ namespace ctLite.Categories
         /// Creates an instance of the CategoryManager.
         /// </summary>
         /// <returns>CategoryManager</returns>
-        public static CategoryManager Categories(this IClient client)
+        public static CategoryManager Categories(this UnityClient client)
         {
             return new CategoryManager(client);
         }

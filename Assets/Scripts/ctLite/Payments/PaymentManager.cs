@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Threading.Tasks;
 
 using ctLite.Common;
 
@@ -24,7 +24,7 @@ namespace ctLite.Payments
 
         #region Member Variables
 
-        private readonly IClient _client;
+        private readonly UnityClient _client;
 
         #endregion
 
@@ -34,7 +34,7 @@ namespace ctLite.Payments
         /// Constructor
         /// </summary>
         /// <param name="client">Client</param>
-        public PaymentManager(IClient client)
+        public PaymentManager(UnityClient client)
         {
             _client = client;
         }
@@ -49,7 +49,7 @@ namespace ctLite.Payments
         /// <param name="paymentId">Payment ID</param>
         /// <returns>Payment</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-payments.html#get-payment-by-id"/>
-        public Task<Response<Payment>> GetPaymentByIdAsync(string paymentId)
+        public IEnumerator GetPaymentByIdAsync(string paymentId, Action<Response<Payment>> onSuccess, Action<Response<Payment>> onError)
         {
             if (string.IsNullOrWhiteSpace(paymentId))
             {
@@ -57,7 +57,7 @@ namespace ctLite.Payments
             }
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", paymentId);
-            return _client.GetAsync<Payment>(endpoint);
+            return _client.GetAsync<Payment>(endpoint, onSuccess, onError);
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace ctLite.Payments
         /// <param name="offset">Offset</param>
         /// <returns>PaymentQueryResult</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-payments.html#query-payments"/>
-        public Task<Response<PaymentQueryResult>> QueryPaymentsAsync(string where = null, string sort = null, int limit = -1, int offset = -1)
+        public IEnumerator QueryPaymentsAsync(Action<Response<PaymentQueryResult>> onSuccess, Action<Response<PaymentQueryResult>> onError, string where = null, string sort = null, int limit = -1, int offset = -1)
         {
             NameValueCollection values = new NameValueCollection();
 
@@ -93,7 +93,7 @@ namespace ctLite.Payments
                 values.Add("offset", offset.ToString());
             }
 
-            return _client.GetAsync<PaymentQueryResult>(ENDPOINT_PREFIX, values);
+            return _client.GetAsync<PaymentQueryResult>(ENDPOINT_PREFIX, onSuccess, onError, values);
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace ctLite.Payments
         /// <param name="draft">PaymentDraft</param>
         /// <returns>Payment</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-payments.html#create-a-payment"/>
-        public Task<Response<Payment>> CreatePaymentAsync(PaymentDraft draft)
+        public IEnumerator CreatePaymentAsync(PaymentDraft draft, Action<Response<Payment>> onSuccess, Action<Response<Payment>> onError)
         {
             if (draft == null)
             {
@@ -111,7 +111,7 @@ namespace ctLite.Payments
             }
 
             string payload = JsonConvert.SerializeObject(draft, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            return _client.PostAsync<Payment>(ENDPOINT_PREFIX, payload);
+            return _client.PostAsync<Payment>(ENDPOINT_PREFIX, payload, onSuccess, onError);
         }
 
         /// <summary>
@@ -121,9 +121,9 @@ namespace ctLite.Payments
         /// <param name="action">The update action to be performed on the payment.</param>
         /// <returns>Payment</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-payments.html#update-payment"/>
-        public Task<Response<Payment>> UpdatePaymentAsync(Payment payment, UpdateAction action)
+        public IEnumerator UpdatePaymentAsync(Payment payment, UpdateAction action, Action<Response<Payment>> onSuccess, Action<Response<Payment>> onError)
         {
-            return UpdatePaymentAsync(payment.Id, payment.Version, new List<UpdateAction> { action });
+            return UpdatePaymentAsync(payment.Id, payment.Version, new List<UpdateAction> { action }, onSuccess, onError);
         }
 
         /// <summary>
@@ -133,9 +133,9 @@ namespace ctLite.Payments
         /// <param name="actions">The list of update actions to be performed on the payment.</param>
         /// <returns>Payment</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-payments.html#update-payment"/>
-        public Task<Response<Payment>> UpdatePaymentAsync(Payment payment, List<UpdateAction> actions)
+        public IEnumerator UpdatePaymentAsync(Payment payment, List<UpdateAction> actions, Action<Response<Payment>> onSuccess, Action<Response<Payment>> onError)
         {
-            return UpdatePaymentAsync(payment.Id, payment.Version, actions);
+            return UpdatePaymentAsync(payment.Id, payment.Version, actions, onSuccess, onError);
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace ctLite.Payments
         /// <param name="actions">The list of update actions to be performed on the payment.</param>
         /// <returns>Payment</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-payments.html#update-payment"/>
-        public Task<Response<Payment>> UpdatePaymentAsync(string paymentId, int version, List<UpdateAction> actions)
+        public IEnumerator UpdatePaymentAsync(string paymentId, int version, List<UpdateAction> actions, Action<Response<Payment>> onSuccess, Action<Response<Payment>> onError)
         {
             if (string.IsNullOrWhiteSpace(paymentId))
             {
@@ -170,7 +170,7 @@ namespace ctLite.Payments
             });
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", paymentId);
-            return _client.PostAsync<Payment>(endpoint, data.ToString());
+            return _client.PostAsync<Payment>(endpoint, data.ToString(), onSuccess, onError);
         }
 
         /// <summary>
@@ -178,9 +178,9 @@ namespace ctLite.Payments
         /// </summary>
         /// <param name="payment">Payment</param>
         /// <see href="http://dev.commercetools.com/http-api-projects-payments.html#delete-payment"/>
-        public Task<Response<JObject>> DeletePaymentAsync(Payment payment)
+        public IEnumerator DeletePaymentAsync(Payment payment, Action<Response<JObject>> onSuccess, Action<Response<JObject>> onError)
         {
-            return DeletePaymentAsync(payment.Id, payment.Version);
+            return DeletePaymentAsync(payment.Id, payment.Version, onSuccess, onError);
         }
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace ctLite.Payments
         /// <param name="paymentId">Payment ID</param>
         /// <param name="version">Payment version</param>
         /// <see href="http://dev.commercetools.com/http-api-projects-payments.html#delete-payment"/>
-        public Task<Response<JObject>> DeletePaymentAsync(string paymentId, int version)
+        public IEnumerator DeletePaymentAsync(string paymentId, int version, Action<Response<JObject>> onSuccess, Action<Response<JObject>> onError)
         {
             if (string.IsNullOrWhiteSpace(paymentId))
             {
@@ -207,7 +207,7 @@ namespace ctLite.Payments
             };
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", paymentId);
-            return _client.DeleteAsync<JObject>(endpoint, values);
+            return _client.DeleteAsync<JObject>(endpoint, onSuccess, onError, values);
         }
 
         #endregion

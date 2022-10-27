@@ -11,7 +11,7 @@ namespace ctLite.TaxCategories
         /// Creates an instance of the TaxCategoryManager.
         /// </summary>
         /// <returns>TaxCategoryManager</returns>
-        public static TaxCategoryManager TaxCategories(this IClient client)
+        public static TaxCategoryManager TaxCategories(this UnityClient client)
         {
             return new TaxCategoryManager(client);
         }

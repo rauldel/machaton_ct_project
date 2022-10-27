@@ -11,7 +11,7 @@ namespace ctLite.Subscriptions
         /// Creates an instance of the SubscriptionManager.
         /// </summary>
         /// <returns>SubscriptionManager</returns>
-        public static SubscriptionManager Subscriptions(this IClient client)
+        public static SubscriptionManager Subscriptions(this UnityClient client)
         {
             return new SubscriptionManager(client);
         }

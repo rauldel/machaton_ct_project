@@ -1,5 +1,6 @@
-﻿using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using System.Text;
+using System.Collections;
 
 using ctLite.Common;
 using ctLite.ProductProjections;
@@ -20,7 +21,7 @@ namespace ctLite.ProductProjectionSearch
 
         #region Member Variables
 
-        private readonly IClient _client;
+        private readonly UnityClient _client;
 
         #endregion 
 
@@ -30,7 +31,7 @@ namespace ctLite.ProductProjectionSearch
         /// Constructor
         /// </summary>
         /// <param name="client">Client</param>
-        public ProductProjectionSearchManager(IClient client)
+        public ProductProjectionSearchManager(UnityClient client)
         {
             _client = client;
         }
@@ -64,7 +65,9 @@ namespace ctLite.ProductProjectionSearch
         /// <param name="priceChannel">Enables price selection. Can only be used in conjunction with the priceCurrency parameter</param>
         /// <returns>ProductProjectionQueryResult object</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-products-search.html#search-productprojections"/>
-        public Task<Response<ProductProjectionQueryResult>> SearchProductProjectionsAsync(
+        public IEnumerator SearchProductProjectionsAsync(
+            Action<Response<ProductProjectionQueryResult>> onSuccess,
+            Action<Response<ProductProjectionQueryResult>> onError,
             string text = null, 
             string language = null, 
             bool fuzzy = false,
@@ -176,7 +179,7 @@ namespace ctLite.ProductProjectionSearch
             }
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, qs.ToString());
-            return _client.GetAsync<ProductProjectionQueryResult>(endpoint);
+            return _client.GetAsync<ProductProjectionQueryResult>(endpoint, onSuccess, onError);
         }
 
         #endregion

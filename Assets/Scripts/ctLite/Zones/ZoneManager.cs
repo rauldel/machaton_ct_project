@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Threading.Tasks;
 
 using ctLite.Common;
 
@@ -24,7 +24,7 @@ namespace ctLite.Zones
 
         #region Member Variables
 
-        private readonly IClient _client;
+        private readonly UnityClient _client;
 
         #endregion
 
@@ -34,7 +34,7 @@ namespace ctLite.Zones
         /// Constructor
         /// </summary>
         /// <param name="client">Client</param>
-        public ZoneManager(IClient client)
+        public ZoneManager(UnityClient client)
         {
             _client = client;
         }
@@ -49,7 +49,7 @@ namespace ctLite.Zones
         /// <param name="zoneId">Zone ID</param>
         /// <returns>Zone</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-zones.html#get-zone-by-id"/>
-        public Task<Response<Zone>> GetZoneByIdAsync(string zoneId)
+        public IEnumerator GetZoneByIdAsync(string zoneId, Action<Response<Zone>> onSuccess, Action<Response<Zone>> onError)
         {
             if (string.IsNullOrWhiteSpace(zoneId))
             {
@@ -57,7 +57,7 @@ namespace ctLite.Zones
             }
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", zoneId);
-            return _client.GetAsync<Zone>(endpoint);
+            return _client.GetAsync<Zone>(endpoint, onSuccess, onError);
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace ctLite.Zones
         /// <param name="offset">Offset</param>
         /// <returns>ZoneQueryResult</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-zones.html#query-zones"/>
-        public Task<Response<ZoneQueryResult>> QueryZonesAsync(string where = null, string sort = null, int limit = -1, int offset = -1)
+        public IEnumerator QueryZonesAsync(Action<Response<ZoneQueryResult>> onSuccess, Action<Response<ZoneQueryResult>> onError, string where = null, string sort = null, int limit = -1, int offset = -1)
         {
             NameValueCollection values = new NameValueCollection();
 
@@ -93,7 +93,7 @@ namespace ctLite.Zones
                 values.Add("offset", offset.ToString());
             }
 
-            return _client.GetAsync<ZoneQueryResult>(ENDPOINT_PREFIX, values);
+            return _client.GetAsync<ZoneQueryResult>(ENDPOINT_PREFIX, onSuccess, onError, values);
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace ctLite.Zones
         /// <param name="zoneDraft">Zone Draft</param>
         /// <returns>Zone</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-zones.html#create-zone"/>
-        public Task<Response<Zone>> CreateZoneAsync(ZoneDraft zoneDraft)
+        public IEnumerator CreateZoneAsync(ZoneDraft zoneDraft, Action<Response<Zone>> onSuccess, Action<Response<Zone>> onError)
         {
             if (string.IsNullOrWhiteSpace(zoneDraft.Name))
             {
@@ -110,7 +110,7 @@ namespace ctLite.Zones
             }
 
             string payload = JsonConvert.SerializeObject(zoneDraft, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            return _client.PostAsync<Zone>(ENDPOINT_PREFIX, payload);
+            return _client.PostAsync<Zone>(ENDPOINT_PREFIX, payload, onSuccess, onError);
         }
 
         /// <summary>
@@ -120,9 +120,9 @@ namespace ctLite.Zones
         /// <param name="action">The update action to be performed on the zone.</param>
         /// <returns>Zone</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-zones.html#update-zone"/>
-        public Task<Response<Zone>> UpdateZoneAsync(Zone zone, UpdateAction action)
+        public IEnumerator UpdateZoneAsync(Zone zone, UpdateAction action, Action<Response<Zone>> onSuccess, Action<Response<Zone>> onError)
         {
-            return UpdateZoneAsync(zone.Id, zone.Version, new List<UpdateAction> { action });
+            return UpdateZoneAsync(zone.Id, zone.Version, new List<UpdateAction> { action }, onSuccess, onError);
         }
 
         /// <summary>
@@ -132,9 +132,9 @@ namespace ctLite.Zones
         /// <param name="actions">The list of update actions to be performed on the zone.</param>
         /// <returns>Zone</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-zones.html#update-zone"/>
-        public Task<Response<Zone>> UpdateZoneAsync(Zone zone, List<UpdateAction> actions)
+        public IEnumerator UpdateZoneAsync(Zone zone, List<UpdateAction> actions, Action<Response<Zone>> onSuccess, Action<Response<Zone>> onError)
         {
-            return UpdateZoneAsync(zone.Id, zone.Version, actions);
+            return UpdateZoneAsync(zone.Id, zone.Version, actions, onSuccess, onError);
         }
 
         /// <summary>
@@ -145,9 +145,9 @@ namespace ctLite.Zones
         /// <param name="action">The update action to be performed on the zone.</param>
         /// <returns>Zone</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-zones.html#update-zone"/>
-        public Task<Response<Zone>> UpdateZoneAsync(string zoneId, int version, UpdateAction action)
+        public IEnumerator UpdateZoneAsync(string zoneId, int version, UpdateAction action, Action<Response<Zone>> onSuccess, Action<Response<Zone>> onError)
         {
-            return UpdateZoneAsync(zoneId, version, new List<UpdateAction> { action });
+            return UpdateZoneAsync(zoneId, version, new List<UpdateAction> { action }, onSuccess, onError);
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace ctLite.Zones
         /// <param name="actions">The list of update actions to be performed on the zone.</param>
         /// <returns>Zone</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-zones.html#update-zone"/>
-        public Task<Response<Zone>> UpdateZoneAsync(string zoneId, int version, List<UpdateAction> actions)
+        public IEnumerator UpdateZoneAsync(string zoneId, int version, List<UpdateAction> actions, Action<Response<Zone>> onSuccess, Action<Response<Zone>> onError)
         {
             if (string.IsNullOrWhiteSpace(zoneId))
             {
@@ -182,7 +182,7 @@ namespace ctLite.Zones
             });
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", zoneId);
-            return _client.PostAsync<Zone>(endpoint, data.ToString());
+            return _client.PostAsync<Zone>(endpoint, data.ToString(), onSuccess, onError);
         }
 
         /// <summary>
@@ -190,9 +190,9 @@ namespace ctLite.Zones
         /// </summary>
         /// <param name="zone">Zone</param>
         /// <see href="http://dev.commercetools.com/http-api-projects-zones.html#delete-zone"/>
-        public Task<Response<JObject>> DeleteZoneAsync(Zone zone)
+        public IEnumerator DeleteZoneAsync(Zone zone, Action<Response<JObject>> onSuccess, Action<Response<JObject>> onError)
         {
-            return DeleteZoneAsync(zone.Id, zone.Version);
+            return DeleteZoneAsync(zone.Id, zone.Version, onSuccess, onError);
         }
 
         /// <summary>
@@ -201,7 +201,7 @@ namespace ctLite.Zones
         /// <param name="zoneId">Zone ID</param>
         /// <param name="version">Zone version</param>
         /// <see href="http://dev.commercetools.com/http-api-projects-zones.html#delete-zone"/>
-        public Task<Response<JObject>> DeleteZoneAsync(string zoneId, int version)
+        public IEnumerator DeleteZoneAsync(string zoneId, int version, Action<Response<JObject>> onSuccess, Action<Response<JObject>> onError)
         {
             if (string.IsNullOrWhiteSpace(zoneId))
             {
@@ -219,7 +219,7 @@ namespace ctLite.Zones
             };
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", zoneId);
-            return _client.DeleteAsync<JObject>(endpoint, values);
+            return _client.DeleteAsync<JObject>(endpoint, onSuccess, onError, values);
         }
 
         #endregion

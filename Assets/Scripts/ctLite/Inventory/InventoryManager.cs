@@ -2,9 +2,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Threading.Tasks;
 
 namespace ctLite.Inventory
 {
@@ -22,7 +22,7 @@ namespace ctLite.Inventory
 
         #region Member Variables
 
-        private Client _client;
+        private UnityClient _client;
 
         #endregion 
 
@@ -31,7 +31,7 @@ namespace ctLite.Inventory
         /// Constructor
         /// </summary>
         /// <param name="client">Client</param>
-        public InventoryManager(Client client)
+        public InventoryManager(UnityClient client)
         {
             _client = client;
         }
@@ -45,7 +45,7 @@ namespace ctLite.Inventory
         /// <param name="inventoryEntryId">InventoryEntry ID</param>
         /// <returns>InventoryEntry</returns>
         /// /// <see href="https://docs.commercetools.com/http-api-projects-inventory.html#get-inventoryentry-by-id"/>
-        public Task<Response<InventoryEntry>> GetInventoryEntryByIdAsync(string inventoryEntryId)
+        public IEnumerator GetInventoryEntryByIdAsync(string inventoryEntryId, Action<Response<InventoryEntry>> onSuccess, Action<Response<InventoryEntry>> onError)
         {
             if (string.IsNullOrWhiteSpace(inventoryEntryId))
             {
@@ -53,7 +53,7 @@ namespace ctLite.Inventory
             }
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", inventoryEntryId);
-            return _client.GetAsync<InventoryEntry>(endpoint);
+            return _client.GetAsync<InventoryEntry>(endpoint, onSuccess, onError);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace ctLite.Inventory
         /// <param name="offset">Offset</param>
         /// <returns>InventoryEntryQueryResult</returns>
         /// <see href="http://docs.commercetools.com/http-api-projects-inventory.html#query-inventory"/>
-        public Task<Response<InventoryEntryQueryResult>> QueryInventoryAsync(string where = null, string sort = null, int limit = -1, int offset = -1)
+        public IEnumerator QueryInventoryAsync(Action<Response<InventoryEntryQueryResult>> onSuccess, Action<Response<InventoryEntryQueryResult>> onError, string where = null, string sort = null, int limit = -1, int offset = -1)
         {
             NameValueCollection values = new NameValueCollection();
 
@@ -89,7 +89,7 @@ namespace ctLite.Inventory
                 values.Add("offset", offset.ToString());
             }
 
-            return _client.GetAsync<InventoryEntryQueryResult>(ENDPOINT_PREFIX, values);
+            return _client.GetAsync<InventoryEntryQueryResult>(ENDPOINT_PREFIX, onSuccess, onError, values);
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace ctLite.Inventory
         /// <param name="inventoryEntryDraft">InventoryEntryDraft object</param>
         /// <returns>InventoryEntry</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-inventory.html#create-an-inventoryentry"/>
-        public Task<Response<InventoryEntry>> CreateInventoryEntryAsync(InventoryEntryDraft inventoryEntryDraft)
+        public IEnumerator CreateInventoryEntryAsync(InventoryEntryDraft inventoryEntryDraft, Action<Response<InventoryEntry>> onSuccess, Action<Response<InventoryEntry>> onError)
         {
             if (inventoryEntryDraft == null)
             {
@@ -111,7 +111,7 @@ namespace ctLite.Inventory
             }
 
             string payload = JsonConvert.SerializeObject(inventoryEntryDraft, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            return _client.PostAsync<InventoryEntry>(ENDPOINT_PREFIX, payload);
+            return _client.PostAsync<InventoryEntry>(ENDPOINT_PREFIX, payload, onSuccess, onError);
         }
 
         /// <summary>
@@ -121,9 +121,9 @@ namespace ctLite.Inventory
         /// <param name="action">The update action to be performed on the inventory entry.</param>
         /// <returns>InventoryEntry</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-inventory.html#update-an-inventoryentry"/>
-        public Task<Response<InventoryEntry>> UpdateInventoryEntryAsync(InventoryEntry inventoryEntry, UpdateAction action)
+        public IEnumerator UpdateInventoryEntryAsync(InventoryEntry inventoryEntry, UpdateAction action, Action<Response<InventoryEntry>> onSuccess, Action<Response<InventoryEntry>> onError)
         {
-            return UpdateInventoryEntryAsync(inventoryEntry.Id, inventoryEntry.Version, new List<UpdateAction> { action });
+            return UpdateInventoryEntryAsync(inventoryEntry.Id, inventoryEntry.Version, new List<UpdateAction> { action }, onSuccess, onError);
         }
 
         /// <summary>
@@ -133,9 +133,9 @@ namespace ctLite.Inventory
         /// <param name="actions">The list of update actions to be performed on the inventory entry.</param>
         /// <returns>InventoryEntry</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-inventory.html#update-an-inventoryentry"/>
-        public Task<Response<InventoryEntry>> UpdateInventoryEntryAsync(InventoryEntry inventoryEntry, List<UpdateAction> actions)
+        public IEnumerator UpdateInventoryEntryAsync(InventoryEntry inventoryEntry, List<UpdateAction> actions, Action<Response<InventoryEntry>> onSuccess, Action<Response<InventoryEntry>> onError)
         {
-            return UpdateInventoryEntryAsync(inventoryEntry.Id, inventoryEntry.Version, actions);
+            return UpdateInventoryEntryAsync(inventoryEntry.Id, inventoryEntry.Version, actions, onSuccess, onError);
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace ctLite.Inventory
         /// <param name="actions">The list of update actions to be performed on the inventory.</param>
         /// <returns>InventoryEntry</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-inventory.html#update-an-inventoryentry"/>
-        public Task<Response<InventoryEntry>> UpdateInventoryEntryAsync(string inventoryEntryId, int version, List<UpdateAction> actions)
+        public IEnumerator UpdateInventoryEntryAsync(string inventoryEntryId, int version, List<UpdateAction> actions, Action<Response<InventoryEntry>> onSuccess, Action<Response<InventoryEntry>> onError)
         {
             if (string.IsNullOrWhiteSpace(inventoryEntryId))
             {
@@ -170,7 +170,7 @@ namespace ctLite.Inventory
             });
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", inventoryEntryId);
-            return _client.PostAsync<InventoryEntry>(endpoint, data.ToString());
+            return _client.PostAsync<InventoryEntry>(endpoint, data.ToString(), onSuccess, onError);
         }
 
         /// <summary>
@@ -179,9 +179,9 @@ namespace ctLite.Inventory
         /// <param name="inventoryEntry">Inventory Entry object</param>
         /// <returns>InventoryEntry</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-inventory.html#delete-an-inventoryentry"/>
-        public Task<Response<InventoryEntry>> DeleteInventoryEntryAsync(InventoryEntry inventoryEntry)
+        public IEnumerator DeleteInventoryEntryAsync(InventoryEntry inventoryEntry, Action<Response<InventoryEntry>> onSuccess, Action<Response<InventoryEntry>> onError)
         {
-            return DeleteInventoryEntryAsync(inventoryEntry.Id, inventoryEntry.Version);
+            return DeleteInventoryEntryAsync(inventoryEntry.Id, inventoryEntry.Version, onSuccess, onError);
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace ctLite.Inventory
         /// <param name="version">Inventory version</param>
         /// <returns>InventoryEntry</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-inventory.html#delete-an-inventoryentry"/>
-        public Task<Response<InventoryEntry>> DeleteInventoryEntryAsync(string inventoryEntryId, int version)
+        public IEnumerator DeleteInventoryEntryAsync(string inventoryEntryId, int version, Action<Response<InventoryEntry>> onSuccess, Action<Response<InventoryEntry>> onError)
         {
             if (string.IsNullOrWhiteSpace(inventoryEntryId))
             {
@@ -209,7 +209,7 @@ namespace ctLite.Inventory
             };
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", inventoryEntryId);
-            return _client.DeleteAsync<InventoryEntry>(endpoint, values);
+            return _client.DeleteAsync<InventoryEntry>(endpoint, onSuccess, onError, values);
         }
 
         #endregion

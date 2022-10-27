@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Threading.Tasks;
+
 using ctLite.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -18,7 +19,7 @@ namespace ctLite.DiscountCodes
 
         #region Member Variables
 
-        private readonly IClient _client;
+        private readonly UnityClient _client;
 
         #endregion
 
@@ -28,7 +29,7 @@ namespace ctLite.DiscountCodes
         /// Constructor
         /// </summary>
         /// <param name="client">Client</param>
-        public DiscountCodeManager(IClient client)
+        public DiscountCodeManager(UnityClient client)
         {
             _client = client;
         }
@@ -43,7 +44,7 @@ namespace ctLite.DiscountCodes
         /// <param name="discountCodeId">Discount Code ID</param>
         /// <see href="https://dev.commercetools.com/http-api-projects-discountCodes.html#get-discountcode-by-id"/>
         /// <returns>DiscountCode</returns>
-        public Task<Response<DiscountCode>> GetDiscountCodeByIdAsync(string discountCodeId)
+        public IEnumerator GetDiscountCodeByIdAsync(string discountCodeId, Action<Response<DiscountCode>> onSuccess, Action<Response<DiscountCode>> onError)
         {
             if (string.IsNullOrWhiteSpace(discountCodeId))
             {
@@ -51,7 +52,7 @@ namespace ctLite.DiscountCodes
             }
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", discountCodeId);
-            return _client.GetAsync<DiscountCode>(endpoint);
+            return _client.GetAsync<DiscountCode>(endpoint, onSuccess, onError);
         }
 
         /// <summary>
@@ -63,7 +64,7 @@ namespace ctLite.DiscountCodes
         /// <param name="offset">Offset</param>
         /// <returns>DiscountCodeQueryResult</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-discountCodes.html#query-discountcodes"/>
-        public Task<Response<DiscountCodeQueryResult>> QueryDiscountCodesAsync(string where = null, string sort = null, int limit = -1, int offset = -1)
+        public IEnumerator QueryDiscountCodesAsync(Action<Response<DiscountCodeQueryResult>> onSuccess, Action<Response<DiscountCodeQueryResult>> onError, string where = null, string sort = null, int limit = -1, int offset = -1)
         {
             NameValueCollection values = new NameValueCollection();
 
@@ -87,7 +88,7 @@ namespace ctLite.DiscountCodes
                 values.Add("offset", offset.ToString());
             }
 
-            return _client.GetAsync<DiscountCodeQueryResult>(ENDPOINT_PREFIX, values);
+            return _client.GetAsync<DiscountCodeQueryResult>(ENDPOINT_PREFIX, onSuccess, onError, values);
         }
 
         /// <summary>
@@ -96,10 +97,10 @@ namespace ctLite.DiscountCodes
         /// <param name="discountCodeDraft">DiscountCodeDraft</param>
         /// <returns>DiscountCode</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-discountCodes.html#create-a-discountcode"/>
-        public Task<Response<DiscountCode>> CreateDiscountCodeAsync(DiscountCodeDraft discountCodeDraft)
+        public IEnumerator CreateDiscountCodeAsync(DiscountCodeDraft discountCodeDraft, Action<Response<DiscountCode>> onSuccess, Action<Response<DiscountCode>> onError)
         {
             string payload = JsonConvert.SerializeObject(discountCodeDraft, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            return _client.PostAsync<DiscountCode>(ENDPOINT_PREFIX, payload);
+            return _client.PostAsync<DiscountCode>(ENDPOINT_PREFIX, payload, onSuccess, onError);
         }
 
         /// <summary>
@@ -108,9 +109,9 @@ namespace ctLite.DiscountCodes
         /// <param name="discountCode">DiscountCode</param>
         /// <returns>DiscountCode</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-discountCodes.html#delete-discountcode"/>
-        public Task<Response<DiscountCode>> DeleteDiscountCodeAsync(DiscountCode discountCode)
+        public IEnumerator DeleteDiscountCodeAsync(DiscountCode discountCode, Action<Response<DiscountCode>> onSuccess, Action<Response<DiscountCode>> onError)
         {
-            return DeleteDiscountCodeAsync(discountCode.Id, discountCode.Version);
+            return DeleteDiscountCodeAsync(discountCode.Id, discountCode.Version, onSuccess, onError);
         }
 
         /// <summary>
@@ -120,7 +121,7 @@ namespace ctLite.DiscountCodes
         /// <param name="version">DiscountCode version</param>
         /// <returns>DiscountCode</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-discountCodes.html#delete-discountcode"/>
-        public Task<Response<DiscountCode>> DeleteDiscountCodeAsync(string discountCartId, int version)
+        public IEnumerator DeleteDiscountCodeAsync(string discountCartId, int version, Action<Response<DiscountCode>> onSuccess, Action<Response<DiscountCode>> onError)
         {
             if (string.IsNullOrWhiteSpace(discountCartId))
             {
@@ -138,7 +139,7 @@ namespace ctLite.DiscountCodes
             };
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", discountCartId);
-            return _client.DeleteAsync<DiscountCode>(endpoint, values);
+            return _client.DeleteAsync<DiscountCode>(endpoint, onSuccess, onError, values);
         }
 
         /// <summary>
@@ -148,9 +149,9 @@ namespace ctLite.DiscountCodes
         /// <param name="action">The update action to be performed on the discount code.</param>
         /// <returns>DiscountCode</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-discountCodes.html#update-discountcode"/>
-        public Task<Response<DiscountCode>> UpdateDiscountCodeAsync(DiscountCode discountCode, UpdateAction action)
+        public IEnumerator UpdateDiscountCodeAsync(DiscountCode discountCode, UpdateAction action, Action<Response<DiscountCode>> onSuccess, Action<Response<DiscountCode>> onError)
         {
-            return UpdateDiscountCodeAsync(discountCode.Id, discountCode.Version, new List<UpdateAction> { action });
+            return UpdateDiscountCodeAsync(discountCode.Id, discountCode.Version, new List<UpdateAction> { action }, onSuccess, onError);
         }
 
         /// <summary>
@@ -160,9 +161,9 @@ namespace ctLite.DiscountCodes
         /// <param name="actions">The list of update actions to be performed on the cart discount.</param>
         /// <returns>DiscountCode</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-discountCodes.html#update-discountcode"/>
-        public Task<Response<DiscountCode>> UpdateDiscountCodeAsync(DiscountCode discountCode, List<UpdateAction> actions)
+        public IEnumerator UpdateDiscountCodeAsync(DiscountCode discountCode, List<UpdateAction> actions, Action<Response<DiscountCode>> onSuccess, Action<Response<DiscountCode>> onError)
         {
-            return UpdateDiscountCodeAsync(discountCode.Id, discountCode.Version, actions);
+            return UpdateDiscountCodeAsync(discountCode.Id, discountCode.Version, actions, onSuccess, onError);
         }
 
         /// <summary>
@@ -173,7 +174,7 @@ namespace ctLite.DiscountCodes
         /// <param name="actions">The list of update actions to be performed on the discount code.</param>
         /// <returns>DiscountCode</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-discountCodes.html#update-discountcode"/>
-        public Task<Response<DiscountCode>> UpdateDiscountCodeAsync(string discountCodeId, int version, List<UpdateAction> actions)
+        public IEnumerator UpdateDiscountCodeAsync(string discountCodeId, int version, List<UpdateAction> actions, Action<Response<DiscountCode>> onSuccess, Action<Response<DiscountCode>> onError)
         {
             if (string.IsNullOrWhiteSpace(discountCodeId))
             {
@@ -197,7 +198,7 @@ namespace ctLite.DiscountCodes
             });
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", discountCodeId);
-            return _client.PostAsync<DiscountCode>(endpoint, data.ToString());
+            return _client.PostAsync<DiscountCode>(endpoint, data.ToString(), onSuccess, onError);
         }
         #endregion
     }

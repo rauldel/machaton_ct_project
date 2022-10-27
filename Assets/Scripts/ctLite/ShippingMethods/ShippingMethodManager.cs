@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Threading.Tasks;
 
 using ctLite.Common;
 
@@ -24,7 +24,7 @@ namespace ctLite.ShippingMethods
 
         #region Member Variables
 
-        private readonly IClient _client;
+        private readonly UnityClient _client;
 
         #endregion
 
@@ -34,7 +34,7 @@ namespace ctLite.ShippingMethods
         /// Constructor
         /// </summary>
         /// <param name="client">Client</param>
-        public ShippingMethodManager(IClient client)
+        public ShippingMethodManager(UnityClient client)
         {
             _client = client;
         }
@@ -49,7 +49,7 @@ namespace ctLite.ShippingMethods
         /// <param name="shippingMethodId">ShippingMethod ID</param>
         /// <returns>ShippingMethod</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-shippingMethods.html#get-shippingmethod-by-id"/>
-        public Task<Response<ShippingMethod>> GetShippingMethodByIdAsync(string shippingMethodId)
+        public IEnumerator GetShippingMethodByIdAsync(string shippingMethodId, Action<Response<ShippingMethod>> onSuccess, Action<Response<ShippingMethod>> onError)
         {
             if (string.IsNullOrWhiteSpace(shippingMethodId))
             {
@@ -57,7 +57,7 @@ namespace ctLite.ShippingMethods
             }
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", shippingMethodId);
-            return _client.GetAsync<ShippingMethod>(endpoint);
+            return _client.GetAsync<ShippingMethod>(endpoint, onSuccess, onError);
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace ctLite.ShippingMethods
         /// <param name="offset">Offset</param>
         /// <returns>ShippingMethodQueryResult</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-shippingMethods.html#query-shippingmethods"/>
-        public Task<Response<ShippingMethodQueryResult>> QueryShippingMethodsAsync(string where = null, string sort = null, int limit = -1, int offset = -1)
+        public IEnumerator QueryShippingMethodsAsync(Action<Response<ShippingMethodQueryResult>> onSuccess, Action<Response<ShippingMethodQueryResult>> onError, string where = null, string sort = null, int limit = -1, int offset = -1)
         {
             NameValueCollection values = new NameValueCollection();
 
@@ -93,7 +93,7 @@ namespace ctLite.ShippingMethods
                 values.Add("offset", offset.ToString());
             }
 
-            return _client.GetAsync<ShippingMethodQueryResult>(ENDPOINT_PREFIX, values);
+            return _client.GetAsync<ShippingMethodQueryResult>(ENDPOINT_PREFIX, onSuccess, onError, values);
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace ctLite.ShippingMethods
         /// <param name="cartId">The ID of the cart with a shipping address set.</param>
         /// <returns>List of ShippingMethod objects</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-shippingMethods.html#get-shippingmethods-for-a-cart"/>
-        public Task<Response<List<ShippingMethod>>> GetShippingMethodsForCart(string cartId)
+        public IEnumerator GetShippingMethodsForCart(string cartId, Action<Response<List<ShippingMethod>>> onSuccess, Action<Response<List<ShippingMethod>>> onError)
         {
             if (string.IsNullOrWhiteSpace(cartId))
             {
@@ -114,7 +114,7 @@ namespace ctLite.ShippingMethods
                 { "cartId", cartId }
             };
 
-            return _client.GetAsync<List<ShippingMethod>>(ENDPOINT_PREFIX, values);
+            return _client.GetAsync<List<ShippingMethod>>(ENDPOINT_PREFIX, onSuccess, onError, values);
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace ctLite.ShippingMethods
         /// <param name="currency">The currency code compliant to ISO 4217.</param>
         /// <returns>List of ShippingMethod objects</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-shippingMethods.html#get-shippingmethods-for-a-location"/>
-        public Task<Response<List<ShippingMethod>>> GetShippingMethodsForLocation(string country, string state = null, string currency = null)
+        public IEnumerator GetShippingMethodsForLocation(string country, Action<Response<List<ShippingMethod>>> onSuccess, Action<Response<List<ShippingMethod>>> onError, string state = null, string currency = null)
         {
             if (string.IsNullOrWhiteSpace(country))
             {
@@ -150,7 +150,7 @@ namespace ctLite.ShippingMethods
                 values.Add("currency", currency);
             }
 
-            return _client.GetAsync<List<ShippingMethod>>(ENDPOINT_PREFIX, values);
+            return _client.GetAsync<List<ShippingMethod>>(ENDPOINT_PREFIX, onSuccess, onError, values);
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace ctLite.ShippingMethods
         /// <param name="shippingMethodDraft">ShippingMethodDraft</param>
         /// <returns>ShippingMethod</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-shippingMethods.html#create-shippingmethod"/>
-        public Task<Response<ShippingMethod>> CreateShippingMethodAsync(ShippingMethodDraft shippingMethodDraft)
+        public IEnumerator CreateShippingMethodAsync(ShippingMethodDraft shippingMethodDraft, Action<Response<ShippingMethod>> onSuccess, Action<Response<ShippingMethod>> onError)
         {
             if (string.IsNullOrWhiteSpace(shippingMethodDraft.Name))
             {
@@ -167,7 +167,7 @@ namespace ctLite.ShippingMethods
             }
 
             string payload = JsonConvert.SerializeObject(shippingMethodDraft, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            return _client.PostAsync<ShippingMethod>(ENDPOINT_PREFIX, payload);
+            return _client.PostAsync<ShippingMethod>(ENDPOINT_PREFIX, payload, onSuccess, onError);
         }
 
         /// <summary>
@@ -177,9 +177,9 @@ namespace ctLite.ShippingMethods
         /// <param name="action">The update action to apply to the shipping method.</param>
         /// <returns>ShippingMethod</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-shippingMethods.html#update-shippingmethod"/>
-        public Task<Response<ShippingMethod>> UpdateShippingMethodAsync(ShippingMethod shippingMethod, UpdateAction action)
+        public IEnumerator UpdateShippingMethodAsync(ShippingMethod shippingMethod, UpdateAction action, Action<Response<ShippingMethod>> onSuccess, Action<Response<ShippingMethod>> onError)
         {
-            return UpdateShippingMethodAsync(shippingMethod.Id, shippingMethod.Version, new List<UpdateAction> { action });
+            return UpdateShippingMethodAsync(shippingMethod.Id, shippingMethod.Version, new List<UpdateAction> { action }, onSuccess, onError);
         }
 
         /// <summary>
@@ -189,9 +189,9 @@ namespace ctLite.ShippingMethods
         /// <param name="actions">The list of update actions to apply to the shipping method.</param>
         /// <returns>ShippingMethod</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-shippingMethods.html#update-shippingmethod"/>
-        public Task<Response<ShippingMethod>> UpdateShippingMethodAsync(ShippingMethod shippingMethod, List<UpdateAction> actions)
+        public IEnumerator UpdateShippingMethodAsync(ShippingMethod shippingMethod, List<UpdateAction> actions, Action<Response<ShippingMethod>> onSuccess, Action<Response<ShippingMethod>> onError)
         {
-            return UpdateShippingMethodAsync(shippingMethod.Id, shippingMethod.Version, actions);
+            return UpdateShippingMethodAsync(shippingMethod.Id, shippingMethod.Version, actions, onSuccess, onError);
         }
 
         /// <summary>
@@ -202,9 +202,9 @@ namespace ctLite.ShippingMethods
         /// <param name="action">The update action to apply to the shipping method.</param>
         /// <returns>ShippingMethod</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-shippingMethods.html#update-shippingmethod"/>
-        public Task<Response<ShippingMethod>> UpdateShippingMethodAsync(string shippingMethodId, int version, UpdateAction action)
+        public IEnumerator UpdateShippingMethodAsync(string shippingMethodId, int version, UpdateAction action, Action<Response<ShippingMethod>> onSuccess, Action<Response<ShippingMethod>> onError)
         {
-            return UpdateShippingMethodAsync(shippingMethodId, version, new List<UpdateAction> { action });
+            return UpdateShippingMethodAsync(shippingMethodId, version, new List<UpdateAction> { action }, onSuccess, onError);
         }
 
         /// <summary>
@@ -215,7 +215,7 @@ namespace ctLite.ShippingMethods
         /// <param name="actions">The list of update actions to apply to the shipping method.</param>
         /// <returns>ShippingMethod</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-shippingMethods.html#update-shippingmethod"/>
-        public Task<Response<ShippingMethod>> UpdateShippingMethodAsync(string shippingMethodId, int version, List<UpdateAction> actions)
+        public IEnumerator UpdateShippingMethodAsync(string shippingMethodId, int version, List<UpdateAction> actions, Action<Response<ShippingMethod>> onSuccess, Action<Response<ShippingMethod>> onError)
         {
             if (string.IsNullOrWhiteSpace(shippingMethodId))
             {
@@ -239,7 +239,7 @@ namespace ctLite.ShippingMethods
             });
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", shippingMethodId);
-            return _client.PostAsync<ShippingMethod>(endpoint, data.ToString());
+            return _client.PostAsync<ShippingMethod>(endpoint, data.ToString(), onSuccess, onError);
         }
 
         /// <summary>
@@ -248,9 +248,9 @@ namespace ctLite.ShippingMethods
         /// <param name="shippingMethod">Shipping method</param>
         /// <returns>ShippingMethod</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-shippingMethods.html#delete-shippingmethod"/>
-        public Task<Response<ShippingMethod>> DeleteShippingMethodAsync(ShippingMethod shippingMethod)
+        public IEnumerator DeleteShippingMethodAsync(ShippingMethod shippingMethod, Action<Response<ShippingMethod>> onSuccess, Action<Response<ShippingMethod>> onError)
         {
-            return DeleteShippingMethodAsync(shippingMethod.Id, shippingMethod.Version);
+            return DeleteShippingMethodAsync(shippingMethod.Id, shippingMethod.Version, onSuccess, onError);
         }
 
         /// <summary>
@@ -260,7 +260,7 @@ namespace ctLite.ShippingMethods
         /// <param name="version">Shipping method version</param>
         /// <returns>ShippingMethod</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-shippingMethods.html#delete-shippingmethod"/>
-        public Task<Response<ShippingMethod>> DeleteShippingMethodAsync(string shippingMethodId, int version)
+        public IEnumerator DeleteShippingMethodAsync(string shippingMethodId, int version, Action<Response<ShippingMethod>> onSuccess, Action<Response<ShippingMethod>> onError)
         {
             if (string.IsNullOrWhiteSpace(shippingMethodId))
             {
@@ -278,7 +278,7 @@ namespace ctLite.ShippingMethods
             };
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", shippingMethodId);
-            return _client.DeleteAsync<ShippingMethod>(endpoint, values);
+            return _client.DeleteAsync<ShippingMethod>(endpoint, onSuccess, onError, values);
         }
 
         #endregion

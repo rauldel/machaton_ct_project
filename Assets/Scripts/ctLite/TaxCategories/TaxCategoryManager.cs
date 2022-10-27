@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Threading.Tasks;
 
 using ctLite.Common;
 
@@ -24,7 +24,7 @@ namespace ctLite.TaxCategories
 
         #region Member Variables
 
-        private readonly IClient _client;
+        private readonly UnityClient _client;
 
         #endregion
 
@@ -34,7 +34,7 @@ namespace ctLite.TaxCategories
         /// Constructor
         /// </summary>
         /// <param name="client">Client</param>
-        public TaxCategoryManager(IClient client)
+        public TaxCategoryManager(UnityClient client)
         {
             _client = client;
         }
@@ -49,7 +49,7 @@ namespace ctLite.TaxCategories
         /// <param name="taxCategoryId">TaxCategory ID</param>
         /// <returns>TaxCategory</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-taxCategories.html#get-taxcategory-by-id"/>
-        public Task<Response<TaxCategory>> GetTaxCategoryByIdAsync(string taxCategoryId)
+        public IEnumerator GetTaxCategoryByIdAsync(string taxCategoryId, Action<Response<TaxCategory>> onSuccess, Action<Response<TaxCategory>> onError)
         {
             if (string.IsNullOrWhiteSpace(taxCategoryId))
             {
@@ -57,7 +57,7 @@ namespace ctLite.TaxCategories
             }
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", taxCategoryId);
-            return _client.GetAsync<TaxCategory>(endpoint);
+            return _client.GetAsync<TaxCategory>(endpoint, onSuccess, onError);
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace ctLite.TaxCategories
         /// <param name="offset">Offset</param>
         /// <returns>TaxCategoryQueryResult</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-taxCategories.html#query-taxcategories"/>
-        public Task<Response<TaxCategoryQueryResult>> QueryTaxCategoriesAsync(string where = null, string sort = null, int limit = -1, int offset = -1)
+        public IEnumerator QueryTaxCategoriesAsync(Action<Response<TaxCategoryQueryResult>> onSuccess, Action<Response<TaxCategoryQueryResult>> onError, string where = null, string sort = null, int limit = -1, int offset = -1)
         {
             NameValueCollection values = new NameValueCollection();
 
@@ -93,7 +93,7 @@ namespace ctLite.TaxCategories
                 values.Add("offset", offset.ToString());
             }
 
-            return _client.GetAsync<TaxCategoryQueryResult>(ENDPOINT_PREFIX, values);
+            return _client.GetAsync<TaxCategoryQueryResult>(ENDPOINT_PREFIX, onSuccess, onError, values);
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace ctLite.TaxCategories
         /// <param name="taxCategoryDraft">TaxCategoryDraft</param>
         /// <returns>TaxCategory</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-taxCategories.html#create-taxcategory"/>
-        public Task<Response<TaxCategory>> CreateTaxCategoryAsync(TaxCategoryDraft taxCategoryDraft)
+        public IEnumerator CreateTaxCategoryAsync(TaxCategoryDraft taxCategoryDraft, Action<Response<TaxCategory>> onSuccess, Action<Response<TaxCategory>> onError)
         {
             if (string.IsNullOrWhiteSpace(taxCategoryDraft.Name))
             {
@@ -110,7 +110,7 @@ namespace ctLite.TaxCategories
             }
 
             string payload = JsonConvert.SerializeObject(taxCategoryDraft, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            return _client.PostAsync<TaxCategory>(ENDPOINT_PREFIX, payload);
+            return _client.PostAsync<TaxCategory>(ENDPOINT_PREFIX, payload, onSuccess, onError);
         }
 
         /// <summary>
@@ -120,9 +120,9 @@ namespace ctLite.TaxCategories
         /// <param name="action">The update action to be performed on the tax category.</param>
         /// <returns>TaxCategory</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-taxCategories.html#update-taxcategory"/>
-        public Task<Response<TaxCategory>> UpdateTaxCategoryAsync(TaxCategory taxCategory, UpdateAction action)
+        public IEnumerator UpdateTaxCategoryAsync(TaxCategory taxCategory, UpdateAction action, Action<Response<TaxCategory>> onSuccess, Action<Response<TaxCategory>> onError)
         {
-            return UpdateTaxCategoryAsync(taxCategory.Id, taxCategory.Version, new List<UpdateAction> { action });
+            return UpdateTaxCategoryAsync(taxCategory.Id, taxCategory.Version, new List<UpdateAction> { action }, onSuccess, onError);
         }
 
         /// <summary>
@@ -132,9 +132,9 @@ namespace ctLite.TaxCategories
         /// <param name="actions">The list of update actions to be performed on the tax category.</param>
         /// <returns>TaxCategory</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-taxCategories.html#update-taxcategory"/>
-        public Task<Response<TaxCategory>> UpdateTaxCategoryAsync(TaxCategory taxCategory, List<UpdateAction> actions)
+        public IEnumerator UpdateTaxCategoryAsync(TaxCategory taxCategory, List<UpdateAction> actions, Action<Response<TaxCategory>> onSuccess, Action<Response<TaxCategory>> onError)
         {
-            return UpdateTaxCategoryAsync(taxCategory.Id, taxCategory.Version, actions);
+            return UpdateTaxCategoryAsync(taxCategory.Id, taxCategory.Version, actions, onSuccess, onError);
         }
 
         /// <summary>
@@ -145,9 +145,9 @@ namespace ctLite.TaxCategories
         /// <param name="action">The update action to be performed on the tax category.</param>
         /// <returns>TaxCategory</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-taxCategories.html#update-taxcategory"/>
-        public Task<Response<TaxCategory>> UpdateTaxCategoryAsync(string taxCategoryId, int version, UpdateAction action)
+        public IEnumerator UpdateTaxCategoryAsync(string taxCategoryId, int version, UpdateAction action, Action<Response<TaxCategory>> onSuccess, Action<Response<TaxCategory>> onError)
         {
-            return UpdateTaxCategoryAsync(taxCategoryId, version, new List<UpdateAction> { action });
+            return UpdateTaxCategoryAsync(taxCategoryId, version, new List<UpdateAction> { action }, onSuccess, onError);
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace ctLite.TaxCategories
         /// <param name="actions">The list of update actions to be performed on the tax category.</param>
         /// <returns>TaxCategory</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-taxCategories.html#update-taxcategory"/>
-        public Task<Response<TaxCategory>> UpdateTaxCategoryAsync(string taxCategoryId, int version, List<UpdateAction> actions)
+        public IEnumerator UpdateTaxCategoryAsync(string taxCategoryId, int version, List<UpdateAction> actions, Action<Response<TaxCategory>> onSuccess, Action<Response<TaxCategory>> onError)
         {
             if (string.IsNullOrWhiteSpace(taxCategoryId))
             {
@@ -182,7 +182,7 @@ namespace ctLite.TaxCategories
             });
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", taxCategoryId);
-            return _client.PostAsync<TaxCategory>(endpoint, data.ToString());
+            return _client.PostAsync<TaxCategory>(endpoint, data.ToString(), onSuccess, onError);
         }
 
         /// <summary>
@@ -190,9 +190,9 @@ namespace ctLite.TaxCategories
         /// </summary>
         /// <param name="taxCategory">Tax category</param>
         /// <see href="https://dev.commercetools.com/http-api-projects-taxCategories.html#delete-taxcategory"/>
-        public Task<Response<JObject>> DeleteTaxCategoryAsync(TaxCategory taxCategory)
+        public IEnumerator DeleteTaxCategoryAsync(TaxCategory taxCategory, Action<Response<JObject>> onSuccess, Action<Response<JObject>> onError)
         {
-            return DeleteTaxCategoryAsync(taxCategory.Id, taxCategory.Version);
+            return DeleteTaxCategoryAsync(taxCategory.Id, taxCategory.Version, onSuccess, onError);
         }
 
         /// <summary>
@@ -201,7 +201,7 @@ namespace ctLite.TaxCategories
         /// <param name="taxCategoryId">Tax category ID</param>
         /// <param name="version">Tax category version</param>
         /// <see href="https://dev.commercetools.com/http-api-projects-taxCategories.html#delete-taxcategory"/>
-        public Task<Response<JObject>> DeleteTaxCategoryAsync(string taxCategoryId, int version)
+        public IEnumerator DeleteTaxCategoryAsync(string taxCategoryId, int version, Action<Response<JObject>> onSuccess, Action<Response<JObject>> onError)
         {
             if (string.IsNullOrWhiteSpace(taxCategoryId))
             {
@@ -219,7 +219,7 @@ namespace ctLite.TaxCategories
             };
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", taxCategoryId);
-            return _client.DeleteAsync<JObject>(endpoint, values);
+            return _client.DeleteAsync<JObject>(endpoint, onSuccess, onError, values);
         }
 
         #endregion

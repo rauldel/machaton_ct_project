@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Threading.Tasks;
 
 using ctLite.Common;
 using ctLite.Messages;
@@ -25,7 +25,7 @@ namespace ctLite.Customers
 
         #region Member Variables
 
-        private readonly IClient _client;
+        private readonly UnityClient _client;
 
         #endregion
 
@@ -35,7 +35,7 @@ namespace ctLite.Customers
         /// Constructor
         /// </summary>
         /// <param name="client">Client</param>
-        public CustomerManager(IClient client)
+        public CustomerManager(UnityClient client)
         {
             _client = client;
         }
@@ -50,7 +50,7 @@ namespace ctLite.Customers
         /// <param name="customerId">Customer ID</param>
         /// <see href="http://dev.commercetools.com/http-api-projects-customers.html#get-customer-by-id"/>
         /// <returns>Customer</returns>
-        public Task<Response<Customer>> GetCustomerByIdAsync(string customerId)
+        public IEnumerator GetCustomerByIdAsync(string customerId, Action<Response<Customer>> onSuccess, Action<Response<Customer>> onError)
         {
             if (string.IsNullOrWhiteSpace(customerId))
             {
@@ -58,7 +58,7 @@ namespace ctLite.Customers
             }
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", customerId);
-            return _client.GetAsync<Customer>(endpoint);
+            return _client.GetAsync<Customer>(endpoint, onSuccess, onError);
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace ctLite.Customers
         /// <param name="limit">Limit</param>
         /// <param name="offset">Offset</param>
         /// <returns>CustomerQueryResult</returns>
-        public Task<Response<CustomerQueryResult>> QueryCustomersAsync(string where = null, string sort = null, int limit = -1, int offset = -1)
+        public IEnumerator QueryCustomersAsync(Action<Response<CustomerQueryResult>> onSuccess, Action<Response<CustomerQueryResult>> onError, string where = null, string sort = null, int limit = -1, int offset = -1)
         {
             NameValueCollection values = new NameValueCollection();
 
@@ -93,7 +93,7 @@ namespace ctLite.Customers
                 values.Add("offset", offset.ToString());
             }
 
-            return _client.GetAsync<CustomerQueryResult>(ENDPOINT_PREFIX, values);
+            return _client.GetAsync<CustomerQueryResult>(ENDPOINT_PREFIX, onSuccess, onError, values);
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace ctLite.Customers
         /// <param name="customerDraft">CustomerDraft</param>
         /// <returns>CustomerCreatedMessage</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-customers.html#create-customer-sign-up"/>
-        public Task<Response<CustomerCreatedMessage>> CreateCustomerAsync(CustomerDraft customerDraft)
+        public IEnumerator CreateCustomerAsync(CustomerDraft customerDraft, Action<Response<CustomerCreatedMessage>> onSuccess, Action<Response<CustomerCreatedMessage>> onError)
         {
             if (string.IsNullOrWhiteSpace(customerDraft.Email))
             {
@@ -115,7 +115,7 @@ namespace ctLite.Customers
             }
 
             string payload = JsonConvert.SerializeObject(customerDraft, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            return _client.PostAsync<CustomerCreatedMessage>(ENDPOINT_PREFIX, payload);
+            return _client.PostAsync<CustomerCreatedMessage>(ENDPOINT_PREFIX, payload, onSuccess, onError);
         }
 
         /// <summary>
@@ -125,9 +125,9 @@ namespace ctLite.Customers
         /// <param name="action">The  update action to be performed on the Customer.</param>
         /// <returns>Customer</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-customers.html#update-customer"/>
-        public Task<Response<Customer>> UpdateCustomerAsync(Customer customer, UpdateAction action)
+        public IEnumerator UpdateCustomerAsync(Customer customer, UpdateAction action, Action<Response<Customer>> onSuccess, Action<Response<Customer>> onError)
         {
-            return UpdateCustomerAsync(customer.Id, customer.Version, new List<UpdateAction> { action });
+            return UpdateCustomerAsync(customer.Id, customer.Version, new List<UpdateAction> { action }, onSuccess, onError);
         }
 
         /// <summary>
@@ -137,9 +137,9 @@ namespace ctLite.Customers
         /// <param name="actions">The list of update actions to be performed on the Customer.</param>
         /// <returns>Customer</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-customers.html#update-customer"/>
-        public Task<Response<Customer>> UpdateCustomerAsync(Customer customer, List<UpdateAction> actions)
+        public IEnumerator UpdateCustomerAsync(Customer customer, List<UpdateAction> actions, Action<Response<Customer>> onSuccess, Action<Response<Customer>> onError)
         {
-            return UpdateCustomerAsync(customer.Id, customer.Version, actions);
+            return UpdateCustomerAsync(customer.Id, customer.Version, actions, onSuccess, onError);
         }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace ctLite.Customers
         /// <param name="actions">The list of update actions to be performed on the Customer.</param>
         /// <returns>Customer</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-customers.html#update-customer"/>
-        public Task<Response<Customer>> UpdateCustomerAsync(string customerId, int version, List<UpdateAction> actions)
+        public IEnumerator UpdateCustomerAsync(string customerId, int version, List<UpdateAction> actions, Action<Response<Customer>> onSuccess, Action<Response<Customer>> onError)
         {
             if (string.IsNullOrWhiteSpace(customerId))
             {
@@ -174,7 +174,7 @@ namespace ctLite.Customers
             });
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", customerId);
-            return _client.PostAsync<Customer>(endpoint, data.ToString());
+            return _client.PostAsync<Customer>(endpoint, data.ToString(), onSuccess, onError);
         }
 
         /// <summary>
@@ -185,9 +185,9 @@ namespace ctLite.Customers
         /// <param name="newPassword">New password</param>
         /// <returns>Customer</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-customers.html#change-customers-password"/>
-        public Task<Response<Customer>> ChangeCustomersPassword(Customer customer, string currentPassword, string newPassword)
+        public IEnumerator ChangeCustomersPassword(Customer customer, string currentPassword, string newPassword, Action<Response<Customer>> onSuccess, Action<Response<Customer>> onError)
         {
-            return ChangeCustomersPassword(customer.Id, customer.Version, currentPassword, newPassword);
+            return ChangeCustomersPassword(customer.Id, customer.Version, currentPassword, newPassword, onSuccess, onError);
         }
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace ctLite.Customers
         /// <param name="newPassword">New password</param>
         /// <returns>Customer</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-customers.html#change-customers-password"/>
-        public Task<Response<Customer>> ChangeCustomersPassword(string id, int version, string currentPassword, string newPassword)
+        public IEnumerator ChangeCustomersPassword(string id, int version, string currentPassword, string newPassword, Action<Response<Customer>> onSuccess, Action<Response<Customer>> onError)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -230,7 +230,7 @@ namespace ctLite.Customers
             });
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/password/");
-            return _client.PostAsync<Customer>(endpoint, data.ToString());
+            return _client.PostAsync<Customer>(endpoint, data.ToString(), onSuccess, onError);
         }
 
         /// <summary>
@@ -243,7 +243,7 @@ namespace ctLite.Customers
         /// <param name="anonymousId">AnonymousId</param>
         /// <returns>CustomerSignInResult</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-customers.html#authenticate-customer-sign-in"/>
-        public Task<Response<CustomerSignInResult>> AuthenticateCustomerAsync(string email, string password, string anonymousCartId = null, AnonymousCartSignInMode? anonymousCartSignInMode = null, string anonymousId = null)
+        public IEnumerator AuthenticateCustomerAsync(string email, string password, Action<Response<CustomerSignInResult>> onSuccess, Action<Response<CustomerSignInResult>> onError, string anonymousCartId = null, AnonymousCartSignInMode? anonymousCartSignInMode = null, string anonymousId = null)
         {
             JObject data = JObject.FromObject(new
             {
@@ -266,7 +266,7 @@ namespace ctLite.Customers
                 data.Add(new JProperty("anonymousId", anonymousId));
             }
 
-            return _client.PostAsync<CustomerSignInResult>("/login", data.ToString());
+            return _client.PostAsync<CustomerSignInResult>("/login", data.ToString(), onSuccess, onError);
         }
 
         /// <summary>
@@ -275,9 +275,9 @@ namespace ctLite.Customers
         /// <param name="customer">Customer</param>
         /// <returns>Customer</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-customers.html#delete-customer"/>
-        public Task<Response<Customer>> DeleteCustomerAsync(Customer customer)
+        public IEnumerator DeleteCustomerAsync(Customer customer, Action<Response<Customer>> onSuccess, Action<Response<Customer>> onError)
         {
-            return DeleteCustomerAsync(customer.Id, customer.Version);
+            return DeleteCustomerAsync(customer.Id, customer.Version, onSuccess, onError);
         }
 
         /// <summary>
@@ -287,7 +287,7 @@ namespace ctLite.Customers
         /// <param name="version">Customer version</param>
         /// <returns>Customer</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-customers.html#delete-customer"/>
-        public Task<Response<Customer>> DeleteCustomerAsync(string customerId, int version)
+        public IEnumerator DeleteCustomerAsync(string customerId, int version, Action<Response<Customer>> onSuccess, Action<Response<Customer>> onError)
         {
             if (string.IsNullOrWhiteSpace(customerId))
             {
@@ -305,7 +305,7 @@ namespace ctLite.Customers
             };
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", customerId);
-            return _client.DeleteAsync<Customer>(endpoint, values);
+            return _client.DeleteAsync<Customer>(endpoint, onSuccess, onError, values);
         }
 
         #endregion

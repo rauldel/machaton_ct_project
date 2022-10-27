@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Threading.Tasks;
 
 using ctLite.Common;
 
@@ -24,7 +24,7 @@ namespace ctLite.Subscriptions
 
         #region Member Variables
 
-        private readonly IClient _client;
+        private readonly UnityClient _client;
 
         #endregion 
 
@@ -34,7 +34,7 @@ namespace ctLite.Subscriptions
         /// Constructor
         /// </summary>
         /// <param name="client">Client</param>
-        public SubscriptionManager(IClient client)
+        public SubscriptionManager(UnityClient client)
         {
             _client = client;
         }
@@ -49,7 +49,7 @@ namespace ctLite.Subscriptions
         /// <param name="subscriptionId">Subscription ID</param>
         /// <returns>Subscription</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-subscriptions.html#get-a-subscription-by-id"/>
-        public Task<Response<Subscription>> GetSubscriptionByIdAsync(string subscriptionId)
+        public IEnumerator GetSubscriptionByIdAsync(string subscriptionId, Action<Response<Subscription>> onSuccess, Action<Response<Subscription>> onError)
         {
             if (string.IsNullOrWhiteSpace(subscriptionId))
             {
@@ -57,7 +57,7 @@ namespace ctLite.Subscriptions
             }
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", subscriptionId);
-            return _client.GetAsync<Subscription>(endpoint);
+            return _client.GetAsync<Subscription>(endpoint, onSuccess, onError);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace ctLite.Subscriptions
         /// <param name="key">Subscription key</param>
         /// <returns>Subscription</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-subscriptions.html#get-a-subscription-by-key"/>
-        public Task<Response<Subscription>> GetSubscriptionByKeyAsync(string key)
+        public IEnumerator GetSubscriptionByKeyAsync(string key, Action<Response<Subscription>> onSuccess, Action<Response<Subscription>> onError)
         {
             if (string.IsNullOrWhiteSpace(key))
             {
@@ -74,7 +74,7 @@ namespace ctLite.Subscriptions
             }
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/key=", key);
-            return _client.GetAsync<Subscription>(endpoint);
+            return _client.GetAsync<Subscription>(endpoint, onSuccess, onError);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace ctLite.Subscriptions
         /// <param name="offset">Offset</param>
         /// <returns>SubscriptionQueryResult</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-subscriptions.html#query-subscriptions"/>
-        public Task<Response<SubscriptionQueryResult>> QuerySubscriptionsAsync(string where = null, string sort = null, int limit = -1, int offset = -1)
+        public IEnumerator QuerySubscriptionsAsync(Action<Response<SubscriptionQueryResult>> onSuccess, Action<Response<SubscriptionQueryResult>> onError, string where = null, string sort = null, int limit = -1, int offset = -1)
         {
             NameValueCollection values = new NameValueCollection();
 
@@ -110,7 +110,7 @@ namespace ctLite.Subscriptions
                 values.Add("offset", offset.ToString());
             }
 
-            return _client.GetAsync<SubscriptionQueryResult>(ENDPOINT_PREFIX, values);
+            return _client.GetAsync<SubscriptionQueryResult>(ENDPOINT_PREFIX, onSuccess, onError, values);
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace ctLite.Subscriptions
         /// <param name="subscriptionDraft">SubscriptionDraft object</param>
         /// <returns>Subscription</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-subscriptions.html#create-a-subscription"/>
-        public Task<Response<Subscription>> CreateSubscriptionAsync(SubscriptionDraft subscriptionDraft)
+        public IEnumerator CreateSubscriptionAsync(SubscriptionDraft subscriptionDraft, Action<Response<Subscription>> onSuccess, Action<Response<Subscription>> onError)
         {
             if (subscriptionDraft == null)
             {
@@ -135,7 +135,7 @@ namespace ctLite.Subscriptions
             }
 
             string payload = JsonConvert.SerializeObject(subscriptionDraft, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            return _client.PostAsync<Subscription>(ENDPOINT_PREFIX, payload);
+            return _client.PostAsync<Subscription>(ENDPOINT_PREFIX, payload, onSuccess, onError);
         }
 
         /// <summary>
@@ -145,9 +145,9 @@ namespace ctLite.Subscriptions
         /// <param name="action">The update action to be performed on the subscription.</param>
         /// <returns>Subscription</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-subscriptions.html#update-subscription"/>
-        public Task<Response<Subscription>> UpdateSubscriptionAsync(Subscription subscription, UpdateAction action)
+        public IEnumerator UpdateSubscriptionAsync(Subscription subscription, UpdateAction action, Action<Response<Subscription>> onSuccess, Action<Response<Subscription>> onError)
         {
-            return UpdateSubscriptionByIdAsync(subscription.Id, subscription.Version, new List<UpdateAction> { action });
+            return UpdateSubscriptionByIdAsync(subscription.Id, subscription.Version, new List<UpdateAction> { action }, onSuccess, onError);
         }
 
         /// <summary>
@@ -157,9 +157,9 @@ namespace ctLite.Subscriptions
         /// <param name="actions">The list of update actions to be performed on the subscription.</param>
         /// <returns>Subscription</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-subscriptions.html#update-subscription"/>
-        public Task<Response<Subscription>> UpdateSubscriptionAsync(Subscription subscription, List<UpdateAction> actions)
+        public IEnumerator UpdateSubscriptionAsync(Subscription subscription, List<UpdateAction> actions, Action<Response<Subscription>> onSuccess, Action<Response<Subscription>> onError)
         {
-            return UpdateSubscriptionByIdAsync(subscription.Id, subscription.Version, actions);
+            return UpdateSubscriptionByIdAsync(subscription.Id, subscription.Version, actions, onSuccess, onError);
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace ctLite.Subscriptions
         /// <param name="actions">The list of update actions to be performed on the subscription.</param>
         /// <returns>Subscription</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-subscriptions.html#update-subscription-by-id"/>
-        public Task<Response<Subscription>> UpdateSubscriptionByIdAsync(string subscriptionId, int version, List<UpdateAction> actions)
+        public IEnumerator UpdateSubscriptionByIdAsync(string subscriptionId, int version, List<UpdateAction> actions, Action<Response<Subscription>> onSuccess, Action<Response<Subscription>> onError)
         {
             if (string.IsNullOrWhiteSpace(subscriptionId))
             {
@@ -178,7 +178,7 @@ namespace ctLite.Subscriptions
             }
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", subscriptionId);
-            return UpdateSubscriptionAsync(endpoint, version, actions);
+            return UpdateSubscriptionAsync(endpoint, version, actions, onSuccess, onError);
         }
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace ctLite.Subscriptions
         /// <param name="actions">The list of update actions to be performed on the subscription.</param>
         /// <returns>Subscription</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-subscriptions.html#update-subscription-by-key"/>
-        public Task<Response<Subscription>> UpdateSubscriptionByKeyAsync(string key, int version, List<UpdateAction> actions)
+        public IEnumerator UpdateSubscriptionByKeyAsync(string key, int version, List<UpdateAction> actions, Action<Response<Subscription>> onSuccess, Action<Response<Subscription>> onError)
         {
             if (string.IsNullOrWhiteSpace(key))
             {
@@ -197,7 +197,7 @@ namespace ctLite.Subscriptions
             }
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/key=", key);
-            return UpdateSubscriptionAsync(endpoint, version, actions);
+            return UpdateSubscriptionAsync(endpoint, version, actions, onSuccess, onError);
         }
 
         /// <summary>
@@ -207,7 +207,7 @@ namespace ctLite.Subscriptions
         /// <param name="version">The expected version of the subscription on which the changes should be applied. If the expected version does not match the actual version, a 409 Conflict will be returned.</param>
         /// <param name="actions">The list of update actions to be performed on the subscription.</param>
         /// <returns></returns>
-        private Task<Response<Subscription>> UpdateSubscriptionAsync(string endpoint, int version, List<UpdateAction> actions)
+        private IEnumerator UpdateSubscriptionAsync(string endpoint, int version, List<UpdateAction> actions, Action<Response<Subscription>> onSuccess, Action<Response<Subscription>> onError)
         {
             if (version < 1)
             {
@@ -225,7 +225,7 @@ namespace ctLite.Subscriptions
                 actions = JArray.FromObject(actions, new JsonSerializer { NullValueHandling = NullValueHandling.Ignore })
             });
 
-            return _client.PostAsync<Subscription>(endpoint, data.ToString());
+            return _client.PostAsync<Subscription>(endpoint, data.ToString(), onSuccess, onError);
         }
 
         /// <summary>
@@ -234,9 +234,9 @@ namespace ctLite.Subscriptions
         /// <param name="subscription">Subscription</param>
         /// <returns>Subscription</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-subscriptions.html#delete-subscription"/>
-        public Task<Response<Subscription>> DeleteSubscriptionAsync(Subscription subscription)
+        public IEnumerator DeleteSubscriptionAsync(Subscription subscription, Action<Response<Subscription>> onSuccess, Action<Response<Subscription>> onError)
         {
-            return DeleteSubscriptionByIdAsync(subscription.Id, subscription.Version);
+            return DeleteSubscriptionByIdAsync(subscription.Id, subscription.Version, onSuccess, onError);
         }
 
         /// <summary>
@@ -246,7 +246,7 @@ namespace ctLite.Subscriptions
         /// <param name="version">Subscription version</param>
         /// <returns>Subscription</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-subscriptions.html#delete-subscription-by-id"/>
-        public Task<Response<Subscription>> DeleteSubscriptionByIdAsync(string subscriptionId, int version)
+        public IEnumerator DeleteSubscriptionByIdAsync(string subscriptionId, int version, Action<Response<Subscription>> onSuccess, Action<Response<Subscription>> onError)
         {
             if (string.IsNullOrWhiteSpace(subscriptionId))
             {
@@ -254,7 +254,7 @@ namespace ctLite.Subscriptions
             }
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", subscriptionId);
-            return UpdateSubscriptionAsync(endpoint, version);
+            return UpdateSubscriptionAsync(endpoint, version, onSuccess, onError);
         }
 
         /// <summary>
@@ -264,7 +264,7 @@ namespace ctLite.Subscriptions
         /// <param name="version">Subscription version</param>
         /// <returns>Subscription</returns>
         /// <see href="https://dev.commercetools.com/http-api-projects-subscriptions.html#delete-subscription-by-id"/>
-        public Task<Response<Subscription>> DeleteSubscriptionByKeyAsync(string key, int version)
+        public IEnumerator DeleteSubscriptionByKeyAsync(string key, int version, Action<Response<Subscription>> onSuccess, Action<Response<Subscription>> onError)
         {
             if (string.IsNullOrWhiteSpace(key))
             {
@@ -272,7 +272,7 @@ namespace ctLite.Subscriptions
             }
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/key=", key);
-            return UpdateSubscriptionAsync(endpoint, version);
+            return UpdateSubscriptionAsync(endpoint, version, onSuccess, onError);
         }
 
         /// <summary>
@@ -281,7 +281,7 @@ namespace ctLite.Subscriptions
         /// <param name="endpoint">Request endpoint</param>
         /// <param name="version">Subscription version</param>
         /// <returns></returns>
-        private Task<Response<Subscription>> UpdateSubscriptionAsync(string endpoint, int version)
+        private IEnumerator UpdateSubscriptionAsync(string endpoint, int version, Action<Response<Subscription>> onSuccess, Action<Response<Subscription>> onError)
         {
             if (version < 1)
             {
@@ -293,7 +293,7 @@ namespace ctLite.Subscriptions
                 { "version", version.ToString() }
             };
 
-            return _client.DeleteAsync<Subscription>(endpoint, values);
+            return _client.DeleteAsync<Subscription>(endpoint, onSuccess, onError, values);
         }
 
         #endregion

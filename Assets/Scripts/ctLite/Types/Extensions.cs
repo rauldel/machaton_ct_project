@@ -11,7 +11,7 @@ namespace ctLite.Types
         /// Creates an instance of the TypeManager.
         /// </summary>
         /// <returns>TypeManager</returns>
-        public static TypeManager Types(this IClient client)
+        public static TypeManager Types(this UnityClient client)
         {
             return new TypeManager(client);
         }

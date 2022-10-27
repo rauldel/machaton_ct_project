@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.Threading;
 
 namespace ctLite.Common
 {
@@ -40,11 +38,8 @@ namespace ctLite.Common
             {
                 if (_disposed || disposedItem.Expired)
                 {
-                    // item has been expired, dispose it
-                    if (Interlocked.CompareExchange(ref disposedItem.DisposeFlag, 1, 0) == 0)
-                    {
-                        _valueDisposeAction(disposedItem.Value);
-                    }
+                    disposedItem.DisposeFlag = 0;
+                    _valueDisposeAction(disposedItem.Value);
                 }
                 else
                 {

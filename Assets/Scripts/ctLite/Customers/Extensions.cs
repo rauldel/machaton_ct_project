@@ -11,7 +11,7 @@ namespace ctLite.Customers
         /// Creates an instance of the CustomerManager.
         /// </summary>
         /// <returns>CustomerManager</returns>
-        public static CustomerManager Customers(this IClient client)
+        public static CustomerManager Customers(this UnityClient client)
         {
             return new CustomerManager(client);
         }

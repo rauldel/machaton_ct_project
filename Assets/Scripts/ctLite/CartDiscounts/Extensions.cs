@@ -8,7 +8,7 @@ namespace ctLite.CartDiscounts
         /// Creates an instance of the CartDiscountManager.
         /// </summary>
         /// <returns>CartDiscountManager</returns>
-        public static CartDiscountManager CartDiscounts(this IClient client)
+        public static CartDiscountManager CartDiscounts(this UnityClient client)
         {
             return new CartDiscountManager(client);
         }

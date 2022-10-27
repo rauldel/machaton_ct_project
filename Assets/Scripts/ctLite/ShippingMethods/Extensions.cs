@@ -11,7 +11,7 @@ namespace ctLite.ShippingMethods
         /// Creates an instance of the ShippingMethodManager.
         /// </summary>
         /// <returns>ShippingMethodManager</returns>
-        public static ShippingMethodManager ShippingMethods(this IClient client)
+        public static ShippingMethodManager ShippingMethods(this UnityClient client)
         {
             return new ShippingMethodManager(client);
         }

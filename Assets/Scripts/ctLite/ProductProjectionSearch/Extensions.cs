@@ -11,7 +11,7 @@ namespace ctLite.ProductProjectionSearch
         /// Creates an instance of the ProductProjectionSearchManager.
         /// </summary>
         /// <returns>ProductProjectionSearchManager</returns>
-        public static ProductProjectionSearchManager ProductProjectionSearch(this IClient client)
+        public static ProductProjectionSearchManager ProductProjectionSearch(this UnityClient client)
         {
             return new ProductProjectionSearchManager(client);
         }

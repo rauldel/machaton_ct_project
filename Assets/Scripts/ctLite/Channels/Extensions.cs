@@ -11,7 +11,7 @@ namespace ctLite.Channels
         /// Creates an instance of the ChannelManager.
         /// </summary>
         /// <returns>ChannelManager</returns>
-        public static ChannelManager Channels(this Client client)
+        public static ChannelManager Channels(this UnityClient client)
         {
             return new ChannelManager(client);
         }

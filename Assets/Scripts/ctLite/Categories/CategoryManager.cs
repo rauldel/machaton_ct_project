@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Threading.Tasks;
 
 using ctLite.Common;
 
@@ -24,7 +24,7 @@ namespace ctLite.Categories
 
         #region Member Variables
 
-        private readonly IClient _client;
+        private readonly UnityClient _client;
 
         #endregion 
 
@@ -34,7 +34,7 @@ namespace ctLite.Categories
         /// Constructor
         /// </summary>
         /// <param name="client">Client</param>
-        public CategoryManager(IClient client)
+        public CategoryManager(UnityClient client)
         {
             _client = client;
         }
@@ -49,7 +49,7 @@ namespace ctLite.Categories
         /// <param name="categoryId">Category ID</param>
         /// <returns>Category</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-categories.html#get-category-by-id"/>
-        public Task<Response<Category>> GetCategoryByIdAsync(string categoryId)
+        public IEnumerator GetCategoryByIdAsync(string categoryId, Action<Response<Category>> onSuccess, Action<Response<Category>> onError)
         {
             if (string.IsNullOrWhiteSpace(categoryId))
             {
@@ -57,7 +57,7 @@ namespace ctLite.Categories
             }
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", categoryId);
-            return _client.GetAsync<Category>(endpoint);
+            return _client.GetAsync<Category>(endpoint, onSuccess, onError);
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace ctLite.Categories
         /// <param name="offset">Offset</param>
         /// <returns>CategoryQueryResult</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-categories.html#query-categories"/>
-        public Task<Response<CategoryQueryResult>> QueryCategoriesAsync(string where = null, string sort = null, int limit = -1, int offset = -1)
+        public IEnumerator QueryCategoriesAsync(Action<Response<CategoryQueryResult>> onSuccess, Action<Response<CategoryQueryResult>> onError, string where = null, string sort = null, int limit = -1, int offset = -1)
         {
             NameValueCollection values = new NameValueCollection();
 
@@ -93,7 +93,7 @@ namespace ctLite.Categories
                 values.Add("offset", offset.ToString());
             }
 
-            return _client.GetAsync <CategoryQueryResult>(ENDPOINT_PREFIX, values);
+            return _client.GetAsync <CategoryQueryResult>(ENDPOINT_PREFIX, onSuccess, onError, values);
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace ctLite.Categories
         /// <param name="categoryDraft">CategoryDraft object</param>
         /// <returns>Category</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-categories.html#create-a-category"/>
-        public Task<Response<Category>> CreateCategoryAsync(CategoryDraft categoryDraft)
+        public IEnumerator CreateCategoryAsync(CategoryDraft categoryDraft, Action<Response<Category>> onSuccess, Action<Response<Category>> onError)
         {
             if (categoryDraft == null)
             {
@@ -120,7 +120,7 @@ namespace ctLite.Categories
             }
 
             string payload = JsonConvert.SerializeObject(categoryDraft, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            return _client.PostAsync<Category>(ENDPOINT_PREFIX, payload);
+            return _client.PostAsync<Category>(ENDPOINT_PREFIX, payload, onSuccess, onError);
         }
 
         /// <summary>
@@ -130,9 +130,9 @@ namespace ctLite.Categories
         /// <param name="action">The update action to be performed on the category.</param>
         /// <returns>Category</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-categories.html#update-category"/>
-        public Task<Response<Category>> UpdateCategoryAsync(Category category, UpdateAction action)
+        public IEnumerator UpdateCategoryAsync(Category category, UpdateAction action, Action<Response<Category>> onSuccess, Action<Response<Category>> onError)
         {
-            return UpdateCategoryAsync(category.Id, category.Version, new List<UpdateAction> { action } );
+            return UpdateCategoryAsync(category.Id, category.Version, new List<UpdateAction> { action }, onSuccess, onError);
         }
 
         /// <summary>
@@ -142,9 +142,9 @@ namespace ctLite.Categories
         /// <param name="actions">The list of update actions to be performed on the category.</param>
         /// <returns>Category</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-categories.html#update-category"/>
-        public Task<Response<Category>> UpdateCategoryAsync(Category category, List<UpdateAction> actions)
+        public IEnumerator UpdateCategoryAsync(Category category, List<UpdateAction> actions, Action<Response<Category>> onSuccess, Action<Response<Category>> onError)
         {
-            return UpdateCategoryAsync(category.Id, category.Version, actions);
+            return UpdateCategoryAsync(category.Id, category.Version, actions, onSuccess, onError);
         }
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace ctLite.Categories
         /// the category.</param>
         /// <returns>Category</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-categories.html#update-category"/>
-        public Task<Response<Category>> UpdateCategoryAsync(string categoryId, int version, List<UpdateAction> actions)
+        public IEnumerator UpdateCategoryAsync(string categoryId, int version, List<UpdateAction> actions, Action<Response<Category>> onSuccess, Action<Response<Category>> onError)
         {
             if (string.IsNullOrWhiteSpace(categoryId))
             {
@@ -180,7 +180,7 @@ namespace ctLite.Categories
             });
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", categoryId);
-            return _client.PostAsync<Category>(endpoint, data.ToString());
+            return _client.PostAsync<Category>(endpoint, data.ToString(), onSuccess, onError);
         }
 
         /// <summary>
@@ -189,9 +189,9 @@ namespace ctLite.Categories
         /// <param name="category">Category</param>
         /// <returns>Category</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-categories.html#delete-category"/>
-        public Task<Response<Category>> DeleteCategoryAsync(Category category)
+        public IEnumerator DeleteCategoryAsync(Category category, Action<Response<Category>> onSuccess, Action<Response<Category>> onError)
         {
-            return DeleteCategoryAsync(category.Id, category.Version);
+            return DeleteCategoryAsync(category.Id, category.Version, onSuccess, onError);
         }
 
         /// <summary>
@@ -201,7 +201,7 @@ namespace ctLite.Categories
         /// <param name="version">Caregory version</param>
         /// <returns>Category</returns>
         /// <see href="http://dev.commercetools.com/http-api-projects-categories.html#delete-category"/>
-        public Task<Response<Category>> DeleteCategoryAsync(string categoryId, int version)
+        public IEnumerator DeleteCategoryAsync(string categoryId, int version, Action<Response<Category>> onSuccess, Action<Response<Category>> onError)
         {
             if (string.IsNullOrWhiteSpace(categoryId))
             {
@@ -219,7 +219,7 @@ namespace ctLite.Categories
             };
 
             string endpoint = string.Concat(ENDPOINT_PREFIX, "/", categoryId);
-            return _client.DeleteAsync<Category>(endpoint, values);
+            return _client.DeleteAsync<Category>(endpoint, onSuccess, onError, values);
         }
 
         #endregion
